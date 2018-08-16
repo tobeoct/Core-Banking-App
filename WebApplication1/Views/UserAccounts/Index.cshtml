@@ -1,0 +1,108 @@
+﻿@model WebApplication1.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@Html.Partial("_AddModal")
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="underline animated fadeInLeft">User Management</h1>
+        </div>
+    </div>
+</div>
+<div class="row margin-vertical">
+    <p class="alert alert-dismissible">@ViewBag.SuccessMessage</p>
+    
+    <div class="row padding-horizontal padding-vertical">
+        <div class="container container-fluid">
+            <p class="align-right grey-color animated fadeInRight ">2 Users</p>
+        </div>
+
+    </div>
+    <div class="container bg-white shadow">
+
+        <div class="row align-right padding-horizontal">
+            <button id="myBtn">Add new Account</button>
+        </div>
+
+
+
+
+        <div class="row padding-horizontal">
+
+            <table id="gl-user-account" class="table table-striped table-responsive small-text animated fadeInUp ">
+                <thead class="padding-vertical">
+                    <tr>
+                        <th>Full Name </th>
+                        <th>Branch</th>
+                        <th>Email</th>
+                        <th>Username</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody></tbody>
+            </table>
+        </div>
+
+
+    </div>
+
+</div>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $("#gl-user-account").DataTable({
+                ajax: {
+                    url: "/api/useraccounts",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "fullName"
+
+                    },
+                    {
+                        data: "branch.name"
+                    },
+                    {
+                        data: "email"
+                    },
+                    {
+                        data: "userName"
+                    },
+                    {
+                        data: "id",
+                        
+                        render: function (data) {
+                            return "<a class='btn-link link' href='UserAccounts/EditProfile/" + data + "'>Edit</a>"
+                        }
+                    }
+                ]
+            });
+            //            $("#branches ").on("click","js-delete", function () {
+            //                var button = $(this);
+            //                //alert("Delete");
+            //                bootbox.confirm("Are you sure you want to delete this branch", function () {
+            //                    if (result) {
+            //                        $.ajax({
+            //                            url: "api/generalledgercategories/" + button.attr("data-branch-id"),
+            //                            method: "DELETE",
+            //                            success: function () {
+            //                                table.row(button.parents("tr")).remove().draw();
+            //                            }
+            //                        });
+            //                    }
+            //                });
+            //            });
+
+        });
+    </script>
+}

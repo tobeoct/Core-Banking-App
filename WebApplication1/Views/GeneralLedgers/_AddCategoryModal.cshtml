@@ -1,0 +1,77 @@
+﻿@model WebApplication1.ViewModels.GLCategoryViewModel
+<div id="myModal" class="modal ">
+
+    <!-- Modal content -->
+    <div class="modal-content animated ">
+        <span class="close">&times;</span>
+        <div>
+            <div class=" padding-horizontal bordered-bottom align-left">
+                <h3 class="alt-color bold-text">Add GL Category</h3>
+            </div>
+            @using (Html.BeginForm("CreateCategory", "GeneralLedgers", new { @class = "form-horizontal", role = "form" }))
+            {
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.GlCategory.MainAccountCategory)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.GlCategory.MainAccountCategory, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.GlCategory.MainAccountCategory)
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.GlCategory.CategoriesId)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.DropDownListFor(m => m.GlCategory.CategoriesId, new SelectList(Model.Categories, "Id", "Name"), "Select Main Account Category", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.GlCategory.CategoriesId)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.GlCategory.Description)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.GlCategory.Description, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.GlCategory.Description)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @{
+                        if (Model.GlCategory == null)
+                        {
+                        <input data-val="true" data-val-number="The field Id must be a number." data-val-required="The Id field is required." id="Customer_Id" name="Customer.Id" type="hidden" value="0" />
+                        }
+                        else
+                        {
+                           @Html.HiddenFor(m => m.GlCategory.Id)
+                        }
+                    }
+
+                </div>
+                <div class="align-right">
+                    <button type="submit">Add GL Category<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
+                </div>
+
+
+            }
+
+        </div>
+    </div>
+
+</div>
+
+
+

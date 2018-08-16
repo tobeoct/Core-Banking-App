@@ -1,0 +1,142 @@
+﻿<div class="col-md-2 col-sm-3 col-xs-2 max-height animated fadeInLeft " id="nav-drawer">
+    <div class="row" id="nav-toggle">
+
+        <div class="col-md-6 col-sm-6 col-xs-6 align-left animated fadeIn ">
+            <img src="~/Content/Images/menu.png" class="icon">
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-6 align-right animated rotateInDownLeft">
+            <img src="~/Content/Images/minimize.png" class="icon">
+        </div>
+
+    </div>
+
+
+    <div class="nav-list white-color">
+        <div class="margin-vertical-max">
+
+            @* <div class="row active"> *@
+            @* *@
+            @*     <div class="" style="z-index: 3;"> *@
+            @*         <div class="col-md-3 col-sm-3 col-xs-3  align-center"><img src="~/Content/Images/user.png" class="icon"></div> *@
+            @*         <div class="col-md-9 col-sm-9 col-xs-9"><a href="~/UserAccounts" class="nav-list-item">Users</a></div> *@
+            @*     </div> *@
+            @* *@
+            @*     <div class="inline-div" id="nav-active" style="z-index: 1;"> *@
+            @* *@
+            @*         <div class="alt-bg" style=" opacity: 0.6;"> *@
+            @* *@
+            @*         </div> *@
+            @*         <!-- *@
+            @*         --> *@
+            @*         <div class="bg-active-indicator"> *@
+            @* *@
+            @*         </div> *@
+            @*     </div> *@
+            @* *@
+            @* </div> *@
+
+            <div class="row animated fadeInLeft">
+            <div style="position: relative; width: 100%;">
+                <div class="col-md-3 col-sm-3 col-xs-3 align-center"><img src="~/Content/Images/teller.png" class="icon"></div>
+                <div class="col-md-9 col-sm-4 col-xs-9">@Html.ActionLink("Branch", "Index", "Branches")</div>
+           
+            </div>
+            <div id="nav-active">
+            
+            <div class="alt-bg" style=" opacity: 0.6;">
+           
+            </div>
+            <!--
+            -->
+            <div class="bg-active-indicator">
+            
+                    </div>
+                </div>
+
+            </div>
+            <div class="row animated fadeInLeft">
+                <div style="position: relative; width: 100%;">
+                    <div class="col-md-3 col-sm-3 col-xs-3 align-center"><img src="~/Content/Images/teller.png" class="icon"></div>
+                    <div class="col-md-9 col-sm-4 col-xs-9">Tellers</div>
+
+
+                </div>
+                <div id="nav-active">
+
+                    <div class="alt-bg" style=" opacity: 0.6;">
+
+                    </div>
+                    <!--
+                    -->
+                    <div class="bg-active-indicator">
+
+                    </div>
+                </div>
+
+                <ul class="dropdown" style="z-index: 3;">
+                    <a href="teller.php"> <li class="col-md-12"><span style="margin-left: 30%">@Html.ActionLink("Management", "Index", "Tellers", new { @class = "nav-list-item" })</span></li></a>
+                    <a href="teller-postings.php"><li class="col-md-12"><span style="margin-left: 30%"> @Html.ActionLink("Postings", "Posting", "Tellers", new { @class = "nav-list-item" })</span></li></a>
+                </ul>
+            </div>
+
+            <div class="row animated fadeInLeft">
+                <div class="col-md-3 col-sm-3 col-xs-3 align-center"><img src="~/Content/Images/customer.png" class="icon"></div>
+                <div class="col-md-9 col-sm-4 col-xs-9">Customers</div>
+                <div class="inline-div" id="nav-active">
+
+                    <div class="alt-bg" style=" opacity: 0.6;">
+
+                    </div>
+                    <!--
+                    -->
+                    <div class="bg-active-indicator">
+
+                    </div>
+                </div>
+            </div>
+            <div class="row animated fadeInLeft">
+                <div class="col-md-3 col-sm-3 col-xs-3  align-center"><img src="~/Content/Images/account-balance.png" class="icon"></div>
+                <div class="col-md-9 col-sm-4 col-xs-9">Accounts</div>
+                <div class="inline-div" id="nav-active">
+
+                    <div class="alt-bg" style=" opacity: 0.6;">
+
+                    </div>
+                    <!--
+                    -->
+                    <div class="bg-active-indicator">
+
+                    </div>
+                </div>
+            </div>
+            <div class="row animated fadeInLeft">
+                <div class="col-md-3 col-sm-3 col-xs-3  align-center"><img src="~/Content/Images/bait.png" class="icon"></div>
+                <div class="col-md-9 col-sm-4 col-xs-9">General Ledger</div>
+                <ul class="dropdown" style="z-index: 3;">
+                    <a href="~/GeneralLedgers"> <li class="col-md-12"><span style="margin-left: 30%">Category</span></li></a>
+                    <a href="~/GeneralLedgers/Account"><li class="col-md-12"><span style="margin-left: 30%"> Accounts</span></li></a>
+                    <a href="~/GeneralLedgers/Postings"><li class="col-md-12"><span style="margin-left: 30%"> Postings</span></li></a>
+                </ul>
+            </div>
+            <div class="row animated fadeInLeft">
+                <div class="col-md-3 col-sm-3 col-xs-3  align-center"><img src="~/Content/Images/stats.png" class="icon"></div>
+                <div class="col-md-9 col-sm-4 col-xs-9">Financial Reports</div>
+            </div>
+            <div class="row animated fadeInLeft">
+                <div class="col-md-3 col-sm-3 col-xs-3  align-center"><img src="~/Content/Images/user.png" class="icon"></div>
+                <div class="col-md-9 col-sm-4 col-xs-9">
+                    @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="submit" value="Logout" class="strip" style="border-bottom:none;width: auto !important;"/>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+
+

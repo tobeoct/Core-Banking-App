@@ -1,0 +1,91 @@
+﻿
+@model WebApplication1.ViewModels.EditProfileViewModel
+<div id="myModal" class="modal ">
+
+    <!-- Modal content -->
+    <div class="modal-content animated">
+        <span class="close">&times;</span>
+        <div>
+            <div class=" padding-horizontal bordered-bottom align-left">
+                <h3 class="alt-color bold-text">Change Password</h3>
+            </div>
+            @using (Html.BeginForm("ResetPassword", "UserAccounts"))
+            {
+            <div class="padding-horizontal">
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.ApplicationUser.Email)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.ApplicationUser.Email, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.ApplicationUser.Email)
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.ApplicationUser.ActivationCode)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.ApplicationUser.ActivationCode, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.ApplicationUser.ActivationCode)
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.Password)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.Password, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Password)
+
+                           
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        
+                             @Html.HiddenFor(m => m.ApplicationUser.Id)
+
+
+                    </div>
+                </div>
+                @* </div> *@
+                @* <div class="row form-group "> *@
+                @*     <div class="margin-vertical"> *@
+                @*         <div class="col-md-3"> *@
+                @*             <label for="name" >New Password</label> *@
+                @*         </div> *@
+                @*         <div class="col-md-9"> *@
+                @*             <input type="Password" name="" class="form-control" placeholder="Enter Password"> *@
+                @*         </div> *@
+                @*     </div> *@
+                @* </div> *@
+                @* <div class="row form-group"> *@
+                @*     <div class="margin-vertical"> *@
+                @*         <div class="col-md-3"> *@
+                @*             <label for="name" class="bold-text">Confirm Password</label> *@
+                @*         </div> *@
+                @*         <div class="col-md-9"> *@
+                @*             <input type="Password" name="" class="form-control" placeholder="Enter Password"> *@
+                @*         </div> *@
+                @*     </div> *@
+                @* </div> *@
+                <div class="align-right">
+                    <button type="submit">Forgot Password <img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+
+</div>

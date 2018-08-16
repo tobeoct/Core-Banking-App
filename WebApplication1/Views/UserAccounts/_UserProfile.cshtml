@@ -1,0 +1,33 @@
+﻿@model WebApplication1.ViewModels.EditProfileViewModel
+<div class="col-md-4 col-sm-6 col-xs-12 align-center bordered-right">
+	<div class=" margin-vertical bordered-bottom" style=" padding-bottom: 30px;">
+		<h3 class="grey-color animated fadeInDown">Profile</h3>
+	</div>
+	<div class=" margin-vertical animated fadeIn"  >
+		<div class="row">
+			<div class="col-md-2 col-sm-2 col-xs-3">
+				
+			</div>
+			<div class=" col-md-8 col-sm-8 col-xs-6">
+				<img src="~/Content/Images/profile.png" style="margin: auto; " >
+			</div>
+			<div class="col-md-2 col-sm-3">
+				
+			</div>
+		</div>
+	</div>
+	<div class="margin-vertical animated fadeInUp">
+		<div >
+			<h3>@Model.ApplicationUser.UserName</h3>
+		</div>
+		<div>
+			<h1>@Model.ApplicationUser.FullName</h1>
+		</div>
+		<div>
+			<p class="grey-color">@Model.ApplicationUser.Email</p>
+		</div>
+		<div>
+			<p>@Model.ApplicationUser.Branch.Name</p>
+		</div>
+	</div>
+</div>

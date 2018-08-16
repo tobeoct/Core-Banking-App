@@ -1,0 +1,17 @@
+﻿@model WebApplication1.ViewModels.EditProfileViewModel
+@{
+	ViewBag.Title = "EditProfile";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row ">
+	
+	<div class="container shadow bg-white animated fadeIn">
+
+		@Html.Partial("_EditUserModal")
+		@Html.Partial("_UserProfile")
+		@Html.Partial("_UserForm")
+
+	</div>
+</div>
+

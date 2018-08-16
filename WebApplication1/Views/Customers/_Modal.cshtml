@@ -1,0 +1,110 @@
+﻿@model WebApplication1.Models.Customer
+<div id="myModal" class="modal ">
+
+    <!-- Modal content -->
+    <div class="modal-content animated ">
+        <span class="close">&times;</span>
+        <div>
+            <div class=" padding-horizontal bordered-bottom align-left">
+                <h3 class="alt-color bold-text">Add Customer</h3>
+            </div>
+            @using (Html.BeginForm("Create", "Customers"))
+            {
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.Name)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Name)
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.Email)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control"})
+                            @Html.ValidationMessageFor(m => m.Email)
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.Address)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.Address, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Address)
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.PhoneNumber)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.PhoneNumber)
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.Gender)
+                        </div>
+                        <div class="col-md-9">
+                            <div class="col-md-3">
+                                <div class="radio">
+
+                                    <label>
+
+                                        @Html.RadioButtonFor(m => m.Gender, "Male")
+
+                                        <span>Male</span>
+
+                                    </label>
+                                    
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="radio ">
+
+                                    <label>
+
+                                        @Html.RadioButtonFor(m => m.Gender, "Male")
+
+                                        <span>Female</span>
+
+                                    </label>
+
+                                </div>
+                            </div>
+                        </div>
+                            @Html.ValidationMessageFor(m => m.Gender)
+                        </div>
+                    </div>
+                
+                <div class="form-group">
+
+                    @Html.HiddenFor(m => m.Id)
+
+                </div>
+                <div class="align-right">
+                    <button type="submit">Add Customer<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
+                </div>
+
+
+            }
+
+        </div>
+    </div>
+
+</div>
+

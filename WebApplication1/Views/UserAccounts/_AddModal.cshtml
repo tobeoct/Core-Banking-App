@@ -1,0 +1,198 @@
+﻿@model WebApplication1.Models.RegisterViewModel
+
+@* <div id="myModal" class="modal "> *@
+@* *@
+@*     <!-- Modal content --> *@
+@*     <div class="modal-content animated "> *@
+@*         <span class="close">&times;</span> *@
+@*         <div> *@
+@*             <div class=" padding-horizontal bordered-bottom align-left"> *@
+@*                 <h3 class="alt-color bold-text">Add GL Category</h3> *@
+@*             </div> *@
+@*             @using (Html.BeginForm("Register", "Account")) *@
+@*             { *@
+@* *@
+@*                 <div class="row form-group "> *@
+@*                     <div class="margin-vertical"> *@
+@*                         <div class="col-md-3"> *@
+@*                             @Html.LabelFor(m => m.UserAccount.Name) *@
+@*                         </div> *@
+@*                         <div class="col-md-9"> *@
+@*                             @Html.TextBoxFor(m => m.UserAccount.Name, new { @class = "form-control" }) *@
+@*                             @Html.ValidationMessageFor(m => m.UserAccount.Name) *@
+@* *@
+@* *@
+@*                         </div> *@
+@*                     </div> *@
+@*                 </div> *@
+@*                 <div class="row form-group "> *@
+@*                     <div class="margin-vertical"> *@
+@*                         <div class="col-md-3"> *@
+@*                             @Html.LabelFor(m => m.UserAccount.Email) *@
+@*                         </div> *@
+@*                         <div class="col-md-9"> *@
+@*                             @Html.TextBoxFor(m => m.UserAccount.Email, new { @class = "form-control" }) *@
+@*                             @Html.ValidationMessageFor(m => m.UserAccount.Email) *@
+@*                         </div> *@
+@*                     </div> *@
+@*                 </div> *@
+@*                 <div class="row form-group "> *@
+@*                     <div class="margin-vertical"> *@
+@*                         <div class="col-md-3"> *@
+@*                             @Html.LabelFor(m => m.UserAccount.Username) *@
+@*                         </div> *@
+@*                         <div class="col-md-9"> *@
+@*                             @Html.TextBoxFor(m => m.UserAccount.Username, new { @class = "form-control" }) *@
+@*                             @Html.ValidationMessageFor(m => m.UserAccount.Username) *@
+@*                         </div> *@
+@*                     </div> *@
+@*                 </div> *@
+@*                 <div class="row form-group "> *@
+@*                     <div class="margin-vertical"> *@
+@*                         <div class="col-md-3"> *@
+@*                             @Html.LabelFor(m => m.UserAccount.PhoneNumber) *@
+@*                         </div> *@
+@*                         <div class="col-md-9"> *@
+@*                             @Html.TextBoxFor(m => m.UserAccount.PhoneNumber, new { @class = "form-control" , @type="number"}) *@
+@*                             @Html.ValidationMessageFor(m => m.UserAccount.PhoneNumber) *@
+@*                         </div> *@
+@*                     </div> *@
+@*                 </div> *@
+@* *@
+@*                 <div class="row form-group "> *@
+@*                     <div class="margin-vertical"> *@
+@*                         <div class="col-md-3"> *@
+@*                             @Html.LabelFor(m => m.UserAccount.BranchId) *@
+@*                         </div> *@
+@*                         <div class="col-md-9"> *@
+@*                             @Html.DropDownListFor(m => m.UserAccount.BranchId, new SelectList(Model.Branch, "Id", "Name"), "Select Branch", new { @class = "form-control" }) *@
+@*                             @Html.ValidationMessageFor(m => m.UserAccount.BranchId) *@
+@*                         </div> *@
+@*                     </div> *@
+@*                 </div> *@
+@*                 <div class="form-group"> *@
+@*                     @Html.HiddenFor(m => m.UserAccount.Id) *@
+@*                     @Html.AntiForgeryToken() *@
+@*                 </div> *@
+@*                 <div class="align-right"> *@
+@*                     <button type="submit">Add GL Account<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button> *@
+@*                 </div> *@
+@* *@
+@* *@
+@*             } *@
+@* *@
+@*         </div> *@
+@*     </div> *@
+@* *@
+@* </div> *@
+@* *@
+@* *@
+@* *@
+<div id="myModal" class="modal ">
+
+    <!-- Modal content -->
+    <div class="modal-content animated ">
+        <span class="close">&times;</span>
+        <div>
+            <div class=" bordered-bottom align-left">
+                <h3 class="alt-color bold-text">Add GL Category</h3>
+            </div>
+            <p class="alert alert-dismissible">@ViewBag.Message</p>
+
+            @using (Html.BeginForm("Register", "UserAccounts", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.ValidationSummary("", new { @class = "text-danger" })
+
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.FullName)
+
+                        </div>
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.FullName)
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.Email)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Email)
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.Username)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.Username, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Username)
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.PhoneNumber)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control", @type = "number" })
+                            @Html.ValidationMessageFor(m => m.PhoneNumber)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.BranchId)
+                        </div>
+                        <div class="col-md-9">
+                            @* @Html.DropDownListFor(m => m.BranchId, Model.Branch, "Select Role", new { @class = "form-control" }) *@
+
+                            @Html.DropDownListFor(m => m.BranchId, new SelectList(Model.Branch, "Id", "Name"), "Select Branch", new { @class = "form-control" })
+
+                            @Html.ValidationMessageFor(m => m.BranchId)
+                        </div>
+                    </div>
+                </div>
+                 <div class="row form-group ">
+                     <div class="margin-vertical">
+                         <div class="col-md-3">
+                             @Html.LabelFor(m => m.RoleName)
+                         </div>
+                         <div class="col-md-9">
+                             @* @Html.DropDownListFor(m => m.BranchId, Model.Branch, "Select Role", new { @class = "form-control" }) *@
+
+                             @* @Html.DropDownListFor(m => m.RoleName, new SelectList(Model.AccountRoles), "Select Branch", new { @class = "form-control" }) *@
+                             @Html.DropDownListFor(m => m.RoleName, Model.RolesList, "Select Role", new { @class = "form-control" })
+
+                             @Html.ValidationMessageFor(m => m.RoleName)
+                         </div>
+                     </div>
+                 </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <button type="submit">Register</button>
+                    </div>
+                </div>
+            }
+        </div>
+     
+    </div>
+</div>
+
+     @section Scripts {
+            @Scripts.Render("~/bundles/jqueryval")
+        }

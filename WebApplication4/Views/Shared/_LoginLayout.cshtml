@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Html.Partial("_Meta")
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="container strip max-width" style="min-height: 100vh;">
+        <div class="bottom left">
+            <div class="" style="width: 45%; ">
+                <img src="~/Content/Images/fintech-construct.png">
+            </div>
+        </div>
+        <img src="~/Content/Images/header.png">
+        <div class="container " style="width: 80%;" id="login-page">
+            <div class="row">  
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+
+    @Scripts.Render("~/bundles/lib")
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>
+

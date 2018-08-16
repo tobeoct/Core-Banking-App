@@ -1,0 +1,78 @@
+﻿
+
+@model WebApplication1.ViewModels.GLAccountViewModel
+<div id="myModal" class="modal ">
+
+    <!-- Modal content -->
+    <div class="modal-content animated ">
+        <span class="close">&times;</span>
+        <div>
+            <div class=" padding-horizontal bordered-bottom align-left">
+                <h3 class="alt-color bold-text">Add GL Account</h3>
+            </div>
+            @using (Html.BeginForm("CreateAccount", "GeneralLedgers"))
+            {
+
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.GlAccount.Name)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(m => m.GlAccount.Name, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.GlAccount.Name)
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.GlAccount.CategoriesId)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.DropDownListFor(m => m.GlAccount.CategoriesId, new SelectList(Model.Categories, "Id", "Name"), "Select Main Account Category", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.GlAccount.CategoriesId)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.GlAccount.BranchId)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.DropDownListFor(m => m.GlAccount.BranchId, new SelectList(Model.Branch, "Id", "Name"), "Select Branch", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.GlAccount.BranchId)
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    @{
+                        if (Model.GlAccount == null)
+                        {
+                            <input data-val="true" data-val-number="The field Id must be a number." data-val-required="The Id field is required." id="Customer_Id" name="Customer.Id" type="hidden" value="0" />
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(m => m.GlAccount.Id)
+                        }
+                    }
+
+                </div>
+                <div class="align-right">
+                    <button type="submit">Add GL Account<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
+                </div>
+
+
+            }
+
+        </div>
+    </div>
+
+</div>
+
+
+
