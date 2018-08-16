@@ -1,0 +1,209 @@
+﻿
+@{
+    ViewBag.Title = "Account Type Configuration";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="underline animated fadeInLeft">Account Type Configuration</h1>
+        </div>
+    </div>
+</div>
+<div class="row margin-vertical">
+    <div class="container margin-vertical">
+        <h3 class="alt-color">Savings Account</h3>
+    </div>
+
+    <div class="container bg-white shadow">
+
+
+
+        <div class="row padding-horizontal">
+
+            <table id="savings" class="table table-striped table-responsive small-text animated fadeInUp ">
+                <thead class="padding-vertical">
+                    <tr>
+                        <th>Credit Interest Rate</th>
+                        <th>Minimum Balance</th>
+                        <th>Interest Expense GL Account</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody></tbody>
+            </table>
+        </div>
+
+
+    </div>
+
+</div>
+<div class="row margin-vertical">
+
+    <div class="container margin-vertical">
+        <h3 class="alt-color">Current Account</h3>
+    </div>
+    <div class="container bg-white shadow">
+
+        <div class="row padding-horizontal">
+
+            <table id="current" class="table table-striped table-responsive small-text animated fadeInUp ">
+                <thead class="padding-vertical">
+                    <tr>
+                        <th>Credit Interest Rate</th>
+                        <th>Minimum Balance</th>
+                        <th>Interest Expense GL Account</th>
+                        <th>COT</th>
+                        <th>COT Income GL Account</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody></tbody>
+            </table>
+        </div>
+
+
+    </div>
+
+</div>
+
+<div class="row margin-vertical">
+    <div class="container margin-vertical">
+        <h3 class="alt-color">Loan Account</h3>
+    </div>
+    <div class="container bg-white shadow">
+
+
+
+        <div class="row padding-horizontal">
+
+            <table id="loan" class="table table-striped table-responsive small-text animated fadeInUp ">
+                <thead class="padding-vertical">
+                    <tr>
+                        <th>Debit Interest Rate</th>
+                        <th>Interest Income GL Account</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody></tbody>
+            </table>
+        </div>
+
+
+    </div>
+
+</div>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $("#savings").DataTable({
+                ajax: {
+                    url: "/api/accounttypes/savingsaccounttype",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "creditInterestRate",
+                        render: function (data) {
+                            return data + "%"
+                        }
+                    },
+                    {
+                        data: "minimumBalance"
+                    },
+                    {
+                        data: "glAccount.name"
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return "<a href='AccountTypes/SavingsAccConfig/" + data + "'>Edit</a>"
+                        }
+                    }
+                ]
+            });
+            $("#current").DataTable({
+                ajax: {
+                    url: "/api/accounttypes/currentaccounttype",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "creditInterestRate",
+                        render: function (data) {
+                            return data + "%"
+                        }
+                    },
+                    {
+                        data: "minimumBalance"
+                    },
+                    {
+                        data: "glAccount.name"
+                    },
+                    {
+                        data: "cot"
+                    },
+                    {
+                        data: "glAccount.name"
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return "<a href='AccountTypes/CurrentAccConfig/" + data + "'>Edit</a>"
+                        }
+                    }
+                ]
+            });
+            $("#loan").DataTable({
+                ajax: {
+                    url: "/api/accounttypes/loanaccounttype",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "debitInterestRate",
+                        render: function (data) {
+                            return data + "%"
+                        }
+                    },
+                    {
+                        data: "glAccount.name"
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return "<a href='AccountTypes/LoanAccConfig/" + data + "'>Edit</a>"
+                        }
+                    }
+                ]
+            });
+
+            $("#savings ").on("click",
+                "js-delete",
+                function () {
+                    var button = $(this);
+                    //alert("Delete");
+                    bootbox.confirm("Are you sure you want to delete this branch",
+                        function () {
+                            if (result) {
+                                $.ajax({
+                                    url: "api/branches/" + button.attr("data-branch-id"),
+                                    method: "DELETE",
+                                    success: function () {
+                                        table.row(button.parents("tr")).remove().draw();
+                                    }
+                                });
+                            }
+                        });
+                });
+
+        });
+    </script>
+}

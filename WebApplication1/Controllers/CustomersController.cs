@@ -22,6 +22,10 @@ namespace WebApplication1.Controllers
         {
             return View();
         }
+        public ActionResult Account()
+        {
+            return View("CustomerAccount");
+        }
 
         [HttpPost]
         public ActionResult Create(Customer customer)

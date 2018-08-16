@@ -1,0 +1,92 @@
+﻿@model WebApplication1.ViewModels.CurrentAccViewModel
+@{
+    ViewBag.Title = "Edit Loan Account Configurations";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="underline animated fadeInLeft">Current Account Configurations</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="row padding-horizontal">
+
+        @using (Html.BeginForm("EditCurrent", "AccountTypes"))
+        {
+            <div class="row form-group ">
+                <div class="margin-vertical">
+                    <div class="col-md-3">
+
+                        @Html.LabelFor(m => m.CurrentAccountType.CreditInterestRate)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(m => m.CurrentAccountType.CreditInterestRate, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.CurrentAccountType.CreditInterestRate)
+                    </div>
+                </div>
+            </div>
+            <div class="row form-group ">
+                <div class="margin-vertical">
+                    <div class="col-md-3">
+                        @Html.LabelFor(m => m.CurrentAccountType.MinimumBalance)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(m => m.CurrentAccountType.MinimumBalance, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.CurrentAccountType.MinimumBalance)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row form-group ">
+                <div class="margin-vertical">
+                    <div class="col-md-3">
+                        @Html.LabelFor(m => m.CurrentAccountType.GLAccountId)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(m => m.CurrentAccountType.GLAccountId, new SelectList(Model.GlAccounts, "Id", "Name"), "Select Interest Expense GL ", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.CurrentAccountType.GlAccount)
+                    </div>
+                </div>
+            </div>
+            <div class="row form-group ">
+                <div class="margin-vertical">
+                    <div class="col-md-3">
+                        @Html.LabelFor(m => m.CurrentAccountType.COT)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(m => m.CurrentAccountType.COT, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.CurrentAccountType.COT)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row form-group ">
+                <div class="margin-vertical">
+                    <div class="col-md-3">
+                        @Html.LabelFor(m => m.CurrentAccountType.GLAccountId) 
+                       
+                    </div>
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(m => m.CurrentAccountType.GLAccountId, new SelectList(Model.GlAccounts, "Id", "Name"), "Select COT Income GL ", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.CurrentAccountType.GlAccount)
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+
+                @Html.HiddenFor(m => m.CurrentAccountType.Id)
+
+            </div>
+            <div class="align-right">
+                <button type="submit">Save Changes<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
+            </div>
+
+
+        }
+    </div>
+</div>

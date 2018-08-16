@@ -221,6 +221,8 @@
     <Compile Include="Configurations\GLCategoryConfigurations.cs" />
     <Compile Include="Configurations\UsersConfigurations.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AccountTypesController.cs" />
+    <Compile Include="Controllers\Api\AccountTypesController.cs" />
     <Compile Include="Controllers\Api\BranchesController.cs" />
     <Compile Include="Controllers\Api\CustomersController.cs" />
     <Compile Include="Controllers\Api\GeneralLedgersController.cs" />
@@ -456,6 +458,10 @@
     <Compile Include="Migrations\201808160837199_PopulateAccTypeCurrent.Designer.cs">
       <DependentUpon>201808160837199_PopulateAccTypeCurrent.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808160936297_RenameGlAccountinSavings.cs" />
+    <Compile Include="Migrations\201808160936297_RenameGlAccountinSavings.Designer.cs">
+      <DependentUpon>201808160936297_RenameGlAccountinSavings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountRoles.cs" />
     <Compile Include="Models\CurrentAccountType.cs" />
@@ -476,9 +482,12 @@
     <Compile Include="Models\UserAccount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\CurrentAccViewModel.cs" />
     <Compile Include="ViewModels\EditProfileViewModel.cs" />
     <Compile Include="ViewModels\GLAccountViewModel.cs" />
     <Compile Include="ViewModels\GLCategoryViewModel.cs" />
+    <Compile Include="ViewModels\LoanAccViewModel.cs" />
+    <Compile Include="ViewModels\SavingsViewModel.cs" />
     <Compile Include="ViewModels\UserAccountViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -758,6 +767,10 @@
     <Content Include="Views\UserAccounts\_EditUserModal.cshtml" />
     <Content Include="Views\Customers\Index.cshtml" />
     <Content Include="Views\Customers\_Modal.cshtml" />
+    <Content Include="Views\AccountTypes\Index.cshtml" />
+    <Content Include="Views\AccountTypes\EditSavingsAccConfig.cshtml" />
+    <Content Include="Views\AccountTypes\EditCurrentAccConfig.cshtml" />
+    <Content Include="Views\AccountTypes\EditLoanAccConfig.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -937,6 +950,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808160837199_PopulateAccTypeCurrent.resx">
       <DependentUpon>201808160837199_PopulateAccTypeCurrent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808160936297_RenameGlAccountinSavings.resx">
+      <DependentUpon>201808160936297_RenameGlAccountinSavings.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

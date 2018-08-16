@@ -1,0 +1,58 @@
+﻿@model WebApplication1.ViewModels.LoanAccViewModel
+@{
+    ViewBag.Title = "EditLoanAccConfig";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="underline animated fadeInLeft">Loan Account Configurations</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="row padding-horizontal">
+
+        @using (Html.BeginForm("EditLoan", "AccountTypes"))
+        {
+            <div class="row form-group ">
+                <div class="margin-vertical">
+                    <div class="col-md-3">
+
+                        @Html.LabelFor(m => m.LoanAccountType.DebitInterestRate)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(m => m.LoanAccountType.DebitInterestRate, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.LoanAccountType.DebitInterestRate)
+                    </div>
+                </div>
+            </div>
+            
+
+            <div class="row form-group ">
+                <div class="margin-vertical">
+                    <div class="col-md-3">
+                        @Html.LabelFor(m => m.LoanAccountType.GlAccountId)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(m => m.LoanAccountType.GlAccountId, new SelectList(Model.GlAccounts, "Id", "Name"), "Select Main Account Category", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.LoanAccountType.GlAccount)
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+
+                @Html.HiddenFor(m => m.LoanAccountType.Id)
+
+            </div>
+            <div class="align-right">
+                <button type="submit">Save Changes<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
+            </div>
+
+
+        }
+    </div>
+</div>
