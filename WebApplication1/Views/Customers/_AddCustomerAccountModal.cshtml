@@ -6,7 +6,7 @@
         <span class="close">&times;</span>
         <div>
             <div class=" padding-horizontal bordered-bottom align-left">
-                <h3 class="alt-color bold-text">Add Customer</h3>
+                <h3 class="alt-color bold-text">Add Customer Account</h3>
             </div>
             @using (Html.BeginForm("CreateCustomerAccount", "Customers"))
             {
@@ -48,11 +48,11 @@
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.CustomerAccount.CustomerAccountTypeId)
+                            @Html.LabelFor(m => m.CustomerAccount.AccountTypeId)
                         </div>
                         <div class="col-md-9">
-                            @Html.DropDownListFor(m => m.CustomerAccount.CustomerAccountTypeId, new SelectList(Model.CustomerAccountTypes, "Id"), "Select Main Account Category", new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.CustomerAccount.CustomerAccountTypeId)
+                            @Html.DropDownListFor(m => m.CustomerAccount.AccountTypeId, new SelectList(Model.AccountTypes, "Id","Name"), "Select Account Type", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.CustomerAccount.AccountTypeId)
                         </div>
                     </div>
                 </div>

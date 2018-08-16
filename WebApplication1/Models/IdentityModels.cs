@@ -49,7 +49,8 @@ namespace WebApplication1.Models
         public DbSet<LoanAccountType> LoanAccountTypes { get; set; }
         public DbSet<CustomerAccountType> CustomerAccountTypes { get; set; }
         public DbSet<CustomerAccount> CustomerAccounts { get; set; }
-        
+        public DbSet<AccountType> AccountTypes { get; set; }
+
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {

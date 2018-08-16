@@ -462,8 +462,21 @@
     <Compile Include="Migrations\201808160936297_RenameGlAccountinSavings.Designer.cs">
       <DependentUpon>201808160936297_RenameGlAccountinSavings.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808161315062_AddAccountTypeToDb.cs" />
+    <Compile Include="Migrations\201808161315062_AddAccountTypeToDb.Designer.cs">
+      <DependentUpon>201808161315062_AddAccountTypeToDb.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808161317093_PopulateAccountTypes.cs" />
+    <Compile Include="Migrations\201808161317093_PopulateAccountTypes.Designer.cs">
+      <DependentUpon>201808161317093_PopulateAccountTypes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808161328116_ChangeFromCustomerAccountTypeToAccountType.cs" />
+    <Compile Include="Migrations\201808161328116_ChangeFromCustomerAccountTypeToAccountType.Designer.cs">
+      <DependentUpon>201808161328116_ChangeFromCustomerAccountTypeToAccountType.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountRoles.cs" />
+    <Compile Include="Models\AccountType.cs" />
     <Compile Include="Models\CurrentAccountType.cs" />
     <Compile Include="Models\LoanAccountType.cs" />
     <Compile Include="Models\SavingsAccountType.cs" />
@@ -956,6 +969,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808160936297_RenameGlAccountinSavings.resx">
       <DependentUpon>201808160936297_RenameGlAccountinSavings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808161315062_AddAccountTypeToDb.resx">
+      <DependentUpon>201808161315062_AddAccountTypeToDb.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808161317093_PopulateAccountTypes.resx">
+      <DependentUpon>201808161317093_PopulateAccountTypes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808161328116_ChangeFromCustomerAccountTypeToAccountType.resx">
+      <DependentUpon>201808161328116_ChangeFromCustomerAccountTypeToAccountType.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -25,7 +25,7 @@ namespace WebApplication1.Controllers.Api
         [Route("api/Customers/CustomerAccounts")]
         public IHttpActionResult GetCustomerAccounts()
         {
-            var customerAccount = _context.CustomerAccounts.Include(g => g.Branch).Include(g => g.Customer).Include(g => g.CustomerAccountType).Include(g => g.LoanDetails).ToList();
+            var customerAccount = _context.CustomerAccounts.Include(g => g.Branch).Include(g => g.Customer).Include(g => g.AccountType).Include(g => g.LoanDetails).ToList();
 
             return Ok(customerAccount);
         }

@@ -10,7 +10,7 @@ namespace WebApplication1.ViewModels
     {
   
         public CustomerAccount CustomerAccount { get; set; }
-        public IEnumerable<CustomerAccountType> CustomerAccountTypes { get; set; }
+        public IEnumerable<AccountType> AccountTypes { get; set; }
         public IEnumerable<Branch> Branches { get; set; }
         public IEnumerable<Customer> Customers { get; set; }
         public IEnumerable<LoanDetails> LoanDetails { get; set; }

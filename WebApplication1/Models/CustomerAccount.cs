@@ -29,9 +29,9 @@ namespace WebApplication1.Models
         public Branch Branch { get; set; }
 
         [Display(Name = "Customer Account Type")]
-        public int CustomerAccountTypeId { get; set; }
+        public int AccountTypeId { get; set; }
 
-        public CustomerAccountType CustomerAccountType { get; set; }
+        public AccountType AccountType { get; set; }
 
         public int? LoanDetailsId { get; set; }
         public LoanDetails LoanDetails { get; set; }
