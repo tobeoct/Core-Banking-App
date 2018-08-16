@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using WebApplication1.Models;
-
+using System.Data.Entity;
 namespace WebApplication1.Controllers.Api
 {
     public class CustomersController : ApiController
@@ -21,6 +21,13 @@ namespace WebApplication1.Controllers.Api
         {
             var customers = _context.Customers.ToList();
             return Ok(customers);
+        }
+        [Route("api/Customers/CustomerAccounts")]
+        public IHttpActionResult GetCustomerAccounts()
+        {
+            var customerAccount = _context.CustomerAccounts.Include(g => g.Branch).Include(g => g.Customer).Include(g => g.CustomerAccountType).Include(g => g.LoanDetails).ToList();
+
+            return Ok(customerAccount);
         }
 
         // GET api/<controller>/5

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using WebApplication1.Models;
+using WebApplication1.ViewModels;
 
 namespace WebApplication1.Controllers
 {
@@ -24,7 +25,22 @@ namespace WebApplication1.Controllers
         }
         public ActionResult Account()
         {
-            return View("CustomerAccount");
+
+            var branches = _context.Branches.ToList();
+            var customers = _context.Customers.ToList();
+            var loanDetails = _context.LoanDetails.ToList();
+            var customerAccountTypes = _context.CustomerAccountTypes.ToList();
+
+            var viewModel = new CustomerAccountViewModel
+            {
+                Branches = branches,
+                Customers = customers,
+                LoanDetails = loanDetails,
+                CustomerAccountTypes = customerAccountTypes,
+                CustomerAccount = new CustomerAccount()
+
+            };
+            return View("CustomerAccount", viewModel);
         }
 
         [HttpPost]
