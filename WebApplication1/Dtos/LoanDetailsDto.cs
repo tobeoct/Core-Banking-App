@@ -4,28 +4,17 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
-namespace WebApplication1.Models
+namespace WebApplication1.Dtos
 {
-    public class LoanDetails
+    public class LoanDetailsDto
     {
-        
         [Key]
         public int Id { get; set; }
 
-        [Display(Name = "Linked Customer Account Bank")]
-        public string LinkedCustomerAccountBank{ get; set; }
-
-        [Display(Name = "Linked Customer Account Number")]
-        public long LinkedCustomerAccountNumber { get; set; }
-
-
-        public long BVN { get; set; }
-
+        public int linkedCustomerAccountId { get; set; }
         [Required]
         [Display(Name = "Terms")]
         public int TermsId { get; set; }
-
-        public Terms Terms { get; set; }
 
         [Required]
         [DataType(DataType.Currency)]

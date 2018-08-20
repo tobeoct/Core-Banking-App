@@ -8,7 +8,7 @@ namespace WebApplication1.ViewModels
 {
     public class CustomerAccountViewModel
     {
-  
+
         public CustomerAccount CustomerAccount { get; set; }
         public IEnumerable<AccountType> AccountTypes { get; set; }
         public IEnumerable<Branch> Branches { get; set; }

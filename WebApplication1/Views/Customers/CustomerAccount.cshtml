@@ -5,7 +5,9 @@
 }
 
 
-@Html.Partial("_AddCustomerAccountModal")
+@Html.Partial("_SelectAccountTypeModal")
+@Html.Partial("_EnterAccountDetailsModal")
+@Html.Partial("_EnterLoanDetailsModal")
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -16,14 +18,14 @@
 <div class="row margin-vertical">
     <div class="row padding-horizontal padding-vertical">
         <div class="container container-fluid">
-            <p class="align-right grey-color animated fadeInRight ">3 Customers Accounts</p>
+            <p class="align-right grey-color animated fadeInRight ">3 Customer Accounts</p>
         </div>
 
     </div>
     <div class="container bg-white shadow">
 
         <div class="row align-right padding-horizontal">
-            <button id="myBtn">Add new Customer Account</button>
+            <button id="myFirstBtn" class="myBtn">Add new Customer Account</button>
         </div>
 
 
@@ -51,10 +53,14 @@
 
 </div>
 
+@* <script src="http://peterolson.github.com/BigInteger.js/BigInteger.min.js"></script> *@
 @section scripts
 {
     <script>
+
+
         $(document).ready(function() {
+
             $("#customers").DataTable({
                 ajax: {
                     url: "/api/customers/customeraccounts",
@@ -71,33 +77,150 @@
                         data: "branch.name"
                     },
                     {
-                        data: "customerAccountType.AccountType.Id"
+                        data: "accountType.name"
                     },
-
                     {
                         data: "id",
                         render: function(data) {
-                            return "<a class='js-delete' data-branch-id='"+data+"'>Delete</a>"
+                            return "<a class='js-delete' data-branch-id='" + data + "'>Edit|Delete</a>"
                         }
                     }
                 ]
             });
-            $("#customers ").on("click","js-delete", function () {
-                var button = $(this);
-                //alert("Delete");
-                bootbox.confirm("Are you sure you want to delete this branch", function () {
-                    if (result) {
+
+            $("#myFirstBtn").on("click",
+                function(e) {
+                    e.preventDefault();
+                    $(".modal").fadeOut();
+                    $("#myAccountTypeModal").fadeIn();
+                });
+            $("#myPrevBtn").on("click",
+                function(e) {
+                    e.preventDefault();
+                    $(".modal").fadeOut();
+                    $("#myAccountTypeModal").fadeIn();
+                });
+            $("#myLoanPrevBtn").on("click",
+                function(e) {
+                    e.preventDefault();
+                    $(".modal").fadeOut();
+                    $("#myAccountTypeModal").fadeIn();
+                });
+            $("#myAccountTypeBtn").on("click",
+                function(e) {
+
+                    e.preventDefault();
+                    accountTypeId = $("#accountTypeId").val();
+                    //alert(accountTypeId);
+                    $("#myAccountTypeModal").fadeOut(400,
+                        function() {
+
+                            $("#myAccountDetailsModal").fadeIn();
+
+                        });
+
+
+                });
+
+            $("#myAccountDetailsBtn").on("click",
+                function(e) {
+
+                    e.preventDefault();
+                    customerId = $("#customerId").val();
+                    branchId = $("#branchId").val();
+                    accountName = $("#accountName").val();
+                    accountNumber = parseInt(String(accountTypeId) + String(customerId));
+                    // alert("Account Type Id : " + accountTypeId + " Customer Id : " + customerId + " Branch Id : " + branchId + " Account Name : " + accountName + " Account Number : " + accountNumber);
+
+                    var customerAccountDto = {
+                        Name: accountName,
+                        CustomerId: customerId,
+                        BranchId: branchId,
+                        AccountNumber: accountNumber,
+                        AccountTypeId: accountTypeId
+                    };
+                    if (accountTypeId == 3) {
+                        $("#myAccountDetailsModal").fadeOut(400,
+                            function() {
+                                $("#myLoanFirstModal").fadeIn();
+                            });
+
+
+                    } else {
                         $.ajax({
-                            url: "api/branches/" + button.attr("data-branch-id"),
-                            method: "DELETE",
-                            success: function () {
-                                table.row(button.parents("tr")).remove().draw();
+                            type: 'POST',
+                            url: '/api/Customers/CreateCustomerAccount',
+                            data: JSON.stringify(customerAccountDto),
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json',
+                            success: function(data) {
+
+
+                                $('#successMessage').fadeIn(200,
+                                    function() {
+                                        document.getElementById('customerAccountDetailsForm').reset();
+                                        $('#successMessage').html(data)
+                                    });
+
+
+                            },
+                            error: function(errorMessage) {
+                                alert('request failed');
+//                            var msg = JSON.stringify(errorMessage);
+                                var msg = JSON.parse(errorMessage.responseText);
+
+                                $('#errorMessage').fadeIn(200,
+                                    function() { $('#errorMessage').html(msg.message) });
+                            }
+
+                        });
+
+                    }
+
+                });
+
+
+            $("#myLoanFirstBtn").on("click",
+                function(e) {
+
+                    e.preventDefault();
+                    loanAmount = $("#loanAmount").val();
+                    linkedCustomerAccountBank = $("#linkedCustomerAccountBank").val();
+                    linkedCustomerAccountNumber = $("#linkedCustomerAccountNumber").val();
+                    bvn = $("#bvn").val();
+                    $("#myLoanFirstModal").fadeOut(400,
+                        function() {
+                            $("#myLoanSecondModal").fadeIn();
+                        });
+
+                });
+
+            $(".close").on("click",
+                function() {
+                    $(".modal").fadeOut();
+//                    $("#myAccountTypeModal").fadeOut();
+                });
+
+            $("#customers ").on("click",
+                "js-delete",
+                function() {
+                    var button = $(this);
+                    //alert("Delete");
+                    bootbox.confirm("Are you sure you want to delete this branch",
+                        function() {
+                            if (result) {
+                                $.ajax({
+                                    url: "api/branches/" + button.attr("data-branch-id"),
+                                    method: "DELETE",
+                                    success: function() {
+                                        table.row(button.parents("tr")).remove().draw();
+                                    }
+                                });
                             }
                         });
-                    }
                 });
-            });
 
         });
     </script>
 }
+

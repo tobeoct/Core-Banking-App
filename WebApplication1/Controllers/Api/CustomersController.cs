@@ -6,11 +6,15 @@ using System.Net.Http;
 using System.Web.Http;
 using WebApplication1.Models;
 using System.Data.Entity;
+using WebApplication1.Dtos;
+using AutoMapper;
+
 namespace WebApplication1.Controllers.Api
 {
     public class CustomersController : ApiController
     {
         private ApplicationDbContext _context;
+        private string errorMessage = " ";
         public CustomersController()
         {
 
@@ -25,7 +29,7 @@ namespace WebApplication1.Controllers.Api
         [Route("api/Customers/CustomerAccounts")]
         public IHttpActionResult GetCustomerAccounts()
         {
-            var customerAccount = _context.CustomerAccounts.Include(g => g.Branch).Include(g => g.Customer).Include(g => g.AccountType).Include(g => g.LoanDetails).ToList();
+           var customerAccount = _context.CustomerAccounts.Include(g => g.Branch).Include(g => g.Customer).Include(g => g.AccountType).Include(g => g.LoanDetails).ToList();
 
             return Ok(customerAccount);
         }
@@ -37,10 +41,55 @@ namespace WebApplication1.Controllers.Api
         }
 
         // POST api/<controller>
-        public void Post([FromBody]string value)
+        [AcceptVerbs("GET", "POST")]
+        [Route("api/Customers/CreateCustomerAccount")]
+        public HttpResponseMessage CreateCustomerAccount(CustomerAccountDto customerAccountDto)
         {
+            if (ValidateEntry(customerAccountDto)==true)
+            {
+               return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMessage);
+            }
+
+            var customerAccount = new CustomerAccount();
+            customerAccount = Mapper.Map<CustomerAccountDto, CustomerAccount>(customerAccountDto);
+            
+            
+            _context.CustomerAccounts.Add(customerAccount);
+            _context.SaveChanges();
+
+            return Request.CreateResponse(HttpStatusCode.OK, "Account Created Successfully"); 
         }
 
+        [NonAction]
+        public bool ValidateEntry(CustomerAccountDto customerAccountDto)
+        {
+
+            bool error = false;
+
+            if (customerAccountDto.Name == null)
+            {
+                errorMessage = errorMessage + "Please Enter Account Name. ";
+                error = true;
+
+            }
+            if (customerAccountDto.CustomerId == null)
+            {
+                errorMessage = errorMessage + "Please Select A Customer. ";
+                error = true;
+            }
+            if (customerAccountDto.AccountTypeId == 0)
+            {
+                errorMessage = errorMessage + "Please Select an Account Type. ";
+                error = true;
+            }
+            if (customerAccountDto.BranchId == 0)
+            {
+                errorMessage = errorMessage + "Please Select a Branch. ";
+                error = true;
+            }
+            return error;
+            //var customers 
+        }
         // PUT api/<controller>/5
         public void Put(int id, [FromBody]string value)
         {

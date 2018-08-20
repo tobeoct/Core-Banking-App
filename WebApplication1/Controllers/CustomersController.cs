@@ -43,6 +43,19 @@ namespace WebApplication1.Controllers
             return View("CustomerAccount", viewModel);
         }
 
+        public ActionResult Create(Customer customer)
+        {
+            customer.Id = RandomString(9);
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Message = "Invalid";
+                return View("Index");
+            }
+            
+            _context.Customers.Add(customer);
+            _context.SaveChanges();
+            return RedirectToAction("Index","Customers");
+        }
         [HttpPost]
         public ActionResult CreateCustomerAccount(CustomerAccountViewModel customerAccountViewModel)
         {
@@ -84,7 +97,7 @@ namespace WebApplication1.Controllers
             customerAccountViewModel.LoanDetails = loanDetails;
             customerAccountViewModel.CustomerAccount = new CustomerAccount();
 
-            return View("CustomerAccount", customerAccountViewModel);
+            return RedirectToAction("Account", "Customers"); ;
         }
 
         [NonAction]

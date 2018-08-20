@@ -1,0 +1,164 @@
+﻿@section scripts
+{
+    <script>
+
+
+
+
+
+        $(document).ready(function () {
+
+            $("#customers").DataTable({
+                ajax: {
+                    url: "/api/customers/customeraccounts",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name"
+                    },
+                    {
+                        data: "accountNumber"
+                    },
+                    {
+                        data: "branch.name"
+                    },
+                    {
+                        data: "accountType.name"
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return "<a class='js-delete' data-branch-id='" + data + "'>Edit|Delete</a>"
+                        }
+                    }
+                ]
+            });
+
+            $("#myFirstBtn").on("click",
+                function (e) {
+                    e.preventDefault();
+                   $("#myAccountDetailsModal").fadeIn();
+                });
+
+
+            $("#myAccountDetailsBtn").on("click",
+                function (e) {
+
+                    e.preventDefault();
+
+                    $("#myAccountDetailsModal").fadeOut(400,
+                        function () {
+
+                          $("#myAccountTypeModal").fadeIn();
+
+                        });
+
+
+                });
+
+            $("#myAccountTypeBtn").on("click",
+                function (e) {
+
+                    e.preventDefault();
+                    accountTypeId = $("#accountType").val();
+                    customerId = $("#customerId").val();
+                    branchId = $("#branchId").val();
+                    accountName = $("#accountName").val();
+                    accountNumber = parseInt(String(accountTypeId) + String(customerId));
+                    //alert(accountTypeId);
+                    $.ajax({
+                        type: 'POST',
+                        url: '/api/Customer/CreateCustomerAccount',
+                        data: {
+                            Name: accountName,
+                            CustomerId: customerId,
+                            BranchId: branchId,
+                            AccountNumber: accountNumber,
+                            AccountTypeId: accountTypeId
+                        },
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        success: function (data) {
+                            $("#myAccountTypeModal").fadeOut(400,
+                                function () {
+                                    if (accountTypeId == 3) {
+                                        $("#myLoanFirstModal").fadeIn();
+
+                                    } else {
+
+                                        return;
+
+                                    }
+                                });
+                        }
+
+                    });
+
+
+
+                });
+
+
+            $("#myLoanFirstBtn").on("click",
+                function (e) {
+
+                    e.preventDefault();
+                    var loanAmount = $(".loanAmount").val();
+                    var customerLinkedAccountId = $(".cid").val();
+                    if (accountTypeId == null) {
+                        alert("Account Type is not selected");
+                        exit;
+                        finish();
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: '/api/Customer/SaveLoanDetails',
+                        data: {
+                            customerLinkedAccountId: customerLinkedAccountId,
+                            loanAmount: loanAmount,
+                            accountTypeId: accountTypeId
+                        },
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        success: function (data) {
+                            $("#myLoanFirstModal .modal").fadeOut(400,
+                                function () {
+                                    $("#myLoanSecondModal").fadeIn();
+                                });
+                        }
+
+                    });
+
+
+
+                });
+
+            $(".close").on("click",
+                function () {
+                    $(".modal").fadeOut();
+                    $("#myAccountTypeModal").fadeOut();
+                });
+            $("#customers ").on("click",
+                "js-delete",
+                function () {
+                    var button = $(this);
+                    //alert("Delete");
+                    bootbox.confirm("Are you sure you want to delete this branch",
+                        function () {
+                            if (result) {
+                                $.ajax({
+                                    url: "api/branches/" + button.attr("data-branch-id"),
+                                    method: "DELETE",
+                                    success: function () {
+                                        table.row(button.parents("tr")).remove().draw();
+                                    }
+                                });
+                            }
+                        });
+                });
+
+        });
+    </script>
+}
+

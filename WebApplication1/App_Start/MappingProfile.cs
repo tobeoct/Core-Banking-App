@@ -22,7 +22,10 @@ namespace WebApplication4.App_Start
             Mapper.CreateMap<Customer, CustomerDto>();
             Mapper.CreateMap<GLAccount, GLAccountDto>();
             Mapper.CreateMap<UserAccount, UserAccountDto>();
-
+            Mapper.CreateMap<CustomerAccount, CustomerAccountDto>();
+            Mapper.CreateMap<AccountType, AccountTypeDto>();
+            Mapper.CreateMap<LoanDetails, LoanDetailsDto>();
+            Mapper.CreateMap<Terms, TermsDto>();
 
             //            Map Dto to Model
 
@@ -31,6 +34,10 @@ namespace WebApplication4.App_Start
             Mapper.CreateMap<GLAccountDto, GLAccount>();
             Mapper.CreateMap<CustomerDto, Customer>();
             Mapper.CreateMap<UserAccountDto, UserAccount>();
+            Mapper.CreateMap<CustomerAccountDto, CustomerAccount>();
+            Mapper.CreateMap<AccountTypeDto, AccountType>();
+            Mapper.CreateMap<LoanDetailsDto, LoanDetails>();
+            Mapper.CreateMap<TermsDto, Terms>();
 
             //Map Model to ViewModel
             Mapper.CreateMap<GLCategory, GLCategoryViewModel>();

@@ -1,0 +1,148 @@
+﻿@model WebApplication1.ViewModels.CustomerAccountViewModel
+<div id="myAccountDetailsModal" class="modal ">
+
+    <!-- Modal content -->
+    <div class="modal-content animated ">
+        <span class="close">&times;</span>
+        <div>
+            <div class=" padding-horizontal bordered-bottom align-left">
+                <h3 class="alt-color bold-text">Add Customer Account</h3>
+            </div>
+            <div class="alert alert-danger" id="errorMessage"></div>
+            <div class="alert alert-success" id="successMessage"></div>
+            <form method="post" id="customerAccountDetailsForm">
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            <label>Account Name</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input type="text" name="accountName" id="accountName" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            <label>Customer</label>
+                        </div>
+                        <div class="col-md-9">
+                            <select class="form-control" id="customerId" required>
+                                <option  value="0">Select Customer</option>
+                                @foreach (var customer in Model.Customers)
+                                {
+                                    <option value="@customer.Id">@customer.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            <label>Branch</label>
+                        </div>
+                        <div class="col-md-9">
+                            <select class="form-control" id="branchId" required>
+                                <option value="0">Select Branch</option>
+                                @foreach (var branch in Model.Branches)
+                                {
+                                    <option value="@branch.Id">@branch.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 align-left">
+                        <button id="myPrevBtn">Prev</button>
+                    </div>
+                    <div class="col-md-6 align-right">
+                        <button id="myAccountDetailsBtn">Create Account<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
+                    </div>
+                </div>
+               
+            </form>
+@*             @using (Html.BeginForm("CreateCustomerAccount", "Customers")) *@
+@*             { *@
+@*                 <div class="row form-group "> *@
+@*                     <div class="margin-vertical"> *@
+@*                         <div class="col-md-3"> *@
+@*                             @Html.LabelFor(m => m.CustomerAccount.Name) *@
+@*                         </div> *@
+@*                         <div class="col-md-9"> *@
+@*                             @Html.TextBoxFor(m => m.CustomerAccount.Name, new { @class = "form-control" }) *@
+@*                             @Html.ValidationMessageFor(m => m.CustomerAccount.Name) *@
+@*                         </div> *@
+@*                     </div> *@
+@*                 </div> *@
+@* *@
+@*                 <div class="row form-group "> *@
+@*                     <div class="margin-vertical"> *@
+@*                         <div class="col-md-3"> *@
+@*                             @Html.LabelFor(m => m.CustomerAccount.CustomerId) *@
+@*                         </div> *@
+@*                         <div class="col-md-9"> *@
+@*                             @Html.DropDownListFor(m => m.CustomerAccount.CustomerId, new SelectList(Model.Customers, "Id", "Name"), "Select Customer", new { @class = "form-control" }) *@
+@*                             @Html.ValidationMessageFor(m => m.CustomerAccount.CustomerId) *@
+@*                         </div> *@
+@*                     </div> *@
+@*                 </div> *@
+@* *@
+@*                 <div class="row form-group "> *@
+@*                     <div class="margin-vertical"> *@
+@*                         <div class="col-md-3"> *@
+@*                             @Html.LabelFor(m => m.CustomerAccount.BranchId) *@
+@*                         </div> *@
+@*                         <div class="col-md-9"> *@
+@*                             @Html.DropDownListFor(m => m.CustomerAccount.BranchId, new SelectList(Model.Branches, "Id", "Name"), "Select Branch", new { @class = "form-control" }) *@
+@*                             @Html.ValidationMessageFor(m => m.CustomerAccount.BranchId) *@
+@*                         </div> *@
+@*                     </div> *@
+@*                 </div> *@
+@*                 <div class="row form-group "> *@
+@*                     <div class="margin-vertical"> *@
+@*                         <div class="col-md-3"> *@
+@*                             @Html.LabelFor(m => m.CustomerAccount.AccountTypeId) *@
+@*                         </div> *@
+@*                         <div class="col-md-9"> *@
+@*                             @Html.DropDownListFor(m => m.CustomerAccount.AccountTypeId, new SelectList(Model.AccountTypes, "Id", "Name"), "Select Account Type", new { @class = "form-control" }) *@
+@*                             @Html.ValidationMessageFor(m => m.CustomerAccount.AccountTypeId) *@
+@*                         </div> *@
+@*                     </div> *@
+@*                 </div> *@
+@* *@
+@* *@
+@* *@
+@*                 <div class="form-group"> *@
+@* *@
+@*                     @{ *@
+@*                         if (Model.CustomerAccount == null) *@
+@*                         { *@
+@*                             <input data-val="true" data-val-number="The field Id must be a number." data-val-required="The Id field is required." id="Customer_Id" name="Customer.Id" type="hidden" value="0" /> *@
+@*                         } *@
+@*                         else *@
+@*                         { *@
+@*                             @Html.HiddenFor(m => m.CustomerAccount.Id) *@
+@*                         } *@
+@*                     } *@
+@* *@
+@* *@
+@*                 </div> *@
+@*                 <div class="align-right"> *@
+@*                     <button type="submit">Add Customer<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button> *@
+@*                 </div> *@
+@* *@
+@* *@
+@*             } *@
+
+        </div>
+    </div>
+
+</div>
+
+
+

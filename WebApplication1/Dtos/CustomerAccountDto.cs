@@ -5,9 +5,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
-namespace WebApplication1.Models
+
+namespace WebApplication1.Dtos
 {
-    public class CustomerAccount
+    public class CustomerAccountDto
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -18,24 +19,23 @@ namespace WebApplication1.Models
 
         public bool IsClosed { get; set; }
 
-        
-        public long AccountNumber { get; set; }
+
+        public int AccountNumber { get; set; }
 
         [Display(Name = "Customer")]
         public string CustomerId { get; set; }
-        public Customer Customer { get; set; }
+       
 
         [Display(Name = "Branch")]
         public int BranchId { get; set; }
 
-        public Branch Branch { get; set; }
 
         [Display(Name = "Customer Account Type")]
         public int AccountTypeId { get; set; }
 
-        public AccountType AccountType { get; set; }
+       
 
         public int? LoanDetailsId { get; set; }
-        public LoanDetails LoanDetails { get; set; }
+        
     }
 }

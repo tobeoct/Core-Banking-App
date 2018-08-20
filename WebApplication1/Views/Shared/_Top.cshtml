@@ -1,4 +1,5 @@
-﻿<div class="row">
+﻿@using WebApplication1.Models
+<div class="row">
 	<div class="container">
 
 		<div class=" col-md-6 col-xs-6 margin-vertical ">
@@ -32,7 +33,7 @@
 			<div class="row">
 
 				<div class="col-md-10 col-sm-10 col-xs-8 align-right">
-					<p><span style="margin-right: 10px;"><img src="~/Content/Images/speech-bubble.png" class="icon"></span><span class="bold-text">Hi, @ViewBag.Message</span></p>
+					<p><span style="margin-right: 10px;"><img src="~/Content/Images/speech-bubble.png" class="icon"></span><span class="bold-text">Hi, @RoleName.USER_NAME</span></p>
 					<p class="grey-color small-text">Last Logged in : 07:00pm 03/08/2018</p>
 				</div>
 				<div class="col-md-2 col-sm-2 col-xs-4">
