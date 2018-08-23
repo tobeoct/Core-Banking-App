@@ -1,0 +1,46 @@
+﻿
+@model WebApplication1.ViewModels.CustomerAccountViewModel
+<div id="myTermsModal" class="modal ">
+
+    <!-- Modal content -->
+    <div class="modal-content animated ">
+        <span class="close">&times;</span>
+        <div>
+            <div class=" padding-horizontal bordered-bottom align-left">
+                <h3 class="alt-color bold-text">Enter Terms</h3>
+            </div>
+            <div class="alert alert-danger" id="errorMessage"></div>
+            <div class="alert alert-success" id="successMessage"></div>
+            <p><b>Terms & Conditions</b></p>
+            <form class="" id="termsForm">
+
+
+
+                <p class="container">You have agreed to pay back the loan monthly at an interest rate of 3%</p>
+                <div class="form-group">
+                    <div class="radio">
+                        <label><input type="radio" name="optradio" checked>Decline</label>
+                    </div>
+                    <div class="radio">
+                        <label><input type="radio" name="optradio">Agree</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 align-left">
+                        <button id="myTermsPrevBtn">Prev</button>
+                    </div>
+                    <div class="col-md-6 align-right">
+                        <button id="myDisburseLoanBtn">Disburse Loan<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+

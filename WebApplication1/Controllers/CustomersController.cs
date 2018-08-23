@@ -25,7 +25,7 @@ namespace WebApplication1.Controllers
         }
         public ActionResult Account()
         {
-
+            ViewBag.Message = RoleName.USER_NAME;
             var branches = _context.Branches.ToList();
             var customers = _context.Customers.ToList();
             var loanDetails = _context.LoanDetails.ToList();
@@ -82,7 +82,7 @@ namespace WebApplication1.Controllers
             var customerAccount = new CustomerAccount();
             var customerId = customerAccountViewModel.CustomerAccount.CustomerId;
             customerAccount.Id = customerAccountViewModel.CustomerAccount.Id;
-            customerAccount.AccountNumber = Int32.Parse( customerAccountViewModel.CustomerAccount.AccountTypeId.ToString()+customerId.ToString());
+            customerAccount.AccountNumber = customerAccountViewModel.CustomerAccount.AccountTypeId.ToString()+customerId.ToString();
             customerAccount.Name = customerAccountViewModel.CustomerAccount.Name;
             customerAccount.BranchId = customerAccountViewModel.CustomerAccount.BranchId;
             customerAccount.AccountTypeId = customerAccountViewModel.CustomerAccount.AccountTypeId;

@@ -1,0 +1,77 @@
+﻿@model WebApplication1.ViewModels.TellerPostingViewModel
+<div id="myAddTellerPostingModal" class="modal ">
+
+    <!-- Modal content -->
+    <div class="modal-content animated ">
+        <span class="close">&times;</span>
+        <div>
+            <div class=" padding-horizontal bordered-bottom align-left">
+                <h3 class="alt-color bold-text">Add Teller </h3>
+            </div>
+            <div class="alert alert-danger" id="errorMessage"></div>
+            <div class="alert alert-success" id="successMessage"></div>
+           
+            <form id="tellerPostingForm">
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            <label>Customer Account</label>
+                        </div>
+                        <div class="col-md-9">
+                            <select class="form-control" id="customerAccountId" required>
+                                <option value="0">Select Customer Account</option>
+                                @foreach (var customerAccount in Model.CustomerAccounts)
+                                {
+                                    <option value="@customerAccount.Id">@customerAccount.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            <label>Posting Type</label>
+                        </div>
+                        <div class="col-md-9">
+                            <select class="form-control" id="postingType" required>
+                                <option value="0">Select Posting Type</option>
+                                <option value="Deposit">Deposit</option>
+                                <option value="Withdrawal">Withdrawal</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            <label>Amount</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input type="number" id="amount">
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            <label>Narration</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input type="text" id="narration">
+                        </div>
+                    </div>
+                </div>
+                <div class="align-right">
+                    <button id="myAddTellerPostingBtn">Add Teller<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+

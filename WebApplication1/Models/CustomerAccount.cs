@@ -18,8 +18,11 @@ namespace WebApplication1.Models
 
         public bool IsClosed { get; set; }
 
-        
-        public long AccountNumber { get; set; }
+        [Display(Name = "Account Number")]
+        public string AccountNumber { get; set; }
+
+        [Display(Name = "Account Balance")]
+        public float AccountBalance { get; set; }
 
         [Display(Name = "Customer")]
         public string CustomerId { get; set; }

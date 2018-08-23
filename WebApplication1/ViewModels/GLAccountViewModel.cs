@@ -8,7 +8,7 @@ namespace WebApplication1.ViewModels
 {
     public class GLAccountViewModel
     {
-        public IEnumerable<Categories> Categories { get; set; }
+        public IEnumerable<GLCategory> GLCategories { get; set; }
         public GLAccount GlAccount { get; set; }
         public IEnumerable<Branch> Branch { get; set; }
     }

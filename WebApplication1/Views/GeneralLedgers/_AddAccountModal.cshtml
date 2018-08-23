@@ -29,11 +29,11 @@
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.GlAccount.CategoriesId)
+                            @Html.LabelFor(m => m.GlAccount.GlCategoriesId)
                         </div>
                         <div class="col-md-9">
-                            @Html.DropDownListFor(m => m.GlAccount.CategoriesId, new SelectList(Model.Categories, "Id", "Name"), "Select Main Account Category", new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.GlAccount.CategoriesId)
+                            @Html.DropDownListFor(m => m.GlAccount.GlCategoriesId, new SelectList(Model.GLCategories, "Id", "MainAccountCategory"), "Select Main Account Category", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.GlAccount.GlCategoriesId)
                         </div>
                     </div>
                 </div>

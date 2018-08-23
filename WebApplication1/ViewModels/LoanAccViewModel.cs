@@ -9,6 +9,6 @@ namespace WebApplication1.ViewModels
     public class LoanAccViewModel
     {
         public IEnumerable<GLAccount> GlAccounts { get; set; }
-        public LoanAccountType LoanAccountType { get; set; }
+        public AccountType LoanAccountType { get; set; }
     }
 }

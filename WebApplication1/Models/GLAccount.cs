@@ -25,9 +25,11 @@ namespace WebApplication1.Models
         [Display(Name = "Branch")]
         public int BranchId { get; set; }
 
-        public Categories Categories { get; set; }
+        public GLCategory GlCategories { get; set; }
 
         [Display(Name = "Main Account Category ")]
-        public byte CategoriesId { get; set; }
+        public byte GlCategoriesId { get; set; }
+
+        public bool IsAssigned { get; set; }
     }
 }

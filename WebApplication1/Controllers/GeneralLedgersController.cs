@@ -37,11 +37,11 @@ namespace WebApplication1.Controllers
         public ActionResult Account()
         {
             ViewBag.Message = RoleName.USER_NAME;
-            var GLCategory = _context.Categories.ToList();
+            var GLCategory = _context.GlCategories.ToList();
             var branches = _context.Branches.ToList();
             var viewModel = new GLAccountViewModel()
             {
-                Categories = GLCategory,
+                GLCategories = GLCategory,
                 Branch = branches
             };
             return View("GLAccount", viewModel);
@@ -81,11 +81,11 @@ namespace WebApplication1.Controllers
             if (!ModelState.IsValid)
             {
                 var branches = _context.Branches.ToList();
-                var categories = _context.Categories.ToList();
+                var GlCategories = _context.GlCategories.ToList();
                 var viewModel = new GLAccountViewModel()
                 {
                     Branch = branches,
-                    Categories = categories,
+                    GLCategories = GlCategories,
                     GlAccount = new GLAccount()
                 };
                 return View("GLAccount", viewModel);
@@ -93,11 +93,11 @@ namespace WebApplication1.Controllers
 
             var generalLedgerAccount = new GLAccount();
             //Mapper.Map(generalLedgerCategoryViewModel, generalLedgerCategory);
-            generalLedgerAccount.CategoriesId = generalLedgerAccountViewModel.GlAccount.CategoriesId;
+            generalLedgerAccount.GlCategoriesId = generalLedgerAccountViewModel.GlAccount.GlCategoriesId;
             generalLedgerAccount.BranchId = generalLedgerAccountViewModel.GlAccount.BranchId;
             generalLedgerAccount.Name = generalLedgerAccountViewModel.GlAccount.Name;
             generalLedgerAccount.Id = generalLedgerAccountViewModel.GlAccount.Id;
-            generalLedgerAccount.Code = getCode(generalLedgerAccountViewModel.GlAccount.CategoriesId);
+            generalLedgerAccount.Code = getCode(generalLedgerAccountViewModel.GlAccount.GlCategoriesId);
             _context.GlAccounts.Add(generalLedgerAccount);
             _context.SaveChanges();
             return RedirectToAction("Account", "GeneralLedgers");

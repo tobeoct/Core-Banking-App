@@ -19,8 +19,10 @@ namespace WebApplication1.Dtos
 
         public bool IsClosed { get; set; }
 
+        [Display(Name = "Account Balance")]
+        public long AccountBalance { get; set; }
 
-        public int AccountNumber { get; set; }
+        public string AccountNumber { get; set; }
 
         [Display(Name = "Customer")]
         public string CustomerId { get; set; }

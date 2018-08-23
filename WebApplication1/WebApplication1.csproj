@@ -227,21 +227,26 @@
     <Compile Include="Controllers\Api\BranchesController.cs" />
     <Compile Include="Controllers\Api\CustomersController.cs" />
     <Compile Include="Controllers\Api\GeneralLedgersController.cs" />
+    <Compile Include="Controllers\Api\TellersController.cs" />
     <Compile Include="Controllers\Api\UserAccountsController.cs" />
     <Compile Include="Controllers\BranchesController.cs" />
     <Compile Include="Controllers\CustomersController.cs" />
     <Compile Include="Controllers\GeneralLedgersController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\TellersController.cs" />
     <Compile Include="Controllers\UserAccountsController.cs" />
     <Compile Include="Dtos\AccountTypeDto.cs" />
     <Compile Include="Dtos\BranchDto.cs" />
     <Compile Include="Dtos\CategoriesDto.cs" />
     <Compile Include="Dtos\CustomerAccountDto.cs" />
     <Compile Include="Dtos\CustomerDto.cs" />
+    <Compile Include="Dtos\FinancialReportDto.cs" />
     <Compile Include="Dtos\GLAccountDto.cs" />
     <Compile Include="Dtos\GLCategoryDto.cs" />
     <Compile Include="Dtos\LoanDetailsDto.cs" />
+    <Compile Include="Dtos\TellerDto.cs" />
+    <Compile Include="Dtos\TellerPostingDto.cs" />
     <Compile Include="Dtos\TermsDto.cs" />
     <Compile Include="Dtos\UserAccountDto.cs" />
     <Compile Include="Global.asax.cs">
@@ -523,11 +528,98 @@
     <Compile Include="Migrations\201808201704534_AddCollateralToTermsInDB.Designer.cs">
       <DependentUpon>201808201704534_AddCollateralToTermsInDB.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808201726008_AddSomeFieldsToLoanDetails.cs" />
+    <Compile Include="Migrations\201808201726008_AddSomeFieldsToLoanDetails.Designer.cs">
+      <DependentUpon>201808201726008_AddSomeFieldsToLoanDetails.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808201731306_changeTypeOfAccountNumberToString.cs" />
+    <Compile Include="Migrations\201808201731306_changeTypeOfAccountNumberToString.Designer.cs">
+      <DependentUpon>201808201731306_changeTypeOfAccountNumberToString.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808201751355_AddAccountBalanceToCustomerAccountDb.cs" />
+    <Compile Include="Migrations\201808201751355_AddAccountBalanceToCustomerAccountDb.Designer.cs">
+      <DependentUpon>201808201751355_AddAccountBalanceToCustomerAccountDb.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808201822338_AddPaymentRateToDb.cs" />
+    <Compile Include="Migrations\201808201822338_AddPaymentRateToDb.Designer.cs">
+      <DependentUpon>201808201822338_AddPaymentRateToDb.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808210007543_ChangeAccountBalanceType.cs" />
+    <Compile Include="Migrations\201808210007543_ChangeAccountBalanceType.Designer.cs">
+      <DependentUpon>201808210007543_ChangeAccountBalanceType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808210032006_changeTermsTenureTypeToString.cs" />
+    <Compile Include="Migrations\201808210032006_changeTermsTenureTypeToString.Designer.cs">
+      <DependentUpon>201808210032006_changeTermsTenureTypeToString.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808211916428_AddTellerToDb.cs" />
+    <Compile Include="Migrations\201808211916428_AddTellerToDb.Designer.cs">
+      <DependentUpon>201808211916428_AddTellerToDb.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808221045420_updateDb.cs" />
+    <Compile Include="Migrations\201808221045420_updateDb.Designer.cs">
+      <DependentUpon>201808221045420_updateDb.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808221047035_GLCategories.cs" />
+    <Compile Include="Migrations\201808221047035_GLCategories.Designer.cs">
+      <DependentUpon>201808221047035_GLCategories.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808221150298_RepopulateAccountTypes.cs" />
+    <Compile Include="Migrations\201808221150298_RepopulateAccountTypes.Designer.cs">
+      <DependentUpon>201808221150298_RepopulateAccountTypes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808221213260_renameUserIdToUserTellerId.cs" />
+    <Compile Include="Migrations\201808221213260_renameUserIdToUserTellerId.Designer.cs">
+      <DependentUpon>201808221213260_renameUserIdToUserTellerId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808221219597_RemoveTellers.cs" />
+    <Compile Include="Migrations\201808221219597_RemoveTellers.Designer.cs">
+      <DependentUpon>201808221219597_RemoveTellers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808221220517_AddTellersAgain.cs" />
+    <Compile Include="Migrations\201808221220517_AddTellersAgain.Designer.cs">
+      <DependentUpon>201808221220517_AddTellersAgain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808230402320_reload.cs" />
+    <Compile Include="Migrations\201808230402320_reload.Designer.cs">
+      <DependentUpon>201808230402320_reload.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808230410136_reloadTeller.cs" />
+    <Compile Include="Migrations\201808230410136_reloadTeller.Designer.cs">
+      <DependentUpon>201808230410136_reloadTeller.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808230445047_AddTillAccountBalanceToTeller.cs" />
+    <Compile Include="Migrations\201808230445047_AddTillAccountBalanceToTeller.Designer.cs">
+      <DependentUpon>201808230445047_AddTillAccountBalanceToTeller.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808230703522_AddIsAssignedToGLAccounts.cs" />
+    <Compile Include="Migrations\201808230703522_AddIsAssignedToGLAccounts.Designer.cs">
+      <DependentUpon>201808230703522_AddIsAssignedToGLAccounts.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808230918475_AddTellerPostingsToDB.cs" />
+    <Compile Include="Migrations\201808230918475_AddTellerPostingsToDB.Designer.cs">
+      <DependentUpon>201808230918475_AddTellerPostingsToDB.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808231102203_AddFinancialReportToDB.cs" />
+    <Compile Include="Migrations\201808231102203_AddFinancialReportToDB.Designer.cs">
+      <DependentUpon>201808231102203_AddFinancialReportToDB.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808231105366_AddFinancialReportToDB1.cs" />
+    <Compile Include="Migrations\201808231105366_AddFinancialReportToDB1.Designer.cs">
+      <DependentUpon>201808231105366_AddFinancialReportToDB1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808231239052_changeDateTimeToNullable.cs" />
+    <Compile Include="Migrations\201808231239052_changeDateTimeToNullable.Designer.cs">
+      <DependentUpon>201808231239052_changeDateTimeToNullable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountRoles.cs" />
     <Compile Include="Models\AccountType.cs" />
+    <Compile Include="Models\CBA.cs" />
     <Compile Include="Models\CurrentAccountType.cs" />
+    <Compile Include="Models\FinancialReport.cs" />
     <Compile Include="Models\LoanAccountType.cs" />
+    <Compile Include="Models\PostingTypes.cs" />
     <Compile Include="Models\SavingsAccountType.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Branch.cs" />
@@ -541,6 +633,8 @@
     <Compile Include="Models\RoleName.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Teller.cs" />
+    <Compile Include="Models\TellerPosting.cs" />
     <Compile Include="Models\Terms.cs" />
     <Compile Include="Models\UserAccount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -551,7 +645,10 @@
     <Compile Include="ViewModels\GLAccountViewModel.cs" />
     <Compile Include="ViewModels\GLCategoryViewModel.cs" />
     <Compile Include="ViewModels\LoanAccViewModel.cs" />
+    <Compile Include="ViewModels\ReportViewModel.cs" />
     <Compile Include="ViewModels\SavingsViewModel.cs" />
+    <Compile Include="ViewModels\TellerPostingViewModel.cs" />
+    <Compile Include="ViewModels\TellerViewModel.cs" />
     <Compile Include="ViewModels\UserAccountViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -840,6 +937,12 @@
     <Content Include="Views\Customers\_EnterAccountDetailsModal.cshtml" />
     <Content Include="Views\Customers\_Scripts.cshtml" />
     <Content Include="Views\Customers\_EnterLoanDetailsModal.cshtml" />
+    <Content Include="Views\Customers\_TermsSelectionModal.cshtml" />
+    <Content Include="Views\Customers\_TermsModal.cshtml" />
+    <Content Include="Views\Tellers\Index.cshtml" />
+    <Content Include="Views\Tellers\_AddTellerModal.cshtml" />
+    <Content Include="Views\Tellers\TellerPosting.cshtml" />
+    <Content Include="Views\Tellers\_AddTellerPostingModal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1064,6 +1167,69 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808201704534_AddCollateralToTermsInDB.resx">
       <DependentUpon>201808201704534_AddCollateralToTermsInDB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808201726008_AddSomeFieldsToLoanDetails.resx">
+      <DependentUpon>201808201726008_AddSomeFieldsToLoanDetails.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808201731306_changeTypeOfAccountNumberToString.resx">
+      <DependentUpon>201808201731306_changeTypeOfAccountNumberToString.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808201751355_AddAccountBalanceToCustomerAccountDb.resx">
+      <DependentUpon>201808201751355_AddAccountBalanceToCustomerAccountDb.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808201822338_AddPaymentRateToDb.resx">
+      <DependentUpon>201808201822338_AddPaymentRateToDb.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808210007543_ChangeAccountBalanceType.resx">
+      <DependentUpon>201808210007543_ChangeAccountBalanceType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808210032006_changeTermsTenureTypeToString.resx">
+      <DependentUpon>201808210032006_changeTermsTenureTypeToString.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808211916428_AddTellerToDb.resx">
+      <DependentUpon>201808211916428_AddTellerToDb.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808221045420_updateDb.resx">
+      <DependentUpon>201808221045420_updateDb.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808221047035_GLCategories.resx">
+      <DependentUpon>201808221047035_GLCategories.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808221150298_RepopulateAccountTypes.resx">
+      <DependentUpon>201808221150298_RepopulateAccountTypes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808221213260_renameUserIdToUserTellerId.resx">
+      <DependentUpon>201808221213260_renameUserIdToUserTellerId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808221219597_RemoveTellers.resx">
+      <DependentUpon>201808221219597_RemoveTellers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808221220517_AddTellersAgain.resx">
+      <DependentUpon>201808221220517_AddTellersAgain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808230402320_reload.resx">
+      <DependentUpon>201808230402320_reload.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808230410136_reloadTeller.resx">
+      <DependentUpon>201808230410136_reloadTeller.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808230445047_AddTillAccountBalanceToTeller.resx">
+      <DependentUpon>201808230445047_AddTillAccountBalanceToTeller.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808230703522_AddIsAssignedToGLAccounts.resx">
+      <DependentUpon>201808230703522_AddIsAssignedToGLAccounts.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808230918475_AddTellerPostingsToDB.resx">
+      <DependentUpon>201808230918475_AddTellerPostingsToDB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808231102203_AddFinancialReportToDB.resx">
+      <DependentUpon>201808231102203_AddFinancialReportToDB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808231105366_AddFinancialReportToDB1.resx">
+      <DependentUpon>201808231105366_AddFinancialReportToDB1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808231239052_changeDateTimeToNullable.resx">
+      <DependentUpon>201808231239052_changeDateTimeToNullable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

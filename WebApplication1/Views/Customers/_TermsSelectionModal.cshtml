@@ -1,0 +1,75 @@
+﻿@model WebApplication1.ViewModels.CustomerAccountViewModel
+<div id="myLoanSecondModal" class="modal ">
+
+    <!-- Modal content -->
+    <div class="modal-content animated ">
+        <span class="close">&times;</span>
+        <div>
+            <div class=" padding-horizontal bordered-bottom align-left">
+                <h3 class="alt-color bold-text">Enter Terms</h3>
+            </div>
+            <form class="container" id="termsSelectionForm">
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            <label>Interest Rate</label>
+                        </div>
+                        <div class="col-md-9">
+                            @foreach (var accountType in Model.AccountTypes)
+                            {
+                                if (accountType.Name == "Loan Account")
+                                {
+                                    <p><b>@accountType.DebitInterestRate%</b></p>
+                                }
+                            }
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            <label>Select Payment Plan</label>
+                        </div>
+                        <div class="col-md-9">
+                            <select class="form-control" id="tenure">
+                                <option>Monthly</option>
+                                <option>Every 6 Months</option>
+                                <option>Annually</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            <label>Payment Rate (in %)</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input type="number" id="paymentRate">
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            <label>Collateral</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input type="text" id="collateral">
+                        </div>
+                    </div>
+                </div>
+
+
+                <button id="myLoanSecondBtn">Next</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+

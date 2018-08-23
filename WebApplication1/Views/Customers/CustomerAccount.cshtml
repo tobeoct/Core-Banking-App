@@ -8,6 +8,8 @@
 @Html.Partial("_SelectAccountTypeModal")
 @Html.Partial("_EnterAccountDetailsModal")
 @Html.Partial("_EnterLoanDetailsModal")
+@Html.Partial("_TermsSelectionModal")
+@Html.Partial("_TermsModal")
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -100,11 +102,11 @@
                     $(".modal").fadeOut();
                     $("#myAccountTypeModal").fadeIn();
                 });
-            $("#myLoanPrevBtn").on("click",
+            $("#myTermsPrevBtn").on("click",
                 function(e) {
                     e.preventDefault();
                     $(".modal").fadeOut();
-                    $("#myAccountTypeModal").fadeIn();
+                    $("#myLoanSecondModal").fadeIn();
                 });
             $("#myAccountTypeBtn").on("click",
                 function(e) {
@@ -129,8 +131,17 @@
                     customerId = $("#customerId").val();
                     branchId = $("#branchId").val();
                     accountName = $("#accountName").val();
-                    accountNumber = parseInt(String(accountTypeId) + String(customerId));
-                    // alert("Account Type Id : " + accountTypeId + " Customer Id : " + customerId + " Branch Id : " + branchId + " Account Name : " + accountName + " Account Number : " + accountNumber);
+                    accountNumber = String(accountTypeId) + String(customerId);
+                    alert("Account Type Id : " +
+                        accountTypeId +
+                        ", Customer Id : " +
+                        customerId +
+                        ", Branch Id : " +
+                        branchId +
+                        ", Account Name : " +
+                        accountName +
+                        ", Account Number : " +
+                        accountNumber);
 
                     var customerAccountDto = {
                         Name: accountName,
@@ -139,43 +150,47 @@
                         AccountNumber: accountNumber,
                         AccountTypeId: accountTypeId
                     };
-                    if (accountTypeId == 3) {
-                        $("#myAccountDetailsModal").fadeOut(400,
-                            function() {
-                                $("#myLoanFirstModal").fadeIn();
-                            });
 
+                    $.ajax({
+                        type: 'POST',
+                        url: '/api/Customers/CreateCustomerAccount',
+                        data: JSON.stringify(customerAccountDto),
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        success: function(data) {
 
-                    } else {
-                        $.ajax({
-                            type: 'POST',
-                            url: '/api/Customers/CreateCustomerAccount',
-                            data: JSON.stringify(customerAccountDto),
-                            contentType: 'application/json; charset=utf-8',
-                            dataType: 'json',
-                            success: function(data) {
-
-
-                                $('#successMessage').fadeIn(200,
+                            if (accountTypeId == 3) {
+                                accountId = data[1];
+                                $("#myAccountDetailsModal").fadeOut(400,
                                     function() {
-                                        document.getElementById('customerAccountDetailsForm').reset();
-                                        $('#successMessage').html(data)
+                                        $("#myLoanFirstModal").fadeIn();
                                     });
 
 
-                            },
-                            error: function(errorMessage) {
-                                alert('request failed');
-//                            var msg = JSON.stringify(errorMessage);
-                                var msg = JSON.parse(errorMessage.responseText);
+                            } else {
+                                $('#successMessage').fadeIn(200,
+                                    function() {
+                                        document.getElementById('customerAccountDetailsForm').reset();
+                                        accountId = data[1];
+                                        $('#successMessage').html(data[1])
+                                    });
+                                return;
 
-                                $('#errorMessage').fadeIn(200,
-                                    function() { $('#errorMessage').html(msg.message) });
                             }
 
-                        });
 
-                    }
+                        },
+                        error: function(errorMessage) {
+                            alert('request failed');
+                            //                            var msg = JSON.stringify(errorMessage);
+                            var msg = JSON.parse(errorMessage.responseText);
+
+                            $('#errorMessage').fadeIn(200,
+                                function() { $('#errorMessage').html(msg.message) });
+                        }
+
+                    });
+
 
                 });
 
@@ -188,31 +203,147 @@
                     linkedCustomerAccountBank = $("#linkedCustomerAccountBank").val();
                     linkedCustomerAccountNumber = $("#linkedCustomerAccountNumber").val();
                     bvn = $("#bvn").val();
+                    alert("Linked Bank : " +
+                        linkedCustomerAccountBank +
+                        ", Linked Number : " +
+                        linkedCustomerAccountNumber +
+                        ", BVN : " +
+                        bvn +
+                        ", Loan Amount : " +
+                        loanAmount
+                    );
                     $("#myLoanFirstModal").fadeOut(400,
-                        function() {
+                        function () {
+                            document.getElementById('loanDetailsForm').reset();
                             $("#myLoanSecondModal").fadeIn();
                         });
 
                 });
 
+            $("#myLoanSecondBtn").on("click",
+                function(e) {
+
+                    e.preventDefault();
+                    tenure = $("#tenure").val();
+                    collateral = $("#collateral").val();
+                    paymentRate = $("#paymentRate").val();
+                    alert("Tenure : " + tenure + ", Collateral : " + collateral+", Payment Rate : "+paymentRate);
+                    $("#myLoanSecondModal").fadeOut(400,
+                        function () {
+                            document.getElementById('termsSelectionForm').reset();
+                            $("#myTermsModal").fadeIn();
+                        });
+
+                });
+
+            $('#myDisburseLoanBtn').on("click",
+                function(e) {
+
+                    e.preventDefault();
+
+
+                    //alert('clicked');
+                    var termsDto = {
+                        Tenure: tenure,
+                        Collateral: collateral,
+                        PaymentRate:paymentRate
+                    };
+                    /**
+                     * Add Terms
+                     */
+                    $.ajax({
+                        type: 'POST',
+                        url: '/api/Customers/Terms',
+                        data: JSON.stringify(termsDto),
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        success: function (data) {
+
+                            var loanDetailsDto = {
+                                LoanAmount: loanAmount,
+                                LinkedCustomerAccountBank: linkedCustomerAccountBank,
+                                LinkedCustomerAccountNumber: linkedCustomerAccountNumber,
+                                BVN: bvn,
+                                customerAccountId: accountId,
+                                TermsId:data[1]
+                            };
+                            /**
+                             * Disburse Loan
+                             */
+                            $('#successMessage').fadeIn(200,
+                                function() {
+                                    document.getElementById('termsForm').reset();
+                                            
+                                    $('#successMessage').html(data[0])
+                                });
+                            $.ajax({
+                                type: 'POST',
+                                url: '/api/Customers/LoanDisbursement',
+                                data: JSON.stringify(loanDetailsDto),
+                                contentType: 'application/json; charset=utf-8',
+                                dataType: 'json',
+                                success: function(data) {
+                                   // alert('Loan Disbursed Successfully');
+                                    $('#myTermsModal #successMessage').fadeIn(200,
+                                        function() {
+                                            document.getElementById('termsForm').reset();
+                                            
+                                            $('#myTermsModal #successMessage').html(data)
+                                        });
+
+                                },
+                                error: function(errorMessage) {
+                                    alert('request failed');
+                                    
+                                    var msg = JSON.parse(errorMessage.responseText);
+
+                                    $('#errorMessage').fadeIn(200,
+                                        function() { $('#errorMessage').html(msg.message) });
+                                }
+
+                            });
+                            
+
+
+                        },
+                        error: function(errorMessage) {
+                            alert('request failed');
+                           
+                            var msg = JSON.parse(errorMessage.responseText);
+
+                            $('#errorMessage').fadeIn(200,
+                                function() { $('#errorMessage').html(msg.message) });
+                        }
+
+                    });
+                   
+
+                });
+    
+
             $(".close").on("click",
-                function() {
+                function () {
+                    $('#successMessage').fadeOut();
                     $(".modal").fadeOut();
-//                    $("#myAccountTypeModal").fadeOut();
+                    //                    $("#myAccountTypeModal").fadeOut();
+                });
+            $("#myTermsModal .close").on("click",
+                function () {
+                   location.reload();
                 });
 
             $("#customers ").on("click",
                 "js-delete",
-                function() {
+                function () {
                     var button = $(this);
                     //alert("Delete");
                     bootbox.confirm("Are you sure you want to delete this branch",
-                        function() {
+                        function () {
                             if (result) {
                                 $.ajax({
                                     url: "api/branches/" + button.attr("data-branch-id"),
                                     method: "DELETE",
-                                    success: function() {
+                                    success: function () {
                                         table.row(button.parents("tr")).remove().draw();
                                     }
                                 });

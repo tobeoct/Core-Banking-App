@@ -8,7 +8,7 @@ namespace WebApplication1.ViewModels
 {
     public class SavingsViewModel
     {
-        public SavingsAccountType SavingsAccountType { get; set; }
+        public AccountType SavingsAccountType { get; set; }
         public IEnumerable<GLAccount> GlAccounts { get; set; }
     }
 }

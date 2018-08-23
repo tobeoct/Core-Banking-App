@@ -25,7 +25,7 @@ namespace WebApplication1.Controllers
         public ActionResult SavingsAccConfig(string id)
         {
             var GLAccounts = _context.GlAccounts.ToList();
-            var savingsAcc = _context.SavingsAccountTypes.SingleOrDefault(c => c.Id == id);
+            var savingsAcc = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals( "Savings Account"));
             var viewModel = new SavingsViewModel()
             {
                 GlAccounts = GLAccounts,
@@ -36,7 +36,7 @@ namespace WebApplication1.Controllers
         public ActionResult CurrentAccConfig(string id)
         {
             var GLAccounts = _context.GlAccounts.ToList();
-            var currentAcc = _context.CurrentAccountTypes.SingleOrDefault(c => c.Id == id);
+            var currentAcc = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals("Current Account"));
             var viewModel = new CurrentAccViewModel()
             {
                 GlAccounts = GLAccounts,
@@ -47,7 +47,7 @@ namespace WebApplication1.Controllers
         public ActionResult LoanAccConfig(string id)
         {
             var GLAccounts = _context.GlAccounts.ToList();
-            var loanAcc = _context.LoanAccountTypes.SingleOrDefault(c => c.Id == id);
+            var loanAcc = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals("Loan Account"));
             var viewModel = new LoanAccViewModel()
             {
                 GlAccounts = GLAccounts,
@@ -65,20 +65,20 @@ namespace WebApplication1.Controllers
                 var viewModel = new SavingsViewModel()
                 {
                     GlAccounts = GLAccounts,
-                    SavingsAccountType = new SavingsAccountType()
+                    SavingsAccountType = new AccountType()
                 };
                 return View("Index", viewModel);
             }
 
             var savingsAccountType =
-                _context.SavingsAccountTypes.SingleOrDefault(c => c.Id == savingsViewModel.SavingsAccountType.Id);
+                _context.AccountTypes.SingleOrDefault(c => c.Name.Equals(savingsViewModel.SavingsAccountType.Name));
             //Mapper.Map(generalLedgerCategoryViewModel, generalLedgerCategory);
             savingsAccountType.Id = savingsViewModel.SavingsAccountType.Id;
-            savingsAccountType.GLAccountId = savingsViewModel.SavingsAccountType.GLAccountId;
+            
             savingsAccountType.CreditInterestRate = savingsViewModel.SavingsAccountType.CreditInterestRate;
             savingsAccountType.MinimumBalance = savingsViewModel.SavingsAccountType.MinimumBalance;
-            savingsAccountType.InterestExpenseGlAccountId =
-                savingsViewModel.SavingsAccountType.GLAccountId;
+            savingsAccountType.InterestExpenseGLAccountId =
+                savingsViewModel.SavingsAccountType.InterestExpenseGLAccountId;
             _context.SaveChanges();
             return RedirectToAction("Index", "AccountTypes");
            
@@ -93,18 +93,18 @@ namespace WebApplication1.Controllers
                 var viewModel = new LoanAccViewModel()
                 {
                     GlAccounts = GLAccounts,
-                    LoanAccountType = new LoanAccountType()
+                    LoanAccountType = new AccountType()
                 };
                 return View("Index", viewModel);
             }
 
-            var loanAccountType = _context.LoanAccountTypes.SingleOrDefault(c => c.Id == loanAccViewModel.LoanAccountType.Id);
+            var loanAccountType = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals( loanAccViewModel.LoanAccountType.Name));
             //Mapper.Map(generalLedgerCategoryViewModel, generalLedgerCategory);
             loanAccountType.Id = loanAccViewModel.LoanAccountType.Id;
-            loanAccountType.GlAccountId = loanAccViewModel.LoanAccountType.GlAccountId;
+            
             loanAccountType.DebitInterestRate = loanAccViewModel.LoanAccountType.DebitInterestRate;
             loanAccountType.InterestIncomeGLAccountId =
-                loanAccViewModel.LoanAccountType.GlAccountId;
+                loanAccViewModel.LoanAccountType.InterestIncomeGLAccountId;
             _context.SaveChanges();
 
             return RedirectToAction("Index", "AccountTypes");
@@ -120,20 +120,20 @@ namespace WebApplication1.Controllers
                 var viewModel = new CurrentAccViewModel()
                 {
                     GlAccounts = GLAccounts,
-                    CurrentAccountType = new CurrentAccountType()
+                    CurrentAccountType = new AccountType()
                 };
                 return View("Index", viewModel);
             }
 
-            var currentAccountType = _context.CurrentAccountTypes.SingleOrDefault(c => c.Id == currentAccViewModel.CurrentAccountType.Id);
+            var currentAccountType = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals( currentAccViewModel.CurrentAccountType.Name));
             //Mapper.Map(generalLedgerCategoryViewModel, generalLedgerCategory);
             currentAccountType.Id = currentAccViewModel.CurrentAccountType.Id;
-            currentAccountType.GLAccountId = currentAccViewModel.CurrentAccountType.GLAccountId;
+            
             currentAccountType.CreditInterestRate = currentAccViewModel.CurrentAccountType.CreditInterestRate;
             currentAccountType.MinimumBalance = currentAccViewModel.CurrentAccountType.MinimumBalance;
-            currentAccountType.COTIncomeGLAccountId = currentAccViewModel.CurrentAccountType.GLAccountId;
+            currentAccountType.COTIncomeGLAccountId = currentAccViewModel.CurrentAccountType.COTIncomeGLAccountId;
             currentAccountType.InterestExpenseGLAccountId =
-                currentAccViewModel.CurrentAccountType.GLAccountId;
+                currentAccViewModel.CurrentAccountType.InterestExpenseGLAccountId;
             _context.SaveChanges();
 
             return RedirectToAction("Index", "AccountTypes");

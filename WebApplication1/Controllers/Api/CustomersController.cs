@@ -45,6 +45,8 @@ namespace WebApplication1.Controllers.Api
         [Route("api/Customers/CreateCustomerAccount")]
         public HttpResponseMessage CreateCustomerAccount(CustomerAccountDto customerAccountDto)
         {
+//            customerAccountDto.AccountNumber = customerAccountDto.AccountTypeId.ToString() + customerAccountDto.CustomerId.ToString();
+            customerAccountDto.AccountBalance = 0;
             if (ValidateEntry(customerAccountDto)==true)
             {
                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMessage);
@@ -56,8 +58,39 @@ namespace WebApplication1.Controllers.Api
             
             _context.CustomerAccounts.Add(customerAccount);
             _context.SaveChanges();
+            List<string> message =new List<string>();
+            message.Add("Account Created Successfully");
+            message.Add(customerAccount.Id.ToString());
+            return Request.CreateResponse(HttpStatusCode.OK,message ); 
+        }
 
-            return Request.CreateResponse(HttpStatusCode.OK, "Account Created Successfully"); 
+        [Route("api/Customers/LoanDisbursement")]
+        public HttpResponseMessage LoanDisbursement(LoanDetailsDto loanDetailsDto)
+        {
+            
+            var loanDetails = new LoanDetails();
+            loanDetails = Mapper.Map<LoanDetailsDto, LoanDetails>(loanDetailsDto);
+            _context.LoanDetails.Add(loanDetails);
+            
+            var customerAccount = _context.CustomerAccounts.Single(c => c.Id == loanDetailsDto.customerAccountId);
+            customerAccount.LoanDetailsId = loanDetails.Id;
+            customerAccount.AccountBalance =customerAccount.AccountBalance+ loanDetails.LoanAmount;
+            _context.SaveChanges();
+            return Request.CreateResponse(HttpStatusCode.OK, "Loan Disbursed Successfully");
+        }
+        [Route("api/Customers/Terms")]
+        public HttpResponseMessage Terms(TermsDto termsDto)
+        {
+            var terms = new Terms();
+            terms = Mapper.Map<TermsDto, Terms>(termsDto);
+
+
+            _context.Terms.Add(terms);
+            _context.SaveChanges();
+            List<string> message = new List<string>();
+            message.Add("Terms Added Successfully");
+            message.Add(terms.Id.ToString());
+            return Request.CreateResponse(HttpStatusCode.OK, message);
         }
 
         [NonAction]

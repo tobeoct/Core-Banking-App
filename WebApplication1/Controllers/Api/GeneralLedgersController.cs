@@ -33,7 +33,7 @@ namespace WebApplication1.Controllers.Api
         [Route("api/GeneralLedgers/GetAccount")]
         public IHttpActionResult GetAccount()
         {
-            var accountDto = _context.GlAccounts.Include(c => c.Categories).Include(b => b.Branch).ToList();
+            var accountDto = _context.GlAccounts.Include(c => c.GlCategories).Include(b => b.Branch).ToList();
 
             return Ok(accountDto);
         }

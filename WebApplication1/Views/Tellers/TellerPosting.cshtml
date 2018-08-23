@@ -1,0 +1,211 @@
+﻿
+
+@model WebApplication1.ViewModels.TellerPostingViewModel
+@{
+    ViewBag.Title = "Teller Postings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Partial("_AddTellerPostingModal")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="underline animated fadeInLeft">Teller Postings</h1>
+        </div>
+    </div>
+</div>
+<div class="row margin-vertical">
+    <div class="row padding-horizontal padding-vertical">
+        <div class="container container-fluid">
+            <p class="align-right grey-color animated fadeInRight ">3 Tellers</p>
+        </div>
+
+    </div>
+    <div class="container bg-white shadow">
+
+        <div class="row align-right padding-horizontal">
+            @* <button id="myFirstBtn" class="myBtn">Add new Teller</button> *@
+            <button id="myOpenTellerPostingModalBtn">Add new Teller Posting</button>
+        </div>
+
+
+
+
+        <div class="row padding-horizontal">
+
+            <table id="tellerPostings" class="table table-striped table-responsive small-text animated fadeInUp ">
+                <thead class="padding-vertical">
+                    <tr>
+                        <th>Account Name</th>
+                        <th>Account Number</th>
+                        <th>Transaction Date</th>
+                        <th>Debit Amount</th>
+                        <th>Credit Amount</th>
+                        <th>Narration</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody></tbody>
+            </table>
+        </div>
+
+
+    </div>
+
+</div>
+
+
+@section scripts
+{
+    <script>
+
+
+        $(document).ready(function () {
+
+            $('#myOpenTellerPostingModalBtn').on('click', function () {
+                $('#myAddTellerPostingModal').fadeIn(0, function () {
+                    $(this).addClass('fadeInDown');
+                });
+            });
+            $("#tellerPostings").DataTable({
+                ajax: {
+                    url: "/api/tellers/tellerpostings",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "customerAccount.Name"
+                    },
+                    {
+                        data: "customerAccount.accountNumber"
+                    },
+                    {
+                        data: "transactionDate"
+                    },
+                    {
+                        data: "amount"
+                    },
+                    {
+                        data: "amount"
+                    },
+                    {
+                        data: "narration"
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return "<a class='js-delete' data-branch-id='" + data + "'>Edit|Delete</a>"
+                        }
+                    }
+                ]
+            });
+
+            $("#myAddTellerPostingBtn").on("click",
+                function (e) {
+
+                    e.preventDefault();
+                    customerAccountId = $("#myAddTellerPostingModal #customerAccountId").val();
+                    postingType = $("#myAddTellerPostingModal #postingType").val();
+                    amount = $('#myAddTellerPostingModal #amount').val();
+                    narration = $('#myAddTellerPostingModal #narration').val();
+                    alert("Customer Account Id : " +
+                        customerAccountId +
+                        ", Posting Type : " +
+                        postingType +
+                        ", Amount : " +
+                        amount +
+                        "Narration : " +
+                        narration);
+                    if (customerAccountId == 0) {
+                        $('#myAddTellerPostingModal #errorMessage').fadeIn();
+                        $('#myAddTellerPostingModal #errorMessage').html("Please Select a Customer Account");
+                        return;
+                    }
+                    if (postingType == 0) {
+                       
+                        $('#myAddTellerPostingModal #errorMessage').fadeIn();
+                        $('#myAddTellerPostingModal #errorMessage').html("Please Select a Posting Type");
+                        return;
+                    }
+                    if (amount <= 0|| amount==null) {
+                      
+                        $('#myAddTellerPostingModal #errorMessage').fadeIn();
+                        $('#myAddTellerPostingModal #errorMessage').html("Please Enter an Amount Greater than 0");
+                        return;
+                    }
+                    if (narration == null || narration==0) {
+                       
+                        $('#myAddTellerPostingModal #errorMessage').fadeIn();
+                        $('#myAddTellerPostingModal #errorMessage').html("Please Enter a Brief Narration (Description)");
+                        return;
+                    }
+                    var tellerPostingDto = {
+                        CustomerAccountId: customerAccountId,
+                        PostingType: postingType,
+                        Amount: amount,
+                        Narration: narration
+                    };
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/api/Tellers/AddTellerPosting',
+                        data: JSON.stringify(tellerPostingDto),
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        success: function (data) {
+
+
+                            $('#myAddTellerPostingModal #successMessage').fadeIn(200,
+                                function () {
+                                    document.getElementById('tellerPostingForm').reset();
+
+                                    $('#myAddTellerPostingModal #successMessage').html(data)
+                                });
+                            return;
+
+
+                        },
+                        error: function (errorMessage) {
+                            // alert('request failed');
+                            //                            var msg = JSON.stringify(errorMessage);
+                            var msg = JSON.parse(errorMessage.responseText);
+
+                            $('#myAddTellerPostingModal #errorMessage').fadeIn(200,
+                                function () { $('#myAddTellerPostingModal #errorMessage').html(msg.message) });
+                        }
+
+                    });
+
+
+                });
+
+            $('#myAddTellerPostingModal .close').on('click',
+                function () {
+                    location.reload();
+                    $('#myAddTellerPostingModal').fadeOut();
+                });
+            $("#tellerPostings ").on("click",
+                "js-delete",
+                function () {
+                    var button = $(this);
+                    //alert("Delete");
+                    bootbox.confirm("Are you sure you want to delete this branch",
+                        function () {
+                            if (result) {
+                                $.ajax({
+                                    url: "api/teller/tellerPosting/" + button.attr("data-branch-id"),
+                                    method: "DELETE",
+                                    success: function () {
+                                        table.row(button.parents("tr")).remove().draw();
+                                    }
+                                });
+                            }
+                        });
+                });
+
+        });
+    </script>
+}
+
+
