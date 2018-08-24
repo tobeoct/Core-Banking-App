@@ -28,6 +28,8 @@ namespace WebApplication1.Dtos
         [Display(Name = "Posting Type")]
         public string PostingType { get; set; }
 
+       
+
         [Required]
         [Display(Name = "Report Date")]
         public DateTime? ReportDate { get; set; }

@@ -12,15 +12,10 @@ namespace WebApplication1.Dtos
         [Key]
         public int Id { get; set; }
 
-        [Display(Name = "Linked Customer Account Bank")]
-        public string LinkedCustomerAccountBank { get; set; }
 
-        [Display(Name = "Linked Customer Account Number")]
-        public long LinkedCustomerAccountNumber { get; set; }
+        public int LinkedCustomerAccountId { get; set; }
 
-        public int customerAccountId { get; set; }
-
-        public long BVN { get; set; }
+        public int CustomerAccountId { get; set; }
 
         [Required]
         [Display(Name = "Terms")]

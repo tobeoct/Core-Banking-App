@@ -244,6 +244,7 @@
     <Compile Include="Dtos\FinancialReportDto.cs" />
     <Compile Include="Dtos\GLAccountDto.cs" />
     <Compile Include="Dtos\GLCategoryDto.cs" />
+    <Compile Include="Dtos\GLPostingDto.cs" />
     <Compile Include="Dtos\LoanDetailsDto.cs" />
     <Compile Include="Dtos\TellerDto.cs" />
     <Compile Include="Dtos\TellerPostingDto.cs" />
@@ -612,24 +613,117 @@
     <Compile Include="Migrations\201808231239052_changeDateTimeToNullable.Designer.cs">
       <DependentUpon>201808231239052_changeDateTimeToNullable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808231347548_AddGLPostings.cs" />
+    <Compile Include="Migrations\201808231347548_AddGLPostings.Designer.cs">
+      <DependentUpon>201808231347548_AddGLPostings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808231414173_AddBalanceToGLAccount.cs" />
+    <Compile Include="Migrations\201808231414173_AddBalanceToGLAccount.Designer.cs">
+      <DependentUpon>201808231414173_AddBalanceToGLAccount.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241017483_AddLinkedAccountToLoanDetails.cs" />
+    <Compile Include="Migrations\201808241017483_AddLinkedAccountToLoanDetails.Designer.cs">
+      <DependentUpon>201808241017483_AddLinkedAccountToLoanDetails.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241022311_AddLinkedAccountToLoanDetails2.cs" />
+    <Compile Include="Migrations\201808241022311_AddLinkedAccountToLoanDetails2.Designer.cs">
+      <DependentUpon>201808241022311_AddLinkedAccountToLoanDetails2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241026161_AddLinkedAccountToLoanDetails3.cs" />
+    <Compile Include="Migrations\201808241026161_AddLinkedAccountToLoanDetails3.Designer.cs">
+      <DependentUpon>201808241026161_AddLinkedAccountToLoanDetails3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241032573_fghj.cs" />
+    <Compile Include="Migrations\201808241032573_fghj.Designer.cs">
+      <DependentUpon>201808241032573_fghj.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241033476_fghje.cs" />
+    <Compile Include="Migrations\201808241033476_fghje.Designer.cs">
+      <DependentUpon>201808241033476_fghje.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241035500_fghjej.cs" />
+    <Compile Include="Migrations\201808241035500_fghjej.Designer.cs">
+      <DependentUpon>201808241035500_fghjej.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241037104_fghjejsds.cs" />
+    <Compile Include="Migrations\201808241037104_fghjejsds.Designer.cs">
+      <DependentUpon>201808241037104_fghjejsds.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241109148_fghjejsdse.cs" />
+    <Compile Include="Migrations\201808241109148_fghjejsdse.Designer.cs">
+      <DependentUpon>201808241109148_fghjejsdse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241120240_re.cs" />
+    <Compile Include="Migrations\201808241120240_re.Designer.cs">
+      <DependentUpon>201808241120240_re.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241136291_re1.cs" />
+    <Compile Include="Migrations\201808241136291_re1.Designer.cs">
+      <DependentUpon>201808241136291_re1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241139188_AddLoanDetailsAndCustomerAccount.cs" />
+    <Compile Include="Migrations\201808241139188_AddLoanDetailsAndCustomerAccount.Designer.cs">
+      <DependentUpon>201808241139188_AddLoanDetailsAndCustomerAccount.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241143024_AddLoanDetailsAndCustomerAccount2.cs" />
+    <Compile Include="Migrations\201808241143024_AddLoanDetailsAndCustomerAccount2.Designer.cs">
+      <DependentUpon>201808241143024_AddLoanDetailsAndCustomerAccount2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241148091_AddChangeBalanceTypeToFloat.cs" />
+    <Compile Include="Migrations\201808241148091_AddChangeBalanceTypeToFloat.Designer.cs">
+      <DependentUpon>201808241148091_AddChangeBalanceTypeToFloat.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241150091_AddChangeBalanceTypeToFloat2.cs" />
+    <Compile Include="Migrations\201808241150091_AddChangeBalanceTypeToFloat2.Designer.cs">
+      <DependentUpon>201808241150091_AddChangeBalanceTypeToFloat2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241228359_AddChangeBalanceTypeToFloat3.cs" />
+    <Compile Include="Migrations\201808241228359_AddChangeBalanceTypeToFloat3.Designer.cs">
+      <DependentUpon>201808241228359_AddChangeBalanceTypeToFloat3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241232207_AddChangeBalanceTypeToFloat4.cs" />
+    <Compile Include="Migrations\201808241232207_AddChangeBalanceTypeToFloat4.Designer.cs">
+      <DependentUpon>201808241232207_AddChangeBalanceTypeToFloat4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241243125_ChangeMig.cs" />
+    <Compile Include="Migrations\201808241243125_ChangeMig.Designer.cs">
+      <DependentUpon>201808241243125_ChangeMig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241247298_ChangeMig1.cs" />
+    <Compile Include="Migrations\201808241247298_ChangeMig1.Designer.cs">
+      <DependentUpon>201808241247298_ChangeMig1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241248242_ChangeMig2.cs" />
+    <Compile Include="Migrations\201808241248242_ChangeMig2.Designer.cs">
+      <DependentUpon>201808241248242_ChangeMig2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241249480_ChangeMig3.cs" />
+    <Compile Include="Migrations\201808241249480_ChangeMig3.Designer.cs">
+      <DependentUpon>201808241249480_ChangeMig3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808241303563_ChangeMig4.cs" />
+    <Compile Include="Migrations\201808241303563_ChangeMig4.Designer.cs">
+      <DependentUpon>201808241303563_ChangeMig4.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountRoles.cs" />
     <Compile Include="Models\AccountType.cs" />
     <Compile Include="Models\CBA.cs" />
     <Compile Include="Models\CurrentAccountType.cs" />
+    <Compile Include="Models\CustomerAccount.cs" />
     <Compile Include="Models\FinancialReport.cs" />
+    <Compile Include="Models\GLPostings.cs" />
     <Compile Include="Models\LoanAccountType.cs" />
+    <Compile Include="Models\LoanDetails.cs" />
     <Compile Include="Models\PostingTypes.cs" />
     <Compile Include="Models\SavingsAccountType.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Branch.cs" />
     <Compile Include="Models\Categories.cs" />
     <Compile Include="Models\Customer.cs" />
-    <Compile Include="Models\CustomerAccount.cs" />
     <Compile Include="Models\CustomerAccountType.cs" />
     <Compile Include="Models\GLAccount.cs" />
     <Compile Include="Models\GLCategory.cs" />
-    <Compile Include="Models\LoanDetails.cs" />
     <Compile Include="Models\RoleName.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -644,6 +738,7 @@
     <Compile Include="ViewModels\EditProfileViewModel.cs" />
     <Compile Include="ViewModels\GLAccountViewModel.cs" />
     <Compile Include="ViewModels\GLCategoryViewModel.cs" />
+    <Compile Include="ViewModels\GLPostingViewModel.cs" />
     <Compile Include="ViewModels\LoanAccViewModel.cs" />
     <Compile Include="ViewModels\ReportViewModel.cs" />
     <Compile Include="ViewModels\SavingsViewModel.cs" />
@@ -943,6 +1038,12 @@
     <Content Include="Views\Tellers\_AddTellerModal.cshtml" />
     <Content Include="Views\Tellers\TellerPosting.cshtml" />
     <Content Include="Views\Tellers\_AddTellerPostingModal.cshtml" />
+    <Content Include="Views\GeneralLedgers\GLPosting.cshtml" />
+    <Content Include="Views\GeneralLedgers\_AddGLPostingModal.cshtml" />
+    <Content Include="Views\GeneralLedgers\_ConfirmationModal.cshtml" />
+    <Content Include="Views\GeneralLedgers\_AddAccount.cshtml" />
+    <Content Include="Views\Tellers\_AddTellerPosting.cshtml" />
+    <Content Include="Views\Tellers\_ConfirmationModal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1230,6 +1331,75 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808231239052_changeDateTimeToNullable.resx">
       <DependentUpon>201808231239052_changeDateTimeToNullable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808231347548_AddGLPostings.resx">
+      <DependentUpon>201808231347548_AddGLPostings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808231414173_AddBalanceToGLAccount.resx">
+      <DependentUpon>201808231414173_AddBalanceToGLAccount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241017483_AddLinkedAccountToLoanDetails.resx">
+      <DependentUpon>201808241017483_AddLinkedAccountToLoanDetails.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241022311_AddLinkedAccountToLoanDetails2.resx">
+      <DependentUpon>201808241022311_AddLinkedAccountToLoanDetails2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241026161_AddLinkedAccountToLoanDetails3.resx">
+      <DependentUpon>201808241026161_AddLinkedAccountToLoanDetails3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241032573_fghj.resx">
+      <DependentUpon>201808241032573_fghj.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241033476_fghje.resx">
+      <DependentUpon>201808241033476_fghje.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241035500_fghjej.resx">
+      <DependentUpon>201808241035500_fghjej.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241037104_fghjejsds.resx">
+      <DependentUpon>201808241037104_fghjejsds.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241109148_fghjejsdse.resx">
+      <DependentUpon>201808241109148_fghjejsdse.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241120240_re.resx">
+      <DependentUpon>201808241120240_re.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241136291_re1.resx">
+      <DependentUpon>201808241136291_re1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241139188_AddLoanDetailsAndCustomerAccount.resx">
+      <DependentUpon>201808241139188_AddLoanDetailsAndCustomerAccount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241143024_AddLoanDetailsAndCustomerAccount2.resx">
+      <DependentUpon>201808241143024_AddLoanDetailsAndCustomerAccount2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241148091_AddChangeBalanceTypeToFloat.resx">
+      <DependentUpon>201808241148091_AddChangeBalanceTypeToFloat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241150091_AddChangeBalanceTypeToFloat2.resx">
+      <DependentUpon>201808241150091_AddChangeBalanceTypeToFloat2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241228359_AddChangeBalanceTypeToFloat3.resx">
+      <DependentUpon>201808241228359_AddChangeBalanceTypeToFloat3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241232207_AddChangeBalanceTypeToFloat4.resx">
+      <DependentUpon>201808241232207_AddChangeBalanceTypeToFloat4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241243125_ChangeMig.resx">
+      <DependentUpon>201808241243125_ChangeMig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241247298_ChangeMig1.resx">
+      <DependentUpon>201808241247298_ChangeMig1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241248242_ChangeMig2.resx">
+      <DependentUpon>201808241248242_ChangeMig2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241249480_ChangeMig3.resx">
+      <DependentUpon>201808241249480_ChangeMig3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808241303563_ChangeMig4.resx">
+      <DependentUpon>201808241303563_ChangeMig4.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

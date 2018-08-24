@@ -18,7 +18,7 @@
 
     //VARIABLES FOR CUSTOMER ACCOUNT CREATION
 
-    var accountTypeId = 0, customerId, branchId = 0, accountName, loanAmount, linkedCustomerAccountBank, linkedCustomerAccountNumber, bvn,tenure,collateral;
+    var accountTypeId = 0, customerId, branchId = 0, accountName, loanAmount, linkedCustomerAccountName, linkedCustomerAccountId, bvn,tenure,collateral;
     var accountNumber,paymentRate,accountId;
 
     //MODALS - Get modal for Customer Account Modal

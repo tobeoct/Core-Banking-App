@@ -1,0 +1,64 @@
+﻿@model WebApplication1.ViewModels.TellerPostingViewModel
+<div id="myAddTellerPostingModal" class="container bg-white shadow">
+
+    <div class="row padding-horizontal">
+
+        <div>
+            <div class=" bordered-bottom row ">
+                <div class="col-md-6 col-sm-6 col-xs-6 align-left">
+                    <h3 class="alt-color bold-text align-left ">Make Teller Posting </h3>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-6 align-right">
+                    <p class="grey-color">Hit Tab to move to next field</p>
+                </div>
+
+            </div>
+            <div class="alert alert-danger alert-dismissible" id="errorMessage"></div>
+            <div class="alert alert-success alert-dismissible" id="successMessage"></div>
+
+            <form id="tellerPostingForm" class="padding-horizontal">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Customer Account</th>
+                            <th>Posting Type</th>
+                            <th>Amount</th>
+                            <th>Narration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="form-group">
+                                <select class="form-control" id="customerAccountId" required>
+                                    <option value="0">Select Customer Account</option>
+                                    @foreach (var customerAccount in Model.CustomerAccounts)
+                                    {
+                                        <option value="@customerAccount.Id">@customerAccount.Name</option>
+                                    }
+                                </select>
+                            </td>
+                            <td class="form-group">
+                                <select class="form-control" id="postingType" required>
+                                    <option value="0">Select Posting Type</option>
+                                    <option value="Deposit">Deposit</option>
+                                    <option value="Withdrawal">Withdrawal</option>
+                                </select>
+                            </td>
+                            <td class="form-group">
+                                <input type="number" id="amount" class="form-control">
+                            </td>
+                            <td class="form-group">
+                                <input type="text" id="narration" class="form-control">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </form>
+            <div class="align-right">
+                <button id="myAddTellerPostingBtn">Add Posting<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
+            </div>
+        </div>
+
+    </div>
+</div>

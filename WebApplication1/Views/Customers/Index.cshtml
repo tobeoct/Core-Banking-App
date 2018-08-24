@@ -55,7 +55,7 @@
 {
     <script>
         $(document).ready(function() {
-            $("#customers").DataTable({
+            var table = $("#customers").DataTable({
                 ajax: {
                     url: "/api/customers",
                     dataSrc: ""

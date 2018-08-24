@@ -42,6 +42,7 @@ namespace WebApplication1.Models
         public DbSet<Categories> Categories { get; set; }
         public DbSet<GLCategory> GlCategories { get; set; }
         public DbSet<GLAccount> GlAccounts { get; set; }
+        public DbSet<GLPostings> GlPostings { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<LoanDetails> LoanDetails { get; set; }
 //        public DbSet<SavingsAccountType> SavingsAccountTypes { get; set; }
@@ -54,6 +55,7 @@ namespace WebApplication1.Models
         public DbSet<Teller> Tellers { get; set; }
         public DbSet<TellerPosting> TellerPostings { get; set; }
         public DbSet<FinancialReport> FinancialReports { get; set; }
+
 
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)

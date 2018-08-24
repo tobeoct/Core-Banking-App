@@ -11,5 +11,6 @@ namespace WebApplication1.ViewModels
         public TellerPosting TellerPosting { get; set; }
         public IEnumerable<CustomerAccount> CustomerAccounts { get; set; }
         public IEnumerable<string> PostingType { get; set; }
+        public int count { get; set; }
     }
 }

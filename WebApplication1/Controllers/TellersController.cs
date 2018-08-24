@@ -65,6 +65,7 @@ namespace WebApplication1.Controllers
         public ActionResult Postings()
         {
             var customerAccounts = _context.CustomerAccounts.Include(c=>c.Customer).Include(c=>c.Branch).Include(c=>c.AccountType).ToList();
+            var count = _context.TellerPostings.Count();
             var postingType1 = new PostingTypes();
             postingType1.Id = 1;
             postingType1.Name = "Deposit";
@@ -83,7 +84,8 @@ namespace WebApplication1.Controllers
             {
                 CustomerAccounts = customerAccounts,
                 PostingType = postingTypes.ToList(),
-                TellerPosting = new TellerPosting()
+                TellerPosting = new TellerPosting(),
+                count = count
             };
             return View("TellerPosting",viewModel);
         }

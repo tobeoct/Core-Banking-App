@@ -169,26 +169,37 @@ input {
 .margin-horizontal {
     margin: auto 20px;
 }
-
-.margin-vertical {
-    margin: 20px auto;
-}
-
-.margin-horizontal-max {
-    margin: auto 10vh;
-}
-
-.margin-vertical-max {
-    margin: 10vh auto;
+.margin-horizontal-min {
+    margin: auto 10px;
 }
 
 .margin-horizontal-mid {
     margin: auto 7vh;
 }
 
+.margin-horizontal-max {
+    margin: auto 10vh;
+}
+
+
+.margin-vertical {
+    margin: 20px auto;
+}
+.margin-vertical-max {
+    margin: 10vh auto;
+}
 .margin-vertical-mid {
     margin: 7vh auto;
 }
+
+.margin-vertical-min {
+    margin: 10px auto;
+}
+
+
+
+
+
 
 .padding-horizontal {
     padding-left: 20px;
@@ -312,7 +323,12 @@ input {
 .bg-active-indicator {
     background: #a574b3 !important;
 }
-
+.bg-red {
+    background: #F22613 !important;
+}
+.bg-green {
+    background: #2ECC71 !important;
+}
 .bg-dark {
     background: #202020;
 }
@@ -483,6 +499,11 @@ input {
     padding: 20px;
     border-radius: 3px;
     width: 50%; /* Could be more or less, depending on screen size */
+}
+
+ td
+{
+    padding-right: 15px !important;
 }
 
 /* The Close Button */

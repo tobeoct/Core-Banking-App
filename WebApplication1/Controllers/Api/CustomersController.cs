@@ -72,12 +72,14 @@ namespace WebApplication1.Controllers.Api
             loanDetails = Mapper.Map<LoanDetailsDto, LoanDetails>(loanDetailsDto);
             _context.LoanDetails.Add(loanDetails);
             
-            var customerAccount = _context.CustomerAccounts.Single(c => c.Id == loanDetailsDto.customerAccountId);
+            var customerAccount = _context.CustomerAccounts.Single(c => c.Id == loanDetailsDto.LinkedCustomerAccountId);
             customerAccount.LoanDetailsId = loanDetails.Id;
             customerAccount.AccountBalance =customerAccount.AccountBalance+ loanDetails.LoanAmount;
             _context.SaveChanges();
+
             return Request.CreateResponse(HttpStatusCode.OK, "Loan Disbursed Successfully");
         }
+
         [Route("api/Customers/Terms")]
         public HttpResponseMessage Terms(TermsDto termsDto)
         {

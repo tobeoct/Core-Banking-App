@@ -1,0 +1,330 @@
+﻿
+
+@model WebApplication1.ViewModels.GLPostingViewModel
+@{
+    ViewBag.Title = "GL Account Postings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@Html.Partial("_ConfirmationModal")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="underline animated fadeInLeft">GL Postings</h1>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_AddAccount")
+<div class="row ">
+    <div class="row padding-horizontal padding-vertical">
+        <div class="container container-fluid">
+            <p class="align-right grey-color animated fadeInRight "><span id="count"></span> GL Postings</p>
+        </div>
+    </div>
+
+    <div class="container bg-white shadow">
+
+        <div class="row align-left padding-horizontal">
+            <h3 class="alt-color bold-text align-left ">List of GL Postings  </h3>
+        </div>
+
+        <div class="row padding-horizontal">
+
+            <table id="GLPostings" class="table table-striped table-responsive small-text animated fadeInUp ">
+                <thead class="padding-vertical">
+                    <tr>
+                        <th>GL Account Name</th>
+                        <th>GL Account Code</th>
+                        <th>Transaction Date</th>
+                        <th>Debit Amount</th>
+                        <th>Credit Amount</th>
+                        <th>Narration</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody></tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+
+@section scripts
+{
+    <script>
+
+
+        $(document).ready(function () {
+
+            var creditAccountName; //Account  - (Name) to be credited
+            var creditAccountId; // Account - (Id) to be credited
+            var creditAmount; // Amount to be credited
+            var creditNarration; // Description of credit
+            var debitAccountName; //Account  - (Name) to be debited
+            var debitAccountId; // Account - (Id) to be debited
+            var debitAmount; // Amount to be debited
+            var debitNarration; //Description of debit
+            var count; //Number of Postings
+
+
+
+
+            /**
+             * TABLE FUNCTIONALITY
+             */
+
+
+            // : To  make API call to GET postings FROM Database TO GlPostings TABLE USING Jquery-DataTables.js
+
+            var table = $("#GLPostings").DataTable({
+                ajax: {
+                    url: "/api/GeneralLedgers/GetPostings",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "transactionDate"
+                    },
+                    {
+                        data: "transactionDate"
+                    },
+                    {
+                        data: "transactionDate"
+                    },
+                    {
+                        data: "creditAmount"
+                    },
+                    {
+                        data: "debitAmount"
+                    },
+                    {
+                        data: "creditNarration"
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return "<a class='js-delete' data-branch-id='" + data + "'>Edit|Delete</a>"
+                        }
+                    }
+                ]
+            });
+            table.ajax.reload(function() {
+                $('#count').html(table.data().count());
+            });
+
+
+            // :To DELETE or EDIT an entry in the GLPostings TABLE
+
+            $("#GLPostings ").on("click", "js-delete", function () {
+                var button = $(this);
+                //alert("Delete");
+                bootbox.confirm("Are you sure you want to delete this branch",
+                    function () {
+                        if (result) {
+                            $.ajax({
+                                url: "api/GeneralLedgers/GetPostings/" + button.attr("data-branch-id"),
+                                method: "DELETE",
+                                success: function () {
+                                    table.row(button.parents("tr")).remove().draw();
+                                }
+                            });
+                        }
+                    });
+            });
+
+
+
+
+            /**
+             * MODAL FUNCTIONALITY
+             */
+
+
+            // :To OPEN the Modal to make a NEW GL Post
+
+            $('#myOpenGlPostingModalBtn').on('click', function (e) {
+                e.preventDefault();
+                $('#myAddGLPostingModal').fadeIn(0, function () {
+                    $(this).addClass('fadeInDown');
+                });
+            });
+
+            $('#myBackToPostBtn').on('click', function (e) {
+                e.preventDefault();
+                $('#myGLPostingConfirmationModal').fadeOut(0, function () {
+                    $('#myAddGLPostingModal').fadeIn(100, function () {
+                        $(this).addClass('fadeInDown');
+                    });
+                });
+
+            });
+            // :To get DATA entered from the GL Posting FORM and VALIDATE
+            $("#myAddGLPostingBtn").on("click",
+                function (e) {
+
+                    e.preventDefault();
+                    creditAccountName = $("#myAddGLPostingModal #glCreditAccountId option:selected").text();
+                    creditAccountId = $("#myAddGLPostingModal #glCreditAccountId").val();
+                    debitAccountName = $("#myAddGLPostingModal #glDebitAccountId option:selected").text();
+                    debitAccountId = $("#myAddGLPostingModal #glDebitAccountId").val();
+                    amount = $("#myAddGLPostingModal #amount").val();
+                    narration = $("#myAddGLPostingModal #narration").val();
+
+                    //alert("Credit Acc : " + creditAccountId + ", Amount : " + creditAmount + ", Narration : " + creditNarration + ", Debit Acc : " + debitAccountId + ", Amount : " + debitAmount + ", Narration : " + debitNarration );
+
+                    glPostingDto = {
+                        GlCreditAccountId: creditAccountId,
+                        CreditAmount: amount,
+                        CreditNarration: narration,
+                        GlDebitAccountId: debitAccountId,
+                        DebitAmount: amount,
+                        DebitNarration: narration
+
+                    };
+
+                    // GL Posting Modal Form Validation
+                    if (creditAccountId == 0) {
+                        $('#myAddGLPostingModal #errorMessage').fadeIn();
+                        $('#myAddGLPostingModal #errorMessage').html("Please Select a GL Credit Account");
+                        return;
+                    }
+                    if (creditAmount == 0) {
+                        $('#myAddGLPostingModal #errorMessage').fadeIn();
+                        $('#myAddGLPostingModal #errorMessage').html("Please Enter GL Credit Amount");
+                        return;
+                    }
+                    if (creditNarration == 0) {
+                        $('#myAddGLPostingModal #errorMessage').fadeIn();
+                        $('#myAddGLPostingModal #errorMessage').html("Please Enter GL Credit Narration");
+                        return;
+                    }
+
+                    if (debitAccountId == 0) {
+                        $('#myAddGLPostingModal #errorMessage').fadeIn();
+                        $('#myAddGLPostingModal #errorMessage').html("Please Select a GL Debit Account");
+                        return;
+                    }
+                    if (debitAmount == 0) {
+                        $('#myAddGLPostingModal #errorMessage').fadeIn();
+                        $('#myAddGLPostingModal #errorMessage').html("Please Enter GL Debit Amount");
+                        return;
+                    }
+                    if (debitNarration == 0) {
+                        $('#myAddGLPostingModal #errorMessage').fadeIn();
+                        $('#myAddGLPostingModal #errorMessage').html("Please Enter GL Debit Narration");
+                        return;
+                    }
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/api/GeneralLedgers/ValidationChecks',
+                        data: JSON.stringify(glPostingDto),
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        success: function (data) {
+
+                            //Confirmation Modal Fades In
+                            
+                                $('#myGLPostingConfirmationModal').fadeIn(300, function () {
+                                    $('#myGLPostingConfirmationModal #creditAccount b').text(" " + amount + " to " + creditAccountName + " ");
+                                    $('#myGLPostingConfirmationModal #debitAccount b').text(" " + amount + " to " + debitAccountName + " ");
+                                });
+                            
+
+
+
+                        },
+                        error: function (errorMessage) {
+                            // alert('request failed');
+                            var msg = JSON.parse(errorMessage.responseText);
+
+                            $('#myAddGLPostingModal #errorMessage').fadeIn(200,
+                                function () { $('#myAddGLPostingModal #errorMessage').html(msg.message) });
+                        }
+
+                    });
+
+
+
+
+
+                });
+
+            // :To confirm ACTION and make an API call to POST to the CONTROLLER
+
+            $('#myGLPostingConfirmationBtn').on('click', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/GeneralLedgers/AddGLPosting',
+                    data: JSON.stringify(glPostingDto),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    success: function (data) {
+
+
+                        $('#myGLPostingConfirmationModal #successMessage').fadeIn(200,
+                            function () {
+                                document.getElementById('confirmationForm').reset();
+
+                                $('#myGLPostingConfirmationModal #successMessage').html(data);
+
+                                $('#myGLPostingConfirmationModal button').fadeOut();
+                            });
+                        return;
+
+
+                    },
+                    error: function (errorMessage) {
+                        // alert('request failed');
+
+                        var msg = JSON.parse(errorMessage.responseText);
+
+                        $('#myGLPostingConfirmationModal #errorMessage').fadeIn(200,
+                            function () { $('#myGLPostingConfirmationModal #errorMessage').html(msg.message) });
+                    }
+
+                });
+
+            });
+
+            // : To CLOSE GL Posting Modal and refresh PAGE
+
+            $('#myAddGLPostingModal .close').on('click',
+                function () {
+
+                    table.ajax.reload();
+
+                    $('#count').html(table.data().count());
+
+                    //$('#myAddTellerPostingModal').fadeOut();
+                });
+
+            // : To CLOSE Confirmation modal and refresh PAGE
+            $('#myGLPostingConfirmationModal .close').on('click',
+                function () {
+
+                    
+                    table.ajax.reload(function() {
+                        $('#count').html(table.data().count());
+                    });
+
+                        
+                    
+                    $('#myGLPostingConfirmationModal').fadeOut();
+                    $('#myGLPostingConfirmationModal button').fadeIn();
+
+                });
+
+
+
+        });
+
+    </script>
+}
+
+

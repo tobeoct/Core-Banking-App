@@ -22,7 +22,7 @@ namespace WebApplication1.Models
         public GLAccount TillAccount { get; set; }
 
         [Display(Name = "Till Account Balance")]
-        public long TillAccountBalance { get; set; }
+        public float TillAccountBalance { get; set; }
         public bool IsAssigned { get; set; }
     }
 }

@@ -12,34 +12,21 @@
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            <label>Linked Customer Account Bank</label>
+                            <label>Linked Customer Account </label>
                         </div>
                         <div class="col-md-9">
-                            <input type="text" id="linkedCustomerAccountBank">
+                            <select class="form-control" id="linkedCustomerAccountId">
+                                @foreach (var customerAcc in Model.CustomerAccounts)
+                                {
+                                    <option value="@customerAcc.Id">@customerAcc.Name</option>
+                                }
+                            </select>
                         </div>
                     </div>
                 </div>
-                <div class="row form-group ">
-                    <div class="margin-vertical">
-                        <div class="col-md-3">
-                            <label>Linked Customer Account Number</label>
-                        </div>
-                        <div class="col-md-9">
-                            <input type="number" id="linkedCustomerAccountNumber">
-                        </div>
-                    </div>
-                </div>
+                
 
-                <div class="row form-group ">
-                    <div class="margin-vertical">
-                        <div class="col-md-3">
-                            <label>BVN</label>
-                        </div>
-                        <div class="col-md-9">
-                            <input type="number" id="bvn">
-                        </div>
-                    </div>
-                </div>
+                
 
                 <div class="row form-group ">
                     <div class="margin-vertical">

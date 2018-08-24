@@ -1,0 +1,97 @@
+﻿
+@model WebApplication1.ViewModels.GLPostingViewModel
+<div id="myAddGLPostingModal" class="modal ">
+
+    <!-- Modal content -->
+    <div class="modal-content animated ">
+        <span class="close">&times;</span>
+        <div>
+            <div class=" bordered-bottom row ">
+                <div class="col-md-6 col-sm-6 col-xs-6 align-left">
+                    <p class="alt-color bold-text align-left " style="font-size: 1.5em;">Make GL Posting </p>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-6 align-right">
+                    <p class="grey-color">Hit Tab to move to next field</p>
+                </div>
+                
+            </div>
+            <div class="alert alert-danger" id="errorMessage"></div>
+            <div class="alert alert-success" id="successMessage"></div>
+
+            <form id="glPostingForm" class="padding-horizontal">
+                
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            <label>GL Credit Account</label>
+                        </div>
+                        <div class="col-md-9">
+                            <select class="form-control" id="glCreditAccountId" required>
+                                <option value="0">Select GL Credit Account</option>
+                                @foreach (var account in Model.GlAccounts)
+                                {
+                                    <option value="@account.Id">@account.Name</option>
+                                }
+                            </select>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            <label>GL Debit Account</label>
+                        </div>
+                        <div class="col-md-9">
+                            <select class="form-control" id="glDebitAccountId" required>
+                                <option value="0">Select GL Debit Account</option>
+                                @foreach (var account in Model.GlAccounts)
+                                {
+                                    <option value="@account.Id">@account.Name</option>
+                                }
+                            </select>
+                       </div>
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            <label>Amount</label>
+                        </div>
+                        <div class="col-md-9">
+
+                            <input type="number" id="amount">
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            <label>Narration</label>
+                        </div>
+                        <div class="col-md-9">
+
+                            <input type="text" id="narration">
+
+                        </div>
+                    </div>
+                </div>
+             
+               
+                
+
+                <div class="align-right">
+                    <button id="myAddGLPostingBtn">Make GL Posting<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+

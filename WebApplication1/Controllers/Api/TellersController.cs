@@ -78,14 +78,52 @@ namespace WebApplication1.Controllers.Api
         public HttpResponseMessage AddTellerPosting(TellerPostingDto tellerPostingDto)
         {     
 
-            tellerPostingDto.TransactionDate = DateTime.Now;
-            if (CheckTillBalance(tellerPostingDto.Amount))
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Insufficient Till Account Balance");
-            }
-
+            tellerPostingDto.TransactionDate = DateTime.Now;  
+            
             var tellerPosting = new TellerPosting();
-            tellerPosting = Mapper.Map<TellerPostingDto, TellerPosting>(tellerPostingDto);
+            tellerPosting = Mapper.Map<TellerPostingDto, TellerPosting>(tellerPostingDto);           
+            
+            _context.TellerPostings.Add(tellerPosting);
+            _context.SaveChanges();
+
+            EnforceDoubleEntry(tellerPostingDto.Amount, tellerPosting.CustomerAccountId, tellerPostingDto.PostingType);
+
+            var financialReportDto = new FinancialReportDto();
+            financialReportDto.PostingType ="Teller Posting";
+            if (tellerPostingDto.PostingType == "Deposit")
+            {
+                financialReportDto.CreditAccount = GetCustomerAccountName(tellerPostingDto.CustomerAccountId);
+                financialReportDto.CreditAmount = tellerPostingDto.Amount;
+                financialReportDto.DebitAccount = GetTillAccountName();
+                financialReportDto.DebitAmount = tellerPostingDto.Amount;
+            }
+            else
+            {
+                financialReportDto.DebitAccount = GetCustomerAccountName(tellerPostingDto.CustomerAccountId);
+                financialReportDto.DebitAmount = tellerPostingDto.Amount;
+                financialReportDto.CreditAccount = GetTillAccountName();
+                financialReportDto.CreditAmount = tellerPostingDto.Amount;
+            }
+            
+            financialReportDto.ReportDate =  DateTime.Now;
+
+            CBA.AddReport(financialReportDto);
+            return Request.CreateResponse(HttpStatusCode.OK, "Teller Posted Successfully");
+           
+
+        }
+
+        [AcceptVerbs("GET", "POST")]
+        [HttpPost]
+        [Route("api/Tellers/ValidationChecks")]
+        public HttpResponseMessage ValidationChecks(TellerPostingDto tellerPostingDto)
+        {
+
+            if (CheckIfCustomerAccountIsClosed(tellerPostingDto.CustomerAccountId) == true)
+            {
+                errorMessage = errorMessage + "Customer Account is Closed";
+
+            }
 
             if (tellerPostingDto.PostingType == "Withdrawal")
             {
@@ -93,28 +131,20 @@ namespace WebApplication1.Controllers.Api
                 {
                     return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMessage);
                 }
+                if (CheckTillBalance(tellerPostingDto.Amount))
+                {
+                    errorMessage = errorMessage + "Insufficient Till Account Balance";
+
+                }
             }
 
-            
-            _context.TellerPostings.Add(tellerPosting);
-            _context.SaveChanges();
-            EnforceDoubleEntry(tellerPostingDto.Amount, tellerPosting.CustomerAccountId);
-
-            var financialReportDto = new FinancialReportDto();
-            financialReportDto.PostingType ="Teller Posting";
-            financialReportDto.CreditAccount = GetCustomerAccountName(tellerPostingDto.CustomerAccountId);
-            financialReportDto.CreditAmount = tellerPostingDto.Amount;
-            financialReportDto.DebitAccount = GetTillAccountName();
-            financialReportDto.DebitAmount = tellerPostingDto.Amount;
-            financialReportDto.ReportDate = new DateTime();
-
-            CBA.AddReport(financialReportDto);
-            return Request.CreateResponse(HttpStatusCode.OK, "Teller Posted Successfully");
-           
+            if (!errorMessage.Equals(""))
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMessage);
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, "Proceed");
 
         }
-    
-
         // GET api/<controller>/5
         public string Get(int id)
         {
@@ -134,6 +164,17 @@ namespace WebApplication1.Controllers.Api
         // DELETE api/<controller>/5
         public void Delete(int id)
         {
+        }
+
+        [NonAction]
+        public bool CheckIfCustomerAccountIsClosed(int customerAccountId)
+        {
+            var customerAccount = _context.CustomerAccounts.SingleOrDefault(c => c.Id == customerAccountId);
+            if (customerAccount.IsClosed == true)
+            {
+                return true;
+            }
+            return false;
         }
 
         [NonAction]
@@ -164,7 +205,7 @@ namespace WebApplication1.Controllers.Api
         }
 
         [NonAction]
-        public void EnforceDoubleEntry(long amount, int customerAccountId)
+        public void EnforceDoubleEntry(long amount, int customerAccountId, string type)
         {
             //            var store = new UserStore<ApplicationUser>(new ApplicationDbContext());
             //            var userManager = new UserManager<ApplicationUser>(store);
@@ -177,9 +218,21 @@ namespace WebApplication1.Controllers.Api
             var tillAccount = _context.Tellers
                 .OrderByDescending(p => p.Id)
                 .FirstOrDefault(c => c.UserTellerId == id);
+            var glAccount = _context.GlAccounts.SingleOrDefault(c => c.Id == tillAccount.TillAccountId);
             var customerAccount = _context.CustomerAccounts.SingleOrDefault(c => c.Id == customerAccountId);
-            tillAccount.TillAccountBalance = tillAccount.TillAccountBalance - amount;
-            customerAccount.AccountBalance = customerAccount.AccountBalance + amount;
+            if (type == "Deposit")
+            {
+                tillAccount.TillAccountBalance = tillAccount.TillAccountBalance + amount;
+                glAccount.AccountBalance = glAccount.AccountBalance + amount;
+                customerAccount.AccountBalance = customerAccount.AccountBalance + amount;
+            }
+            else
+            {
+                tillAccount.TillAccountBalance = tillAccount.TillAccountBalance - amount;
+                glAccount.AccountBalance = glAccount.AccountBalance - amount;
+                customerAccount.AccountBalance = customerAccount.AccountBalance - amount;
+            }
+
             _context.SaveChanges();
 
         }
@@ -215,17 +268,21 @@ namespace WebApplication1.Controllers.Api
                 .OrderByDescending(p => p.Id)
                 .FirstOrDefault(c => c.UserTellerId.Equals(id));
 
-
-            if (tillAccount.TillAccountBalance < amount)
+            if (tillAccount.TillAccountBalance <= 0)
             {
-                return false;
+                errorMessage = errorMessage + " Account Balance is exhausted";
+                if (tillAccount.TillAccountBalance < amount)
+                {
+                    return false;
+                }
             }
+            
             return true;
         }
 
         [NonAction] public bool CheckCustomerAccountBalance(int customerAccountId, long amount)
         {
-            var customerAccount = _context.CustomerAccounts.SingleOrDefault(c => c.Id == customerAccountId);
+            var customerAccount = _context.CustomerAccounts.Include(m=>m.AccountType).SingleOrDefault(c => c.Id == customerAccountId);
             var customerAccountBalance = customerAccount.AccountBalance;
             if (customerAccountBalance < amount)
             {

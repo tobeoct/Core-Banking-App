@@ -10,6 +10,7 @@
 @Html.Partial("_EnterLoanDetailsModal")
 @Html.Partial("_TermsSelectionModal")
 @Html.Partial("_TermsModal")
+
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -19,15 +20,18 @@
 </div>
 <div class="row margin-vertical">
     <div class="row padding-horizontal padding-vertical">
-        <div class="container container-fluid">
-            <p class="align-right grey-color animated fadeInRight ">3 Customer Accounts</p>
-        </div>
+
 
     </div>
     <div class="container bg-white shadow">
 
-        <div class="row align-right padding-horizontal">
-            <button id="myFirstBtn" class="myBtn">Add new Customer Account</button>
+        <div class="row  padding-horizontal">
+            <div class="col-md-6 col-sm-6 col-xs-6 align-left " style="padding-top: 35px;">
+                <p class=" grey-color animated fadeInRight "> Customer Accounts</p>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6 align-right">
+                <button id="myFirstBtn" class="myBtn">Add new Customer Account</button>
+            </div>
         </div>
 
 
@@ -61,9 +65,9 @@
     <script>
 
 
-        $(document).ready(function() {
+        $(document).ready(function () {
 
-            $("#customers").DataTable({
+            var table = $("#customers").DataTable({
                 ajax: {
                     url: "/api/customers/customeraccounts",
                     dataSrc: ""
@@ -83,7 +87,7 @@
                     },
                     {
                         data: "id",
-                        render: function(data) {
+                        render: function (data) {
                             return "<a class='js-delete' data-branch-id='" + data + "'>Edit|Delete</a>"
                         }
                     }
@@ -91,31 +95,31 @@
             });
 
             $("#myFirstBtn").on("click",
-                function(e) {
+                function (e) {
                     e.preventDefault();
                     $(".modal").fadeOut();
                     $("#myAccountTypeModal").fadeIn();
                 });
             $("#myPrevBtn").on("click",
-                function(e) {
+                function (e) {
                     e.preventDefault();
                     $(".modal").fadeOut();
                     $("#myAccountTypeModal").fadeIn();
                 });
             $("#myTermsPrevBtn").on("click",
-                function(e) {
+                function (e) {
                     e.preventDefault();
                     $(".modal").fadeOut();
                     $("#myLoanSecondModal").fadeIn();
                 });
             $("#myAccountTypeBtn").on("click",
-                function(e) {
+                function (e) {
 
                     e.preventDefault();
                     accountTypeId = $("#accountTypeId").val();
                     //alert(accountTypeId);
                     $("#myAccountTypeModal").fadeOut(400,
-                        function() {
+                        function () {
 
                             $("#myAccountDetailsModal").fadeIn();
 
@@ -125,7 +129,7 @@
                 });
 
             $("#myAccountDetailsBtn").on("click",
-                function(e) {
+                function (e) {
 
                     e.preventDefault();
                     customerId = $("#customerId").val();
@@ -157,22 +161,22 @@
                         data: JSON.stringify(customerAccountDto),
                         contentType: 'application/json; charset=utf-8',
                         dataType: 'json',
-                        success: function(data) {
+                        success: function (data) {
 
                             if (accountTypeId == 3) {
                                 accountId = data[1];
                                 $("#myAccountDetailsModal").fadeOut(400,
-                                    function() {
+                                    function () {
                                         $("#myLoanFirstModal").fadeIn();
                                     });
 
 
                             } else {
                                 $('#successMessage').fadeIn(200,
-                                    function() {
+                                    function () {
                                         document.getElementById('customerAccountDetailsForm').reset();
                                         accountId = data[1];
-                                        $('#successMessage').html(data[1])
+                                        $('#successMessage').html(data[0])
                                     });
                                 return;
 
@@ -180,13 +184,13 @@
 
 
                         },
-                        error: function(errorMessage) {
+                        error: function (errorMessage) {
                             alert('request failed');
                             //                            var msg = JSON.stringify(errorMessage);
                             var msg = JSON.parse(errorMessage.responseText);
 
                             $('#errorMessage').fadeIn(200,
-                                function() { $('#errorMessage').html(msg.message) });
+                                function () { $('#errorMessage').html(msg.message) });
                         }
 
                     });
@@ -196,19 +200,16 @@
 
 
             $("#myLoanFirstBtn").on("click",
-                function(e) {
+                function (e) {
 
                     e.preventDefault();
                     loanAmount = $("#loanAmount").val();
-                    linkedCustomerAccountBank = $("#linkedCustomerAccountBank").val();
-                    linkedCustomerAccountNumber = $("#linkedCustomerAccountNumber").val();
-                    bvn = $("#bvn").val();
+                    linkedCustomerAccountName = $('#linkedCustomerAccountId option:selected').text();
+                    linkedCustomerAccountId = $('#linkedCustomerAccountId').val();
+                    
                     alert("Linked Bank : " +
-                        linkedCustomerAccountBank +
-                        ", Linked Number : " +
-                        linkedCustomerAccountNumber +
-                        ", BVN : " +
-                        bvn +
+                        linkedCustomerAccountName +
+                       
                         ", Loan Amount : " +
                         loanAmount
                     );
@@ -221,13 +222,13 @@
                 });
 
             $("#myLoanSecondBtn").on("click",
-                function(e) {
+                function (e) {
 
                     e.preventDefault();
                     tenure = $("#tenure").val();
                     collateral = $("#collateral").val();
                     paymentRate = $("#paymentRate").val();
-                    alert("Tenure : " + tenure + ", Collateral : " + collateral+", Payment Rate : "+paymentRate);
+                    alert("Tenure : " + tenure + ", Collateral : " + collateral + ", Payment Rate : " + paymentRate);
                     $("#myLoanSecondModal").fadeOut(400,
                         function () {
                             document.getElementById('termsSelectionForm').reset();
@@ -237,7 +238,7 @@
                 });
 
             $('#myDisburseLoanBtn').on("click",
-                function(e) {
+                function (e) {
 
                     e.preventDefault();
 
@@ -246,7 +247,7 @@
                     var termsDto = {
                         Tenure: tenure,
                         Collateral: collateral,
-                        PaymentRate:paymentRate
+                        PaymentRate: paymentRate
                     };
                     /**
                      * Add Terms
@@ -261,19 +262,17 @@
 
                             var loanDetailsDto = {
                                 LoanAmount: loanAmount,
-                                LinkedCustomerAccountBank: linkedCustomerAccountBank,
-                                LinkedCustomerAccountNumber: linkedCustomerAccountNumber,
-                                BVN: bvn,
-                                customerAccountId: accountId,
-                                TermsId:data[1]
+                                LinkedCustomerAccountId: linkedCustomerAccountId,                               
+                                TermsId: data[1],
+                                customerAccountId: accountId
                             };
                             /**
                              * Disburse Loan
                              */
                             $('#successMessage').fadeIn(200,
-                                function() {
+                                function () {
                                     document.getElementById('termsForm').reset();
-                                            
+
                                     $('#successMessage').html(data[0])
                                 });
                             $.ajax({
@@ -282,54 +281,56 @@
                                 data: JSON.stringify(loanDetailsDto),
                                 contentType: 'application/json; charset=utf-8',
                                 dataType: 'json',
-                                success: function(data) {
-                                   // alert('Loan Disbursed Successfully');
+                                success: function (data) {
+                                    // alert('Loan Disbursed Successfully');
                                     $('#myTermsModal #successMessage').fadeIn(200,
-                                        function() {
+                                        function () {
                                             document.getElementById('termsForm').reset();
-                                            
+
                                             $('#myTermsModal #successMessage').html(data)
                                         });
 
                                 },
-                                error: function(errorMessage) {
+                                error: function (errorMessage) {
                                     alert('request failed');
-                                    
+
                                     var msg = JSON.parse(errorMessage.responseText);
 
                                     $('#errorMessage').fadeIn(200,
-                                        function() { $('#errorMessage').html(msg.message) });
+                                        function () { $('#errorMessage').html(msg.message) });
                                 }
 
                             });
-                            
+
 
 
                         },
-                        error: function(errorMessage) {
+                        error: function (errorMessage) {
                             alert('request failed');
-                           
+
                             var msg = JSON.parse(errorMessage.responseText);
 
                             $('#errorMessage').fadeIn(200,
-                                function() { $('#errorMessage').html(msg.message) });
+                                function () { $('#errorMessage').html(msg.message) });
                         }
 
                     });
-                   
+
 
                 });
-    
+
 
             $(".close").on("click",
                 function () {
+                    table.ajax.reload();
                     $('#successMessage').fadeOut();
                     $(".modal").fadeOut();
                     //                    $("#myAccountTypeModal").fadeOut();
                 });
-            $("#myTermsModal .close").on("click",
+            $("#myTermsModal ").on("click", 'close',
                 function () {
-                   location.reload();
+                    table.ajax.reload();
+                    $("#myTermsModal").fadeOut();
                 });
 
             $("#customers ").on("click",

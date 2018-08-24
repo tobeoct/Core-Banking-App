@@ -6,7 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using WebApplication1.Models;
 using WebApplication1.ViewModels;
-
+using System.Data.Entity;
 namespace WebApplication1.Controllers
 {
     public class GeneralLedgersController : Controller
@@ -33,6 +33,7 @@ namespace WebApplication1.Controllers
             };
             return View("GLCategory", viewModel);
         }
+
         // GET: GeneralLedgers/Account
         public ActionResult Account()
         {
@@ -47,8 +48,23 @@ namespace WebApplication1.Controllers
             return View("GLAccount", viewModel);
         }
 
-      
-         //POST: GeneralLedgers/CreateCategory
+        public ActionResult Postings()
+        {
+            var _context = new ApplicationDbContext();
+            ViewBag.Message = RoleName.USER_NAME;
+            var glAccount = _context.GlAccounts.Include(c=>c.GlCategories).Include(c=>c.Branch).ToList();
+            var count = _context.GlAccounts.Count();
+            ViewBag.Count = count;
+            var viewModel = new GLPostingViewModel()
+            {
+                GlAccounts =  glAccount,
+                GlPostings = new GLPostings(),
+                count = count
+            };
+            return View("GLPosting", viewModel);
+        }
+
+        //POST: GeneralLedgers/CreateCategory
         [HttpPost]
         public ActionResult CreateCategory(GLCategoryViewModel generalLedgerCategoryViewModel)
         {
@@ -74,6 +90,7 @@ namespace WebApplication1.Controllers
             _context.SaveChanges();
             return RedirectToAction("Index", "GeneralLedgers");
         }
+
         // POST: GeneralLedgers/CreateAccount
         [HttpPost]
         public ActionResult CreateAccount(GLAccountViewModel generalLedgerAccountViewModel)
@@ -117,6 +134,7 @@ namespace WebApplication1.Controllers
 
             return true;
         }
+
 
         public string getCode(int id)
         {

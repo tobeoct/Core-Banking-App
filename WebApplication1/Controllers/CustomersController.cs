@@ -29,15 +29,16 @@ namespace WebApplication1.Controllers
             var branches = _context.Branches.ToList();
             var customers = _context.Customers.ToList();
             var loanDetails = _context.LoanDetails.ToList();
-            var AccountTypes = _context.AccountTypes.ToList();
-
+            var accountTypes = _context.AccountTypes.ToList();
+            var customerAccounts = _context.CustomerAccounts.ToList();
             var viewModel = new CustomerAccountViewModel
             {
                 Branches = branches,
                 Customers = customers,
                 LoanDetails = loanDetails,
-                AccountTypes =AccountTypes,
-                CustomerAccount = new CustomerAccount()
+                AccountTypes =accountTypes,
+                CustomerAccount = new CustomerAccount(),
+                CustomerAccounts = customerAccounts
 
             };
             return View("CustomerAccount", viewModel);

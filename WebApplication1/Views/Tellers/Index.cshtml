@@ -66,7 +66,7 @@
                     $(this).addClass('fadeInDown');
                 });
             });
-            $("#tellers").DataTable({
+            var table = $("#tellers").DataTable({
                 ajax: {
                     url: "/api/tellers",
                     dataSrc: ""
@@ -158,7 +158,7 @@
 
             $('#myAddTellerModal .close').on('click',
                 function () {
-                    location.reload();
+                    table.ajax.reload();
                     $('#myAddTellerModal').fadeOut();
                 });
             $("#tellers ").on("click",

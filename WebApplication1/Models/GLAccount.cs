@@ -30,6 +30,9 @@ namespace WebApplication1.Models
         [Display(Name = "Main Account Category ")]
         public byte GlCategoriesId { get; set; }
 
+        [Display(Name = "Account Balance")]
+        public float AccountBalance { get; set; }
+
         public bool IsAssigned { get; set; }
     }
 }

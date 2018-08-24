@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -8,18 +9,15 @@ namespace WebApplication1.Models
 {
     public class LoanDetails
     {
-        
+
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Display(Name = "Linked Customer Account Bank")]
-        public string LinkedCustomerAccountBank{ get; set; }
-
-        [Display(Name = "Linked Customer Account Number")]
-        public long LinkedCustomerAccountNumber { get; set; }
 
 
-        public long BVN { get; set; }
+        [Display(Name = "Customer Linked Account ")]
+        public int LinkedCustomerAccountId { get; set; }
 
         [Required]
         [Display(Name = "Terms")]
