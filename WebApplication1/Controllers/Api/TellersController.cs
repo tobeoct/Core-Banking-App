@@ -106,7 +106,10 @@ namespace WebApplication1.Controllers.Api
             }
             
             financialReportDto.ReportDate =  DateTime.Now;
-
+            if(!errorMessage.Equals(""))
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMessage);
+            }
             CBA.AddReport(financialReportDto);
             return Request.CreateResponse(HttpStatusCode.OK, "Teller Posted Successfully");
            
@@ -198,10 +201,17 @@ namespace WebApplication1.Controllers.Api
             var tillAccount = _context.Tellers
                 .OrderByDescending(p => p.Id)
                 .FirstOrDefault(c => c.UserTellerId == id);
-            var tillAccountId = tillAccount.TillAccountId;
-            var GLAccount = _context.GlAccounts.SingleOrDefault(c => c.Id == tillAccountId);
-            var tillAccountName = GLAccount.Name;
-            return tillAccountName;
+            if(tillAccount!=null)
+            {
+                var tillAccountId = tillAccount.TillAccountId;
+                var GLAccount = _context.GlAccounts.SingleOrDefault(c => c.Id == tillAccountId);
+                var tillAccountName = GLAccount.Name;
+                return tillAccountName;
+            }
+
+            errorMessage = errorMessage + "You have not been assigned a Till";
+            return "";
+            
         }
 
         [NonAction]
@@ -218,22 +228,30 @@ namespace WebApplication1.Controllers.Api
             var tillAccount = _context.Tellers
                 .OrderByDescending(p => p.Id)
                 .FirstOrDefault(c => c.UserTellerId == id);
-            var glAccount = _context.GlAccounts.SingleOrDefault(c => c.Id == tillAccount.TillAccountId);
-            var customerAccount = _context.CustomerAccounts.SingleOrDefault(c => c.Id == customerAccountId);
-            if (type == "Deposit")
+            if(tillAccount!=null)
             {
-                tillAccount.TillAccountBalance = tillAccount.TillAccountBalance + amount;
-                glAccount.AccountBalance = glAccount.AccountBalance + amount;
-                customerAccount.AccountBalance = customerAccount.AccountBalance + amount;
+                var glAccount = _context.GlAccounts.SingleOrDefault(c => c.Id == tillAccount.TillAccountId);
+                var customerAccount = _context.CustomerAccounts.SingleOrDefault(c => c.Id == customerAccountId);
+                if (type == "Deposit")
+                {
+                    tillAccount.TillAccountBalance = tillAccount.TillAccountBalance + amount;
+                    glAccount.AccountBalance = glAccount.AccountBalance + amount;
+                    customerAccount.AccountBalance = customerAccount.AccountBalance + amount;
+                }
+                else
+                {
+                    tillAccount.TillAccountBalance = tillAccount.TillAccountBalance - amount;
+                    glAccount.AccountBalance = glAccount.AccountBalance - amount;
+                    customerAccount.AccountBalance = customerAccount.AccountBalance - amount;
+                }
+
+                _context.SaveChanges();
             }
             else
             {
-                tillAccount.TillAccountBalance = tillAccount.TillAccountBalance - amount;
-                glAccount.AccountBalance = glAccount.AccountBalance - amount;
-                customerAccount.AccountBalance = customerAccount.AccountBalance - amount;
+                errorMessage = errorMessage + "You have not been assigned a Till";
             }
-
-            _context.SaveChanges();
+            
 
         }
 
@@ -267,15 +285,22 @@ namespace WebApplication1.Controllers.Api
             var tillAccount = _context.Tellers
                 .OrderByDescending(p => p.Id)
                 .FirstOrDefault(c => c.UserTellerId.Equals(id));
-
-            if (tillAccount.TillAccountBalance <= 0)
+            if(tillAccount!=null)
             {
-                errorMessage = errorMessage + " Account Balance is exhausted";
-                if (tillAccount.TillAccountBalance < amount)
+                if (tillAccount.TillAccountBalance <= 0)
                 {
-                    return false;
+                    errorMessage = errorMessage + " Till Account Balance is exhausted";
+                    if (tillAccount.TillAccountBalance < amount)
+                    {
+                        return false;
+                    }
                 }
             }
+            else
+            {
+                errorMessage = errorMessage + "You have not been assigned a Till";
+            }
+            
             
             return true;
         }

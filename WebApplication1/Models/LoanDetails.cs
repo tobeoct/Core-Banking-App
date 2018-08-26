@@ -29,5 +29,15 @@ namespace WebApplication1.Models
         [DataType(DataType.Currency)]
         [Display(Name = "Loan Amount")]
         public float LoanAmount { get; set; }
+        public float InterestRate { get; set; }
+        public float InterestReceivable { get; set; }
+        public float InterestIncome { get; set; }
+        public float PrincipalOverdue { get; set; }
+        public float InterestInSuspense { get; set; }
+        public float InterestOverdue { get; set; }
+        public float CustomerLoan { get; set; }
+
+
+            
     }
 }

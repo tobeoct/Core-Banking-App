@@ -18,7 +18,7 @@
 
                 <div class="" style="z-index: 3;">
                     <div class="col-md-3 col-sm-3 col-xs-3  align-center"><img src="~/Content/Images/user.png" class="icon"></div>
-                    <div class="col-md-9 col-sm-9 col-xs-9"><a href="~/UserAccounts" class="nav-list-item">Users</a></div>
+                    <div class="col-md-9 col-sm-9 col-xs-9"><a href="~/UserAccounts" class="nav-list-item" id="nav-users">Users</a></div>
                 </div>
 
                 <div class="inline-div" id="nav-active" style="z-index: 1;">
@@ -37,7 +37,7 @@
             <div class="row animated fadeInLeft">
                 <div style="position: relative; width: 100%;">
                     <div class="col-md-3 col-sm-3 col-xs-3 align-center"><img src="~/Content/Images/teller.png" class="icon"></div>
-                    <div class="col-md-9 col-sm-4 col-xs-9">@Html.ActionLink("Branch", "Index", "Branches")</div>
+                    <a href="~/Branches" id="nav-branch"><div class="col-md-9 col-sm-4 col-xs-9">Branch</div></a>
 
 
                 </div>
@@ -75,8 +75,8 @@
                 </div>
 
                 <ul class="dropdown" style="z-index: 3;">
-                    <a href='~/Tellers'><li class="col-md-12"><span style="margin-left: 30%">Management</span></li></a>
-                    <a href="~/Tellers/Postings"><li class="col-md-12"><span style="margin-left: 30%">Postings</span></li></a>
+                    <a href='~/Tellers' id="nav-teller-mgt"><li class="col-md-12"><span style="margin-left: 30%">Management</span></li></a>
+                    <a href="~/Tellers/Postings" id="nav-teller-pst"><li class="col-md-12"><span style="margin-left: 30%">Postings</span></li></a>
                 </ul>
             </div>
 
@@ -96,14 +96,14 @@
                    
                 </div>
                 <ul class="dropdown" style="z-index: 3;">
-                    <a href="~/Customers"> <li class="col-md-12"><span style="margin-left: 30%">Management</span></li></a>
-                    <a href="~/Customers/Account"><li class="col-md-12"><span style="margin-left: 30%"> Accounts</span></li></a>
+                    <a href="~/Customers" id="nav-customer-mgt"> <li class="col-md-12"><span style="margin-left: 30%">Management</span></li></a>
+                    <a href="~/Customers/Account" id="nav-customer-acc"><li class="col-md-12"><span style="margin-left: 30%"> Accounts</span></li></a>
                    
                 </ul>
             </div>
             <div class="row animated fadeInLeft">
                 <div class="col-md-3 col-sm-3 col-xs-3  align-center"><img src="~/Content/Images/account-balance.png" class="icon"></div>
-                <div class="col-md-9 col-sm-4 col-xs-9">@Html.ActionLink("Account Type", "Index", "AccountTypes") </div>
+                    <a href="~/AccountTypes" id="nav-account-type"><div class="col-md-9 col-sm-4 col-xs-9">Account Type </div></a>
                 <div class="inline-div" id="nav-active">
 
                     <div class="alt-bg" style=" opacity: 0.6;">
@@ -120,19 +120,19 @@
                 <div class="col-md-3 col-sm-3 col-xs-3  align-center"><img src="~/Content/Images/bait.png" class="icon"></div>
                 <div class="col-md-9 col-sm-4 col-xs-9">General Ledger</div>
                 <ul class="dropdown" style="z-index: 3;">
-                    <a href="~/GeneralLedgers"> <li class="col-md-12"><span style="margin-left: 30%">Category</span></li></a>
-                    <a href="~/GeneralLedgers/Account"><li class="col-md-12"><span style="margin-left: 30%"> Accounts</span></li></a>
-                    <a href="~/GeneralLedgers/Postings"><li class="col-md-12"><span style="margin-left: 30%"> Postings</span></li></a>
+                    <a href="~/GeneralLedgers" id="nav-gl-ctgry"> <li class="col-md-12"><span style="margin-left: 30%">Category</span></li></a>
+                    <a href="~/GeneralLedgers/Account" id="nav-gl-acc"><li class="col-md-12"><span style="margin-left: 30%"> Accounts</span></li></a>
+                    <a href="~/GeneralLedgers/Postings" id="nav-gl-pst"><li class="col-md-12"><span style="margin-left: 30%"> Postings</span></li></a>
                 </ul>
             </div>
             <div class="row animated fadeInLeft">
                 <div class="col-md-3 col-sm-3 col-xs-3  align-center"><img src="~/Content/Images/stats.png" class="icon"></div>
-                <div class="col-md-9 col-sm-4 col-xs-9">Financial Reports</div>
+                <a href="~/FinancialReports" id="nav-financial-report"><div class="col-md-9 col-sm-4 col-xs-9">Financial Reports</div></a>
             </div>
             <div class="row animated fadeInLeft">
                 <div class="col-md-3 col-sm-3 col-xs-3  align-center"><img src="~/Content/Images/user.png" class="icon"></div>
                 <div class="col-md-9 col-sm-4 col-xs-9">
-                    @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                    @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form",@id="nav-log-out" }))
                     {
                         @Html.AntiForgeryToken()
                        <input type="submit" value="Logout" class="strip" style="border-bottom:none;width: auto !important;"/>

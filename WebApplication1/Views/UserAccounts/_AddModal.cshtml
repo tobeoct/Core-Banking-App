@@ -95,9 +95,9 @@
         <span class="close">&times;</span>
         <div>
             <div class=" bordered-bottom align-left">
-                <h3 class="alt-color bold-text">Add GL Category</h3>
+                <h3 class="alt-color bold-text">Add Users</h3>
             </div>
-            <p class="alert alert-dismissible">@ViewBag.Message</p>
+            @*<p class="alert alert-dismissible">@ViewBag.Message</p>*@
 
             @using (Html.BeginForm("Register", "UserAccounts", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
             {
@@ -167,21 +167,21 @@
                         </div>
                     </div>
                 </div>
-                 <div class="row form-group ">
-                     <div class="margin-vertical">
-                         <div class="col-md-3">
-                             @Html.LabelFor(m => m.RoleName)
-                         </div>
-                         <div class="col-md-9">
-                             @* @Html.DropDownListFor(m => m.BranchId, Model.Branch, "Select Role", new { @class = "form-control" }) *@
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.RoleName)
+                        </div>
+                        <div class="col-md-9">
+                            @* @Html.DropDownListFor(m => m.BranchId, Model.Branch, "Select Role", new { @class = "form-control" }) *@
 
-                             @* @Html.DropDownListFor(m => m.RoleName, new SelectList(Model.AccountRoles), "Select Branch", new { @class = "form-control" }) *@
-                             @Html.DropDownListFor(m => m.RoleName, Model.RolesList, "Select Role", new { @class = "form-control" })
+                            @* @Html.DropDownListFor(m => m.RoleName, new SelectList(Model.AccountRoles), "Select Branch", new { @class = "form-control" }) *@
+                            @Html.DropDownListFor(m => m.RoleName, Model.RolesList, "Select Role", new { @class = "form-control" })
 
-                             @Html.ValidationMessageFor(m => m.RoleName)
-                         </div>
-                     </div>
-                 </div>
+                            @Html.ValidationMessageFor(m => m.RoleName)
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
                         <button type="submit">Register</button>

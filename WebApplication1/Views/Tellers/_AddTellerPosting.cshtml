@@ -31,10 +31,18 @@
                             <td class="form-group">
                                 <select class="form-control" id="customerAccountId" required>
                                     <option value="0">Select Customer Account</option>
-                                    @foreach (var customerAccount in Model.CustomerAccounts)
-                                    {
-                                        <option value="@customerAccount.Id">@customerAccount.Name</option>
+                                    @{
+
+                                        foreach (var customerAccount in Model.CustomerAccounts)
+                                        {
+                                            if (customerAccount.AccountTypeId != 3)
+                                            {
+                                                <option value="@customerAccount.Id">@customerAccount.Name</option>
+                                            }
+
+                                        }
                                     }
+
                                 </select>
                             </td>
                             <td class="form-group">

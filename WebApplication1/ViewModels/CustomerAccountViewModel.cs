@@ -15,5 +15,6 @@ namespace WebApplication1.ViewModels
         public IEnumerable<Branch> Branches { get; set; }
         public IEnumerable<Customer> Customers { get; set; }
         public IEnumerable<LoanDetails> LoanDetails { get; set; }
+        public int count { get; set; }
     }
 }

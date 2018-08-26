@@ -226,6 +226,7 @@
     <Compile Include="Controllers\Api\AccountTypesController.cs" />
     <Compile Include="Controllers\Api\BranchesController.cs" />
     <Compile Include="Controllers\Api\CustomersController.cs" />
+    <Compile Include="Controllers\Api\EODController.cs" />
     <Compile Include="Controllers\Api\GeneralLedgersController.cs" />
     <Compile Include="Controllers\Api\TellersController.cs" />
     <Compile Include="Controllers\Api\UserAccountsController.cs" />
@@ -238,6 +239,7 @@
     <Compile Include="Controllers\UserAccountsController.cs" />
     <Compile Include="Dtos\AccountTypeDto.cs" />
     <Compile Include="Dtos\BranchDto.cs" />
+    <Compile Include="Dtos\BusinessStatusDto.cs" />
     <Compile Include="Dtos\CategoriesDto.cs" />
     <Compile Include="Dtos\CustomerAccountDto.cs" />
     <Compile Include="Dtos\CustomerDto.cs" />
@@ -705,9 +707,30 @@
     <Compile Include="Migrations\201808241303563_ChangeMig4.Designer.cs">
       <DependentUpon>201808241303563_ChangeMig4.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808250920076_AddBusinessStatusToDb.cs" />
+    <Compile Include="Migrations\201808250920076_AddBusinessStatusToDb.Designer.cs">
+      <DependentUpon>201808250920076_AddBusinessStatusToDb.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808251042194_PopulateBusinessStatusinDb.cs" />
+    <Compile Include="Migrations\201808251042194_PopulateBusinessStatusinDb.Designer.cs">
+      <DependentUpon>201808251042194_PopulateBusinessStatusinDb.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808251933471_AddFieldsToLoanDetailsInDb.cs" />
+    <Compile Include="Migrations\201808251933471_AddFieldsToLoanDetailsInDb.Designer.cs">
+      <DependentUpon>201808251933471_AddFieldsToLoanDetailsInDb.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808261243428_AddInterestRateToLoanDetails.cs" />
+    <Compile Include="Migrations\201808261243428_AddInterestRateToLoanDetails.Designer.cs">
+      <DependentUpon>201808261243428_AddInterestRateToLoanDetails.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808261301174_ChangeTypeOfAmount.cs" />
+    <Compile Include="Migrations\201808261301174_ChangeTypeOfAmount.Designer.cs">
+      <DependentUpon>201808261301174_ChangeTypeOfAmount.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountRoles.cs" />
     <Compile Include="Models\AccountType.cs" />
+    <Compile Include="Models\BusinessStatus.cs" />
     <Compile Include="Models\CBA.cs" />
     <Compile Include="Models\CurrentAccountType.cs" />
     <Compile Include="Models\CustomerAccount.cs" />
@@ -863,6 +886,7 @@
     <Content Include="Content\Images\add.png" />
     <Content Include="Content\Images\arrows-pointing-to-center.png" />
     <Content Include="Content\Images\bait.png" />
+    <Content Include="Content\Images\bg.png" />
     <Content Include="Content\Images\customer.png" />
     <Content Include="Content\Images\fintech-construct.png" />
     <Content Include="Content\Images\header.png" />
@@ -960,6 +984,8 @@
     <Content Include="Scripts\jquery-3.3.1.slim.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.hotkeys.js" />
+    <Content Include="Scripts\jquery.hotkeys.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -1044,6 +1070,7 @@
     <Content Include="Views\GeneralLedgers\_AddAccount.cshtml" />
     <Content Include="Views\Tellers\_AddTellerPosting.cshtml" />
     <Content Include="Views\Tellers\_ConfirmationModal.cshtml" />
+    <Content Include="Views\Shared\_BusinessStatusModal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1400,6 +1427,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808241303563_ChangeMig4.resx">
       <DependentUpon>201808241303563_ChangeMig4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808250920076_AddBusinessStatusToDb.resx">
+      <DependentUpon>201808250920076_AddBusinessStatusToDb.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808251042194_PopulateBusinessStatusinDb.resx">
+      <DependentUpon>201808251042194_PopulateBusinessStatusinDb.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808251933471_AddFieldsToLoanDetailsInDb.resx">
+      <DependentUpon>201808251933471_AddFieldsToLoanDetailsInDb.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808261243428_AddInterestRateToLoanDetails.resx">
+      <DependentUpon>201808261243428_AddInterestRateToLoanDetails.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808261301174_ChangeTypeOfAmount.resx">
+      <DependentUpon>201808261301174_ChangeTypeOfAmount.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

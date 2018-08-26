@@ -1,57 +1,57 @@
 ﻿@using WebApplication1.Models
 <div class="row max-width  animated fadeInDown " style="font-size: 13px;  background: rgba(255,255,255,0.9) ; box-shadow: 3px 3px 10px 10px rgba(0,0,0,0.0135); padding-right: 0 !important; margin-right: 0; margin-bottom: 20px;">
-	<div class="container">
+    <div class="container">
 
-		<div class=" col-md-6 col-xs-6 margin-vertical-min ">
-			
-			<div class="row">
-			   
-				<div class="col-md-2">
-					<p class="bold-text animated fadeInLeft" style="margin-top:2px;">Business</p>
-				</div>
-				<div class="col-md-10 align-left">
-				
-					<div class="switch switch--vertical ">
-						<input id="radio-c" type="radio" name="second-switch" checked="checked"/>
-						<label for="radio-c" class="red-color">Closed</label>
-						<input id="radio-d" type="radio" name="second-switch"/>
-						<label for="radio-d" class="green-color">Opened</label><span class="toggle-outside"><span class="toggle-inside"></span></span>
-					</div>
-					<!--
-					<div id="toggles" class="margin-horizontal">
-						<input type="checkbox" name="checkbox1" id="checkbox1" class="ios-toggle" checked/>
-						<label for="checkbox1" class="checkbox-label" data-off="Closed" data-on="Opened"></label>
-					</div>
-					-->
-				</div>
-			</div>
+        <div class=" col-md-6 col-xs-6 margin-vertical-min ">
 
-			
-		</div>
-		<div class=" col-md-6  col-xs-6 margin-vertical-min animated fadeInRight">
+            <div class="row">
 
-			<div class="row">
+                <div class="col-md-2">
+                    <p class="bold-text animated fadeInLeft" style="margin-top:2px;">Business</p>
+                </div>
+                <div class="col-md-10 align-left">
 
-				<div class="col-md-10 col-sm-10 col-xs-8 align-right">
-					<p><span style="margin-right: 10px;"><img src="~/Content/Images/speech-bubble.png" class="icon"></span><span class="bold-text">Hi, @RoleName.USER_NAME</span></p>
-					<p class="grey-color ">Last Logged in : 07:00pm 03/08/2018</p>
-				</div>
-				<div class="col-md-2 col-sm-2 col-xs-4">
-					<div style="width: 50%; ">
-						<img src="~/Content/Images/profile.png" >
-					</div>
-				</div>
-				
-			</div>
-			
+                    <div class="switch switch--vertical ">
+                        <input id="radio-c" type="radio" name="second-switch"  />
+                        <label for="radio-c" class="red-color" id="closedLabel">Closed</label>
+                        <input id="radio-d" type="radio" name="second-switch" />
+                        <label for="radio-d" class="green-color" id="openedLabel">Opened</label><span class="toggle-outside"><span class="toggle-inside"></span></span>
+                    </div>
+                    <!--
+                    <div id="toggles" class="margin-horizontal">
+                        <input type="checkbox" name="checkbox1" id="checkbox1" class="ios-toggle" checked/>
+                        <label for="checkbox1" class="checkbox-label" data-off="Closed" data-on="Opened"></label>
+                    </div>
+                    -->
+                </div>
+            </div>
 
-		</div>
-		<!--<div class="row">
-			<div class="col-md-12">
-				<h1 class="underline animated fadeInLeft">User Management</h1>
-			</div>
-		</div>-->
-		
-	</div>
+
+        </div>
+        <div class=" col-md-6  col-xs-6 margin-vertical-min animated fadeInRight">
+
+            <div class="row">
+
+                <div class="col-md-10 col-sm-10 col-xs-8 align-right">
+                    <p><span style="margin-right: 10px;"><img src="~/Content/Images/speech-bubble.png" class="icon"></span><span class="bold-text">Hi, @RoleName.USER_NAME</span></p>
+                    <p class="grey-color ">Last Logged in : 07:00pm 03/08/2018</p>
+                </div>
+                <div class="col-md-2 col-sm-2 col-xs-4">
+                    <div style="width: 50%; ">
+                        <img src="~/Content/Images/profile.png">
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+        <!--<div class="row">
+            <div class="col-md-12">
+                <h1 class="underline animated fadeInLeft">User Management</h1>
+            </div>
+        </div>-->
+
+    </div>
 </div>
 

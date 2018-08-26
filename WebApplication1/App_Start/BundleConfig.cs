@@ -14,7 +14,8 @@ namespace WebApplication1
                 "~/Scripts/bootbox.js",
                 "~/Scripts/script.js",
                 "~/Scripts/dataTables/jquery.dataTables.js",
-                "~/Scripts/dataTables/dataTables.bootstrap.js"
+                "~/Scripts/dataTables/dataTables.bootstrap.js",
+                "~/Scripts/jquery.hotkeys.js"
 
             ));
 

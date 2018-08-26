@@ -8,7 +8,7 @@
             <div class=" padding-horizontal bordered-bottom align-left">
                 <h3 class="alt-color bold-text">Select Account Type</h3>
             </div>
-            <form class="container">
+            <form>
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
@@ -16,7 +16,7 @@
                         </div>
                         <div class="col-md-9">
                             <select class="form-control" id="accountTypeId" required>
-                                <option  value="0">Select Account Type </option>
+                                <option value="0">Select Account Type </option>
                                 @foreach (var accountType in Model.AccountTypes)
                                 {
                                     <option value="@accountType.Id">@accountType.Name</option>
@@ -25,8 +25,13 @@
                         </div>
                     </div>
                 </div>
-
-                <button id="myAccountTypeBtn">Next</button>
+                <div class="row ">
+                    
+                    <div class=" col-md-12 align-right">
+                        <button id="myAccountTypeBtn">Next</button>
+                    </div>
+                </div>
+                
             </form>
         </div>
     </div>

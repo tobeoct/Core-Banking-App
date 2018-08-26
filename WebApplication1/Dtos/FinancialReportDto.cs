@@ -17,13 +17,13 @@ namespace WebApplication1.Dtos
         public string DebitAccount { get; set; }
 
         [Display(Name = "Debit Amount")]
-        public long DebitAmount { get; set; }
+        public float DebitAmount { get; set; }
 
         [Display(Name = "Credit Account")]
         public string CreditAccount { get; set; }
 
         [Display(Name = "Credit Amount")]
-        public long CreditAmount { get; set; }
+        public float CreditAmount { get; set; }
 
         [Display(Name = "Posting Type")]
         public string PostingType { get; set; }

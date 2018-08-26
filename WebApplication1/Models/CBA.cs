@@ -15,7 +15,14 @@ namespace WebApplication1.Models
         {
            _context = new ApplicationDbContext();
         }
-
+        
+        public static string RandomString(int length)
+        {
+            Random random = new Random();
+            const string chars = "01234567890123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
         public static void AddReport(FinancialReportDto financialReportDto)
         {
            ApplicationDbContext _context = new ApplicationDbContext();

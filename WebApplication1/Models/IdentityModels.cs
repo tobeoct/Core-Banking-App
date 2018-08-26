@@ -55,7 +55,7 @@ namespace WebApplication1.Models
         public DbSet<Teller> Tellers { get; set; }
         public DbSet<TellerPosting> TellerPostings { get; set; }
         public DbSet<FinancialReport> FinancialReports { get; set; }
-
+        public DbSet<BusinessStatus> BusinessStatus { get; set; }
 
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)

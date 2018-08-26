@@ -1,32 +1,57 @@
 ﻿@model WebApplication1.ViewModels.CustomerAccountViewModel
 <div id="myLoanFirstModal" class="modal ">
-
+   
     <!-- Modal content -->
     <div class="modal-content animated ">
         <span class="close">&times;</span>
         <div>
             <div class=" padding-horizontal bordered-bottom align-left">
-                <h3 class="alt-color bold-text">Select Account Type</h3>
+                <h3 class="alt-color bold-text">Enter Loan Details</h3>
             </div>
-            <form class="container" id="loanDetailsForm">
+            <form id="loanDetailsForm">
+
+                <div class="row form-group">
+                    <div class="container">
+                        <p><span>Customer Account : </span><b><span id="customerAccountDisplay"></span></b></p>
+                    </div>              
+                </div>
+
                 <div class="row form-group ">
+
                     <div class="margin-vertical">
                         <div class="col-md-3">
                             <label>Linked Customer Account </label>
                         </div>
                         <div class="col-md-9">
                             <select class="form-control" id="linkedCustomerAccountId">
-                                @foreach (var customerAcc in Model.CustomerAccounts)
-                                {
-                                    <option value="@customerAcc.Id">@customerAcc.Name</option>
+
+                                @{
+                                    int accountTypeId = 0;
+                                    foreach (var accountType in Model.AccountTypes)
+                                    {
+                                        if (accountType.Name.Equals("Loan Account"))
+                                        {
+                                            accountTypeId = accountType.Id;
+                                        }
+                                    }
+
+                                    foreach (var customerAcc in Model.CustomerAccounts)
+                                    {
+                                        if (customerAcc.AccountTypeId != accountTypeId)
+                                        {
+                                            <option value="@customerAcc.Id">@customerAcc.Name</option>
+                                        }
+
+                                    }
                                 }
+
                             </select>
                         </div>
                     </div>
                 </div>
-                
 
-                
+
+
 
                 <div class="row form-group ">
                     <div class="margin-vertical">
@@ -34,12 +59,20 @@
                             <label>Loan Amount</label>
                         </div>
                         <div class="col-md-9">
-                            <input type="number" id="loanAmount">
+                            <input type="number" id="loanAmount" class="form-control">
                         </div>
                     </div>
                 </div>
+                <div class="row form-group">
+                    <div class="col-md-6 col-sm-6col-xs-6 align-left">
+                        <button id="myPrevToAccSelectBtn">Prev</button>
+                    </div>
+                    <div class="col-md-6 col-sm-6col-xs-6  align-right">
+                        <button id="myLoanFirstBtn">Next</button>
+                    </div>
+                </div>
 
-                <button id="myLoanFirstBtn">Next</button>
+
             </form>
         </div>
     </div>

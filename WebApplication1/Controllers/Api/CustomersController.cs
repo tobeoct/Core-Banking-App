@@ -20,7 +20,7 @@ namespace WebApplication1.Controllers.Api
 
             _context = new ApplicationDbContext();
         }
-        // GET api/<controller>
+        // GET api/Customers
         public IHttpActionResult GetCustomers()
         {
             var customers = _context.Customers.ToList();
@@ -29,18 +29,19 @@ namespace WebApplication1.Controllers.Api
         [Route("api/Customers/CustomerAccounts")]
         public IHttpActionResult GetCustomerAccounts()
         {
-           var customerAccount = _context.CustomerAccounts.Include(g => g.Branch).Include(g => g.Customer).Include(g => g.AccountType).Include(g => g.LoanDetails).ToList();
-
-            return Ok(customerAccount);
+           var customerAccounts = _context.CustomerAccounts.Include(g => g.Branch).Include(g => g.Customer).Include(g => g.AccountType).Include(g => g.LoanDetails).ToList();
+         
+            
+            return Ok(customerAccounts);
         }
 
-        // GET api/<controller>/5
+        // GET api/Customers/5
         public string Get(int id)
         {
             return "value";
         }
 
-        // POST api/<controller>
+        // POST api/Customers/CreateCustomerAccount
         [AcceptVerbs("GET", "POST")]
         [Route("api/Customers/CreateCustomerAccount")]
         public HttpResponseMessage CreateCustomerAccount(CustomerAccountDto customerAccountDto)
@@ -64,20 +65,99 @@ namespace WebApplication1.Controllers.Api
             return Request.CreateResponse(HttpStatusCode.OK,message ); 
         }
 
+        // POST api/Customers/CheckEligibility
+        [AcceptVerbs("GET", "POST")]
+        [HttpPost]
+        [Route("api/Customers/CheckEligibility")]
+        public HttpResponseMessage CheckIfEligibleToCollectLoan(LoanDetailsDto loanDetailsDto)
+        {
+            var customerLinkedAccount = _context.CustomerAccounts.Single(c => c.Id == loanDetailsDto.LinkedCustomerAccountId);
+            if(customerLinkedAccount.LoanDetailsId!=null)
+            {
+                var linkedLoanDetail = _context.LoanDetails.SingleOrDefault(c => c.Id == customerLinkedAccount.LoanDetailsId);
+                if (linkedLoanDetail.LoanAmount != 0)
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Customer yet to pay off previous loan");
+                }
+                
+                
+                
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, "Ok");
+
+        }
+
+        // POST api/Customers/CheckIfCustomerHasAccount
+        [AcceptVerbs("GET", "POST")]
+        [HttpPost]
+        [Route("api/Customers/CheckIfCustomerHasAccount")]
+        public HttpResponseMessage CheckIfCustomerHasAccount(CustomerAccountDto customerAccountDto)
+        {
+            var savingsAccountType = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals("Savings Account"));
+            var loanAccountType = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals("Loan Account"));
+            var currentAccountType = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals("Current Account"));
+            var customerAccount = _context.CustomerAccounts.Where(c=>c.AccountTypeId!=loanAccountType.Id).SingleOrDefault(c => c.CustomerId == customerAccountDto.CustomerId);
+            
+            
+            if (customerAccount != null )
+            {
+                if(customerAccount.AccountTypeId == savingsAccountType.Id && customerAccountDto.AccountTypeId == savingsAccountType.Id)
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Customer already has a Savings Account");
+                }
+                 if(customerAccount.AccountTypeId == currentAccountType.Id && customerAccountDto.AccountTypeId == currentAccountType.Id)
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Customer already has a Current Account");
+                }
+                 
+
+
+            }
+            else if(customerAccount.IsClosed==true)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, "Ok");
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, "Ok");
+
+        }
+        // POST api/Customers/LoanDisbursement
         [Route("api/Customers/LoanDisbursement")]
         public HttpResponseMessage LoanDisbursement(LoanDetailsDto loanDetailsDto)
         {
-            
+            var loanAccountTypeConfig = _context.AccountTypes.Single(c => c.Name.Equals("Loan Account"));
+            var interestRate = loanAccountTypeConfig.DebitInterestRate;
+            loanDetailsDto.CustomerLoan = loanDetailsDto.LoanAmount;
+            loanDetailsDto.InterestRate = interestRate;
             var loanDetails = new LoanDetails();
+
             loanDetails = Mapper.Map<LoanDetailsDto, LoanDetails>(loanDetailsDto);
             _context.LoanDetails.Add(loanDetails);
             
             var customerAccount = _context.CustomerAccounts.Single(c => c.Id == loanDetailsDto.LinkedCustomerAccountId);
             customerAccount.LoanDetailsId = loanDetails.Id;
             customerAccount.AccountBalance =customerAccount.AccountBalance+ loanDetails.LoanAmount;
-            _context.SaveChanges();
 
-            return Request.CreateResponse(HttpStatusCode.OK, "Loan Disbursed Successfully");
+            //Loan Account
+            var accountType = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals("Loan Account"));
+            //Customers Linked (Onyema George Loan)
+                      
+            _context.SaveChanges();
+            
+            //            if (customerLinkedAccount.AccountTypeId == accountType.Id)//if linked Account is a Loan Account
+            //            {
+            //                var initialLinkedLoanDetail = _context.LoanDetails.SingleOrDefault(c => c.LinkedCustomerAccountId == loanDetailsDto.LinkedCustomerAccountId);
+            //                var customerAcc =
+            //                    _context.CustomerAccounts.SingleOrDefault(c => c.LoanDetailsId == customerAccount.LoanDetailsId);
+            //                customerAcc.AccountBalance = customerAcc.AccountBalance + loanDetailsDto.LoanAmount;
+            //                initialLinkedLoanDetail.LoanAmount = loanDetailsDto.LoanAmount + initialLinkedLoanDetail.LoanAmount;
+            //                _context.SaveChanges();
+            //
+            //            }
+
+            List<string> message = new List<string>();
+            message.Add("Loan Disbursed Successfully");
+            message.Add(loanDetails.Id.ToString());
+            return Request.CreateResponse(HttpStatusCode.OK, message);
         }
 
         [Route("api/Customers/Terms")]

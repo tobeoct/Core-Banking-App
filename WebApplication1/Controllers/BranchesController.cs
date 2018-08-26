@@ -35,7 +35,7 @@ namespace WebApplication1.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(branch);
+                return View("Index",branch);
             }
             //            var branchInDb = _context.Branches.LastOrDefault();
             //            var id = branchInDb.Id + 1;
