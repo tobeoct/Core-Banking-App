@@ -10,10 +10,34 @@ namespace WebApplication1.Models
     public class CBA
     {
         private ApplicationDbContext _context;
+        public static string INTEREST_IN_SUSPENSE_ACC_NAME = "Interest-In-Suspense GL Account";
+        public static string INTEREST_OVERDUE_ACC_NAME = "Interest Overdue GL Account";
+        public static string INTEREST_RECEIVABLE_ACC_NAME = "Interest Receivable GL Account";
+        public static string INTEREST_INCOME_ACC_NAME = "Interest Income GL Account";
+        public static string PRINCIPAL_OVERDUE_ACC_NAME = "Principal Overdue GL Account";
+        public static int LOAN_ACCOUNT_TYPE_ID = 3;
+        public static int CURRENT_ACCOUNT_TYPE_ID = 2;
+        public static int SAVINGS_ACCOUNT_TYPE_ID = 1;
 
         public CBA()
         {
            _context = new ApplicationDbContext();
+            var loanAccountType = _context.AccountTypes.Where(c => c.Name.Equals("Loan Account")).SingleOrDefault();
+            var savingsAccountType = _context.AccountTypes.Where(c => c.Name.Equals("Savings Account")).SingleOrDefault();
+            var currentAccountType = _context.AccountTypes.Where(c => c.Name.Equals("Current Account")).SingleOrDefault();
+            if(loanAccountType!=null)
+            {
+                LOAN_ACCOUNT_TYPE_ID = loanAccountType.Id;
+            }
+            if (savingsAccountType != null)
+            {
+                SAVINGS_ACCOUNT_TYPE_ID = loanAccountType.Id;
+            }
+            if (currentAccountType != null)
+            {
+                CURRENT_ACCOUNT_TYPE_ID = loanAccountType.Id;
+            }
+           
         }
         
         public static string RandomString(int length)

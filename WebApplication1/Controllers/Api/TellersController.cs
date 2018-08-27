@@ -111,6 +111,7 @@ namespace WebApplication1.Controllers.Api
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMessage);
             }
             CBA.AddReport(financialReportDto);
+
             return Request.CreateResponse(HttpStatusCode.OK, "Teller Posted Successfully");
            
 

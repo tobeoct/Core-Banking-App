@@ -227,6 +227,7 @@
     <Compile Include="Controllers\Api\BranchesController.cs" />
     <Compile Include="Controllers\Api\CustomersController.cs" />
     <Compile Include="Controllers\Api\EODController.cs" />
+    <Compile Include="Controllers\Api\FinancialReportsController.cs" />
     <Compile Include="Controllers\Api\GeneralLedgersController.cs" />
     <Compile Include="Controllers\Api\TellersController.cs" />
     <Compile Include="Controllers\Api\UserAccountsController.cs" />
@@ -738,6 +739,10 @@
     <Compile Include="Migrations\201808270314279_AddFinancialDateTODb3.cs" />
     <Compile Include="Migrations\201808270314279_AddFinancialDateTODb3.Designer.cs">
       <DependentUpon>201808270314279_AddFinancialDateTODb3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808271226095_AddNarrationToFinancialReportsInDb.cs" />
+    <Compile Include="Migrations\201808271226095_AddNarrationToFinancialReportsInDb.Designer.cs">
+      <DependentUpon>201808271226095_AddNarrationToFinancialReportsInDb.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountRoles.cs" />
@@ -1464,6 +1469,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808270314279_AddFinancialDateTODb3.resx">
       <DependentUpon>201808270314279_AddFinancialDateTODb3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808271226095_AddNarrationToFinancialReportsInDb.resx">
+      <DependentUpon>201808271226095_AddNarrationToFinancialReportsInDb.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

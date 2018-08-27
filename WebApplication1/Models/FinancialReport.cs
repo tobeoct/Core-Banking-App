@@ -31,7 +31,8 @@ namespace WebApplication1.Models
       
         [Display(Name = "Report Date")]
         public DateTime? ReportDate { get; set; }
-
+         
+        public string Narration { get; set; }
         
     }
 }

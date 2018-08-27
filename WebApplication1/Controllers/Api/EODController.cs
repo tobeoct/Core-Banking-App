@@ -6,15 +6,17 @@ using System.Net.Http;
 using System.Web.Http;
 using WebApplication1.Dtos;
 using WebApplication1.Models;
+using System.Data.Entity;
 
 namespace WebApplication1.Controllers.Api
 {
-    
+
     public class EODController : ApiController
     {
         private ApplicationDbContext _context;
-        private string returnMsg = "Business";
+        private string returnMsg = "Business : ";
         private string errorMsg = "";
+        private CBA CBA;
         GLAccount interestIncomeAcc;
         GLAccount interestReceivableAcc;
         GLAccount interestInSuspenseAcc;
@@ -23,11 +25,12 @@ namespace WebApplication1.Controllers.Api
         public EODController()
         {
             _context = new ApplicationDbContext();
-            interestIncomeAcc = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals("Interest Income Account"));
-            interestReceivableAcc = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals("Interest Receivable Account"));
-            interestInSuspenseAcc = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals("Interest-In-Suspense Account"));
-            interestOverdueAcc = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals("Interest Overdue Account"));
-            principalOverdueAcc = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals("Principal Overdue Account"));
+            CBA = new CBA();
+            interestIncomeAcc = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals(CBA.INTEREST_INCOME_ACC_NAME));
+            interestReceivableAcc = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals(CBA.INTEREST_RECEIVABLE_ACC_NAME));
+            interestInSuspenseAcc = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals(CBA.INTEREST_IN_SUSPENSE_ACC_NAME));
+            interestOverdueAcc = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals(CBA.INTEREST_OVERDUE_ACC_NAME));
+            principalOverdueAcc = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals(CBA.PRINCIPAL_OVERDUE_ACC_NAME));
         }
 
         [AcceptVerbs("GET", "POST")]
@@ -37,14 +40,73 @@ namespace WebApplication1.Controllers.Api
         {
 
             var status = false;
-            
-            
-            if(businessStatusDto.IntendedAction.Equals("Open"))
+            bool isEOMDone = false;
+            var businessStatus = _context.BusinessStatus.FirstOrDefault();
+
+            // : If Business is being Closed 
+            if (businessStatusDto.IntendedAction.Equals("Close"))
+            {
+                var financialDates = _context.FinancialDates.Count();
+
+                CalculateCOT();
+
+                if (!errorMsg.Equals(""))
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMsg);
+                }
+
+                InterestAccrual();
+
+                // : If END OF FINANCIAL MONTH
+                if (financialDates % 2 == 1)
+                {
+
+                    ValidateGLAccounts();
+
+                    if (errorMsg == "")
+                    {
+                        RunEOM();
+                        isEOMDone = true;
+
+                    }
+                    else
+                    {
+                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "<b>EOM Failed</b> :" + errorMsg);
+                    }
+
+                }
+                _context.SaveChanges();
+
+                if (isEOMDone == false)
+                {
+                    var financialDate = new FinancialDates
+                    {
+                        EOD = DateTime.Now
+                    };
+                    _context.FinancialDates.Add(financialDate);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    var financialDate = new FinancialDates
+                    {
+                        EOD = DateTime.Now,
+                        EOM = DateTime.Now
+                    };
+                    _context.FinancialDates.Add(financialDate);
+                    _context.SaveChanges();
+                    returnMsg = returnMsg + "<br/> : <b>EOM</b> Completed";
+                }
+                returnMsg = returnMsg + "<br/> : Business <b>Closed</b>";
+
+            }
+            else
             {
                 status = true;
+                returnMsg = returnMsg + "<br/> : Business <b>Opened</b>";
             }
 
-            var businessStatus = _context.BusinessStatus.FirstOrDefault();
+
             if (businessStatus == null)
             {
                 var business = new BusinessStatus();
@@ -55,88 +117,43 @@ namespace WebApplication1.Controllers.Api
             {
                 businessStatus.Status = status;
             }
-            
-            
-            if(businessStatusDto.IntendedAction.Equals("Open"))
-            {
-                returnMsg = returnMsg + " Opened";
-            }
-            else
-            {
-                returnMsg = returnMsg + " Closed";
-            }
-
-            // : If Business is being Closed 
-            if(businessStatusDto.IntendedAction.Equals("Close"))
-            {
-                CalculateCOT();
-                if (!errorMsg.Equals(""))
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMsg);
-                }
-                InterestAccrual();
-                var financialDates = _context.FinancialDates.Count();
-
-                // : If END OF FINANCIAL MONTH
-                if(financialDates%2==0)
-                {
-
-                    ValidateGLAccounts();
-                    if(errorMsg=="")
-                    {
-                        RunEOM();
-                    }
-                    else
-                    {
-                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMsg+" EOM Failed");
-                    }
-                    
-                }
-                
-               
-            }
-
-            // return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Customer already has a Savings Account");
             _context.SaveChanges();
-            if (businessStatusDto.IntendedAction.Equals("Close"))
-            {
-
-                var financialDate = new FinancialDates
-                {
-                    EOD = DateTime.Now
-                };
-                _context.FinancialDates.Add(financialDate);
-                _context.SaveChanges();
-            }
             return Request.CreateResponse(HttpStatusCode.OK, returnMsg);
 
         }
-  
+
+        [NonAction]
+        public void CloseBusiness()
+        {
+
+        }
+
         [NonAction]
         public void ValidateGLAccounts()
         {
 
             if (interestIncomeAcc == null)
             {
-                errorMsg = ": Please create an " + interestIncomeAcc.Name;
+                errorMsg = errorMsg + "<br/> : Please create an <b>Interest Income GL Account</b>";
             }
             if (interestInSuspenseAcc == null)
             {
-                errorMsg = ": Please create an " + interestInSuspenseAcc.Name;
+                errorMsg = errorMsg + "<br/> : Please create an <b>Interest-In-Suspense GL Account</b>";
             }
             if (interestOverdueAcc == null)
             {
-                errorMsg = ": Please create an " + interestOverdueAcc.Name;
+                errorMsg = errorMsg + "<br/> : Please create an <b>Interest Overdue GL Account</b>";
             }
             if (interestReceivableAcc == null)
             {
-                errorMsg = ": Please create an " + interestReceivableAcc.Name;
+                errorMsg = errorMsg + "<br/> : Please create an <b>Interest Receivable GL Account</b>";
             }
             if (principalOverdueAcc == null)
             {
-                errorMsg = ": Please create an " + principalOverdueAcc.Name;
+                errorMsg = errorMsg + "<br/> : Please create a <b>Principal Overdue GL Account</b>";
             }
         }
+
         // GET api/<controller>
         [AcceptVerbs("GET", "POST")]
         [Route("api/EOD/GetStatus")]
@@ -144,8 +161,8 @@ namespace WebApplication1.Controllers.Api
         {
             var business = _context.BusinessStatus.FirstOrDefault();
             var businessStatus = business.Status;
-            var status="";
-            if (businessStatus==true)
+            var status = "";
+            if (businessStatus == true)
             {
                 status = "Opened";
             }
@@ -153,11 +170,11 @@ namespace WebApplication1.Controllers.Api
             {
                 status = "Closed";
             }
-            
+
             return Request.CreateResponse(HttpStatusCode.OK, status);
         }
 
-    
+
         [NonAction]
         public void InterestAccrual()
         {
@@ -173,54 +190,56 @@ namespace WebApplication1.Controllers.Api
                     accruedInterest = (interestRate * principal) / (12 * 30);
                     detail.InterestIncome = detail.InterestReceivable + accruedInterest; //DEBIT
                     detail.InterestReceivable = detail.InterestReceivable + accruedInterest; // CREDIT  
-
                     _context.SaveChanges();
 
                     //ADD TO REPORT TABLE IN DB (DOUBLE ENTRY)
-                    AddToReport("Interest Accrual", "Interest Receivable Account", "Interest Income Account", accruedInterest);
-
-
-                    returnMsg = returnMsg + ", Interest Accrual Process Successful";
+                    AddToReport("Interest Accrual", "Interest Receivable GL Account", "Interest Income GL Account", accruedInterest);
+                    returnMsg = returnMsg + "<br/> : <b>Interest Accrual </b> Process Successful";
 
                 }
             }
 
 
         }
+
         [NonAction]
         public void CalculateCOT()
         {
-            var customerAccounts = _context.CustomerAccounts.ToList();
-            var COTIncomeGLAccount = _context.GlAccounts.Where(c => c.Name.Equals("COT Income GL Account")).FirstOrDefault();
             var currentAccountId = _context.AccountTypes.Where(c => c.Name.Equals("Current Account")).FirstOrDefault().Id;
+            var customerAccounts = _context.CustomerAccounts.Where(c => c.AccountTypeId == currentAccountId).ToList();
+            var COTIncomeGLAccount = _context.GlAccounts.Where(c => c.Name.Equals("COT Income GL Account")).FirstOrDefault();
+
+
             if (COTIncomeGLAccount != null)
             {
                 foreach (var account in customerAccounts)
                 {
-                    if (account.AccountTypeId == currentAccountId)
-                    {
-                        float todayWithdrawal = 0, cotAmount;
-                        float customerAccountBalance = account.AccountBalance;
-                        var tellerPostings = _context.TellerPostings.Where(c => c.PostingType.Equals("Withdrawal") && c.CustomerAccountId == account.Id).ToList();
-                        foreach (var posting in tellerPostings)
-                        {
-                            if (posting.TransactionDate.Day == DateTime.Today.Day)
-                            {
-                                todayWithdrawal = todayWithdrawal + posting.Amount;
-                            }
 
+                    float todayWithdrawal = 0;
+                    float cotAmount;
+                    float customerAccountBalance = account.AccountBalance;
+                    var tellerPostings = _context.TellerPostings.Where(c => c.PostingType.Equals("Withdrawal") && c.CustomerAccountId == account.Id).ToList();
+                    // Total withdrawals made by customer today;
+                    foreach (var posting in tellerPostings)
+                    {
+                        if (posting.TransactionDate.Day == DateTime.Today.Day)
+                        {
+                            todayWithdrawal = todayWithdrawal + posting.Amount;
                         }
 
-                        cotAmount = (5 * customerAccountBalance) / 1000;
-                        account.AccountBalance = customerAccountBalance - cotAmount;
-                        COTIncomeGLAccount.AccountBalance = COTIncomeGLAccount.AccountBalance + cotAmount;
-                        //ADD TO REPORT TABLE IN DB (DOUBLE ENTRY)
-                        AddToReport("COT", account.Name+"Account", "COT Income GL Account", cotAmount);
-
-                        returnMsg = returnMsg + ": COT Calculated Successfully Successful";
-
                     }
+
+                    cotAmount = (5 * customerAccountBalance) / 1000;
+                    account.AccountBalance = customerAccountBalance - cotAmount;
+                    COTIncomeGLAccount.AccountBalance = COTIncomeGLAccount.AccountBalance + cotAmount;
+
+                    //ADD TO REPORT TABLE IN DB (DOUBLE ENTRY)
+                    AddToReport("COT", account.Name + "Account", "COT Income GL Account", cotAmount);
+
+                    returnMsg = returnMsg + "<br/> : <b>COT</b> Calculated Successfully Successful";
+
                 }
+
             }
 
             else
@@ -234,24 +253,24 @@ namespace WebApplication1.Controllers.Api
         public void RunEOM()
         {
             var customerAccounts = _context.CustomerAccounts.ToList();
-            var loanDetails = _context.LoanDetails.ToList();
-            
-            foreach(var loanDetail in loanDetails)
+            var loanDetails = _context.LoanDetails.Include(c => c.Terms).ToList();
+
+            foreach (var loanDetail in loanDetails)
             {
-                var customerAccount = customerAccounts.SingleOrDefault(c => c.LoanDetailsId == loanDetail.Id);
-                var customerAccountBalance = customerAccount.AccountBalance;               
+                var customerAccount = customerAccounts.Where(c => c.AccountTypeId != CBA.LOAN_ACCOUNT_TYPE_ID).SingleOrDefault(c => c.LoanDetailsId == loanDetail.Id);
+                var customerAccountBalance = customerAccount.AccountBalance;
                 var minimumBalance = _context.AccountTypes.SingleOrDefault(c => c.Id == customerAccount.AccountTypeId).MinimumBalance;
                 var loanAmount = loanDetail.LoanAmount; // Total amount 
                 var monthlyInterest = (loanDetail.InterestRate * loanAmount) / 12; // Monthly interest to be repaid
-                var monthlyPrincipal = loanDetail.Terms.PaymentRate * loanAmount; // Monthly principal to be repaid
+                var monthlyPrincipal = (loanDetail.Terms.PaymentRate/100) * loanAmount; // Monthly principal to be repaid
                 var amountPayable = monthlyPrincipal + monthlyInterest; // Total amount to be repaid monthly
-                if(customerAccount.IsClosed==false)
+                if (customerAccount.IsClosed == false)
                 {
                     PerformDoubleEntry(loanDetail, customerAccount, minimumBalance, customerAccountBalance, monthlyPrincipal, monthlyInterest, loanAmount);
                 }
-               
+
             }
-            
+
 
         }
 
@@ -271,7 +290,8 @@ namespace WebApplication1.Controllers.Api
             if (availableBalance >= amountPayable)
             {
 
-                GreaterThanOrEqualsToAmountPayable(customerAccount,loanDetail,monthlyPrincipal,monthlyInterest);
+                Console.WriteLine(availableBalance);
+                GreaterThanOrEqualsToAmountPayable(customerAccount, loanDetail, monthlyPrincipal, monthlyInterest);
             }
 
             // If customer account balance sufficient to pay back FULL monthly principal and interest ALONE
@@ -279,38 +299,37 @@ namespace WebApplication1.Controllers.Api
             {
 
                 GreaterThanAmountPayable(customerAccount, loanDetail, availableBalance, amountPayable, principalOverdue, interestOverdue);
-                
-            }       
+
+            }
             // : If customer account balance insufficient to pay back FULL monthly principal and interest
             else
             {
-                LessThanOrEqualsToAmountPayable(customerAccount, loanDetail, monthlyPrincipal,monthlyInterest, availableBalance, amountPayable, minimumBalance);
+                LessThanOrEqualsToAmountPayable(customerAccount, loanDetail, monthlyPrincipal, monthlyInterest, availableBalance, amountPayable, minimumBalance);
             }
         }
 
         [NonAction]
         public void LessThanOrEqualsToAmountPayable(CustomerAccount customerAccount, LoanDetails loanDetail, float monthlyPrincipal, float monthlyInterest, float availableBalance, float amountPayable, float minimumBalance)
         {
-            
-           
+
             var customerDebitAccountName = customerAccount.Name;
-            var customerLoanAccount = _context.CustomerAccounts.Where(c => c.AccountTypeId == 3 && c.CustomerId==customerAccount.CustomerId).ToList();
-            var customerLoanAccountName="";
+            var customerLoanAccount = _context.CustomerAccounts.Where(c => c.AccountTypeId == CBA.LOAN_ACCOUNT_TYPE_ID && c.CustomerId == customerAccount.CustomerId).ToList();
+            var customerLoanAccountName = "";
             bool isClosed = false;
-            foreach (var acc in customerLoanAccount )
+            foreach (var acc in customerLoanAccount)
             {
-                if(acc.IsClosed==true)
+                if (acc.IsClosed == true)
                 {
                     isClosed = true;
                 }
                 isClosed = false;
                 customerLoanAccountName = acc.Name;
             }
-            if(isClosed==false)
+            if (isClosed == false)
             {
-               
+
                 // If PARTLY sufficient to pay back monthly principal
-                if (monthlyPrincipal > availableBalance && availableBalance > minimumBalance)
+                if (monthlyPrincipal > availableBalance && customerAccount.AccountBalance > minimumBalance)
                 {
                     customerAccount.AccountBalance = customerAccount.AccountBalance - availableBalance;   // DEBIT
                     loanDetail.CustomerLoan = loanDetail.CustomerLoan - availableBalance; // CREDIT
@@ -320,8 +339,8 @@ namespace WebApplication1.Controllers.Api
                     loanDetail.InterestOverdue = loanDetail.InterestOverdue + monthlyInterest; // CREDIT
 
                     AddToReport("EOM", customerDebitAccountName + " Account", customerLoanAccountName + " Account", availableBalance);
-                    AddToReport("EOM", "Principal Overdue Account", customerLoanAccountName + " Account", (monthlyPrincipal - availableBalance));
-                    AddToReport("EOM", "Interest-In-Suspense Account", "Interest Overdue Account", monthlyInterest);
+                    AddToReport("EOM", CBA.PRINCIPAL_OVERDUE_ACC_NAME, customerLoanAccountName + " Account", (monthlyPrincipal - availableBalance));
+                    AddToReport("EOM", CBA.INTEREST_IN_SUSPENSE_ACC_NAME, CBA.INTEREST_OVERDUE_ACC_NAME, monthlyInterest);
                 }
                 // : If sufficient to pay back the full monthly principal alone i.e minus monthly interest
                 else if (availableBalance == monthlyPrincipal)
@@ -332,8 +351,8 @@ namespace WebApplication1.Controllers.Api
                     loanDetail.InterestOverdue = loanDetail.InterestOverdue + monthlyInterest; // CREDIT
 
                     // Financial Report Entry
-                    AddToReport("EOM", customerDebitAccountName+" Account", customerLoanAccountName+" Account", monthlyPrincipal);
-                    AddToReport("EOM", "Interest-In-Suspense Account", "Interest Overdue Account", monthlyInterest);
+                    AddToReport("EOM", customerDebitAccountName + " Account", customerLoanAccountName + " Account", monthlyPrincipal);
+                    AddToReport("EOM", CBA.INTEREST_IN_SUSPENSE_ACC_NAME, CBA.INTEREST_OVERDUE_ACC_NAME, monthlyInterest);
                 }
                 // : If sufficient to pay back the FULL monthly principal and PART of monthly interest
                 else if (availableBalance > monthlyPrincipal && availableBalance < amountPayable)
@@ -349,22 +368,22 @@ namespace WebApplication1.Controllers.Api
                     loanDetail.InterestOverdue = loanDetail.InterestOverdue + amountUnpaid; // CREDIT
 
                     // Financial Report Entry
-                    AddToReport("EOM", customerDebitAccountName + " Account", customerLoanAccountName + " Account", monthlyPrincipal );
-                    AddToReport("EOM", customerDebitAccountName + " Account", "Interest Receivable Account", amountDeductible);
-                    AddToReport("EOM", "Interest-In-Suspense Account", "Interest Overdue Account", amountUnpaid);
+                    AddToReport("EOM", customerDebitAccountName + " Account", customerLoanAccountName + " Account", monthlyPrincipal);
+                    AddToReport("EOM", customerDebitAccountName + " Account", CBA.INTEREST_RECEIVABLE_ACC_NAME, amountDeductible);
+                    AddToReport("EOM", CBA.INTEREST_IN_SUSPENSE_ACC_NAME, CBA.INTEREST_OVERDUE_ACC_NAME, amountUnpaid);
 
                 }
             }
-            
+
         }
 
         [NonAction]
-        public void GreaterThanOrEqualsToAmountPayable( CustomerAccount customerAccount, LoanDetails loanDetail, float monthlyPrincipal, float monthlyInterest)
+        public void GreaterThanOrEqualsToAmountPayable(CustomerAccount customerAccount, LoanDetails loanDetail, float monthlyPrincipal, float monthlyInterest)
         {
 
 
             var customerDebitAccountName = customerAccount.Name;
-            var customerLoanAccount = _context.CustomerAccounts.Where(c => c.AccountTypeId == 3 && c.CustomerId == customerAccount.CustomerId).ToList();
+            var customerLoanAccount = _context.CustomerAccounts.Where(c => c.AccountTypeId == CBA.LOAN_ACCOUNT_TYPE_ID && c.CustomerId == customerAccount.CustomerId).ToList();
             var customerLoanAccountName = "";
             bool isClosed = false;
             foreach (var acc in customerLoanAccount)
@@ -384,16 +403,16 @@ namespace WebApplication1.Controllers.Api
                 loanDetail.InterestReceivable = loanDetail.InterestReceivable - monthlyInterest; // CREDIT
 
                 AddToReport("EOM", customerDebitAccountName + " Account", customerLoanAccountName + " Account", monthlyPrincipal);
-                AddToReport("EOM", customerDebitAccountName + " Account", "Interest Receivable Account", monthlyInterest);
+                AddToReport("EOM", customerDebitAccountName + " Account", CBA.INTEREST_RECEIVABLE_ACC_NAME, monthlyInterest);
             }
 
         }
 
         [NonAction]
-        public void GreaterThanAmountPayable(CustomerAccount customerAccount, LoanDetails loanDetail, float availableBalance, float amountPayable, float principalOverdue, float interestOverdue )
+        public void GreaterThanAmountPayable(CustomerAccount customerAccount, LoanDetails loanDetail, float availableBalance, float amountPayable, float principalOverdue, float interestOverdue)
         {
             var customerDebitAccountName = customerAccount.Name;
-            var customerLoanAccount = _context.CustomerAccounts.Where(c => c.AccountTypeId == 3 && c.CustomerId == customerAccount.CustomerId).ToList();
+            var customerLoanAccount = _context.CustomerAccounts.Where(c => c.AccountTypeId == CBA.LOAN_ACCOUNT_TYPE_ID && c.CustomerId == customerAccount.CustomerId).ToList();
             var customerLoanAccountName = "";
             bool isClosed = false;
             foreach (var acc in customerLoanAccount)
@@ -420,8 +439,8 @@ namespace WebApplication1.Controllers.Api
                     // Overdues
                     loanDetail.CustomerLoan = loanDetail.CustomerLoan - principalOverdue; // DEBIT
                     loanDetail.PrincipalOverdue = loanDetail.PrincipalOverdue - principalOverdue; // CREDIT 
-                    AddToReport("EOM", customerLoanAccountName + " Account", "Principal Overdue Account", principalOverdue);
-                    
+                    AddToReport("EOM", customerLoanAccountName + " Account", CBA.PRINCIPAL_OVERDUE_ACC_NAME, principalOverdue);
+
                     // If sufficient to pay back FULL monthly principal and interest and the FULL principal overdue but PART of interest overdue
                     if (availableBalance > (amountPayable + principalOverdue))
                     {
@@ -429,8 +448,8 @@ namespace WebApplication1.Controllers.Api
                         loanDetail.InterestIncome = loanDetail.InterestIncome - interestPayable; // CREDIT 
                         loanDetail.InterestOverdue = loanDetail.InterestOverdue - interestPayable; // DEBIT
                         loanDetail.InterestInSuspense = loanDetail.InterestInSuspense - interestPayable; // CREDIT
-                        AddToReport("EOM", customerDebitAccountName + " Account", "Interest Income Account", interestPayable);
-                        AddToReport("EOM", "Interest Overdue Account", "Interest-In-Suspense Account", interestPayable);
+                        AddToReport("EOM", customerDebitAccountName + " Account", CBA.INTEREST_INCOME_ACC_NAME, interestPayable);
+                        AddToReport("EOM", CBA.INTEREST_OVERDUE_ACC_NAME, CBA.INTEREST_IN_SUSPENSE_ACC_NAME, interestPayable);
                     }
 
                 }
@@ -445,7 +464,7 @@ namespace WebApplication1.Controllers.Api
                     // Overdues
                     loanDetail.CustomerLoan = loanDetail.CustomerLoan - principalPayable; // DEBIT
                     loanDetail.PrincipalOverdue = loanDetail.PrincipalOverdue - principalPayable; // CREDIT 
-                    AddToReport("EOM", customerLoanAccountName + " Account", "Principal Overdue Account", principalPayable);
+                    AddToReport("EOM", customerLoanAccountName + " Account", CBA.PRINCIPAL_OVERDUE_ACC_NAME, principalPayable);
 
                 }
                 // : If customer account balance sufficient to settle TOTAL amount payable i.e plus interest overdue and principal overdue
@@ -460,8 +479,8 @@ namespace WebApplication1.Controllers.Api
                     loanDetail.InterestInSuspense = loanDetail.InterestInSuspense - interestOverdue; // CREDIT
 
                     AddToReport("EOM", customerDebitAccountName + " Account", customerLoanAccountName + " Account", principalOverdue);
-                    AddToReport("EOM", customerDebitAccountName + " Account", "Interest Income Account", interestOverdue);
-                    AddToReport("EOM", "Interest Overdue Account", "Interest-In-Suspense Account", interestOverdue);
+                    AddToReport("EOM", customerDebitAccountName + " Account", CBA.INTEREST_INCOME_ACC_NAME, interestOverdue);
+                    AddToReport("EOM", CBA.INTEREST_OVERDUE_ACC_NAME, CBA.INTEREST_IN_SUSPENSE_ACC_NAME, interestOverdue);
                 }
             }
         }
