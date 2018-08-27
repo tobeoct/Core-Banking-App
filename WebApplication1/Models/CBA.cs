@@ -25,6 +25,7 @@ namespace WebApplication1.Models
         }
         public static void AddReport(FinancialReportDto financialReportDto)
         {
+            financialReportDto.ReportDate = DateTime.Now;
            ApplicationDbContext _context = new ApplicationDbContext();
             var financialReport = new FinancialReport
             {

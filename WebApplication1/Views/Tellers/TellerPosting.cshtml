@@ -283,6 +283,13 @@
                     $('#count').html(table.data().count());
                     $('#myTellerPostingConfirmationModal #successMessage').fadeOut();
                     $('#myTellerPostingConfirmationModal #errorMessage').fadeOut();
+                    $('#myTellerPostingConfirmationModal').fadeOut(100,function () {
+                        customerAccountId = 0;
+                        postingType = "";
+                        amount = 0;
+                        narration = "";
+                    });
+
                 });
 
         });

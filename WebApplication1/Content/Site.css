@@ -13,7 +13,9 @@
     padding-left: 15px;
     padding-right: 15px;
 }
-
+.display-none{
+    display:none !important;
+}
 /* Set width on the form input elements since they're 100% wide by default */
 input,
 select,

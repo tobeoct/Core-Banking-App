@@ -14,6 +14,7 @@ namespace WebApplication1.Controllers.Api
     {
         private ApplicationDbContext _context;
         private string returnMsg = "Business";
+        private string errorMsg = "";
         public EODController()
         {
             _context = new ApplicationDbContext();
@@ -45,7 +46,7 @@ namespace WebApplication1.Controllers.Api
                 businessStatus.Status = status;
             }
             
-            _context.SaveChanges();
+            
             if(businessStatusDto.IntendedAction.Equals("Open"))
             {
                 returnMsg = returnMsg + " Opened";
@@ -56,14 +57,99 @@ namespace WebApplication1.Controllers.Api
             }
             if(businessStatusDto.IntendedAction.Equals("Close"))
             {
+                CalculateCOT();
+                if (!errorMsg.Equals(""))
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMsg);
+                }
                 InterestAccrual();
+                var financialDates = _context.FinancialDates.Count();
+                if(financialDates%30==0)
+                {
+                    RunEOM();
+                }
+                
+               
             }
-           
-            // return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Customer already has a Savings Account");
 
+            // return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Customer already has a Savings Account");
+            _context.SaveChanges();
+            if (businessStatusDto.IntendedAction.Equals("Close"))
+            {
+
+                var financialDate = new FinancialDates
+                {
+                    EOD = DateTime.Now
+                };
+                _context.FinancialDates.Add(financialDate);
+                _context.SaveChanges();
+            }
             return Request.CreateResponse(HttpStatusCode.OK, returnMsg);
 
         }
+        [NonAction]
+        public void RunEOM()
+        {
+
+        }
+        [NonAction]
+        public void CalculateCOT()
+        {
+            var customerAccounts = _context.CustomerAccounts.ToList();
+            var COTIncomeGLAccount = _context.GlAccounts.Where(c => c.Name.Equals("COT Income GL Account")).FirstOrDefault();
+            var currentAccountId = _context.AccountTypes.Where(c => c.Name.Equals("Current Account")).FirstOrDefault().Id;
+            if (COTIncomeGLAccount != null)
+            {
+                foreach (var account in customerAccounts)
+                {
+                    if (account.AccountTypeId == currentAccountId)
+                    {
+                        float todayWithdrawal = 0, cotAmount;
+                        float customerAccountBalance = account.AccountBalance;
+                        var tellerPostings = _context.TellerPostings.Where(c=> c.PostingType.Equals("Withdrawal") && c.CustomerAccountId == account.Id).ToList();
+                        foreach (var posting in tellerPostings)
+                        {
+                            if(posting.TransactionDate.Day==DateTime.Today.Day)
+                            {
+                                todayWithdrawal = todayWithdrawal + posting.Amount;
+                            }
+                            
+                        }
+
+                        cotAmount = (5 * customerAccountBalance) / 1000;
+                        account.AccountBalance = customerAccountBalance - cotAmount;
+                        COTIncomeGLAccount.AccountBalance = COTIncomeGLAccount.AccountBalance + cotAmount;
+                        //ADD TO REPORT TABLE IN DB (DOUBLE ENTRY)
+                        var financialReportDto = new FinancialReportDto
+                        {
+                            PostingType = "COT",
+                            DebitAccount = account.Name,
+                            DebitAmount = cotAmount,
+                            CreditAccount = "COT Income GL Account",
+                            CreditAmount = cotAmount,
+                            ReportDate = DateTime.Now
+                        };
+
+                        CBA.AddReport(financialReportDto);
+                        returnMsg = returnMsg + ": COT Calculated Successfully Successful";
+
+                    }                       
+                }
+            }
+        
+            else
+            {
+                errorMsg = errorMsg + " No <b> COT Income GL Account Created </b>";
+            }
+            
+        }
+          
+            
+
+            
+            
+
+        
         [NonAction]
         public void InterestAccrual()
         {
@@ -81,16 +167,16 @@ namespace WebApplication1.Controllers.Api
                     detail.InterestIncome = detail.InterestReceivable + accruedInterest;
                     _context.SaveChanges();
 
-                    var financialReportDto = new FinancialReportDto();
-                    financialReportDto.PostingType = "Interest Accrual";
-
-                    financialReportDto.DebitAccount = "Interest Receivable Account";
-                    financialReportDto.DebitAmount = accruedInterest;
-                    financialReportDto.CreditAccount = "Interest Income Account";
-                    financialReportDto.CreditAmount = accruedInterest;
-
-
-                    financialReportDto.ReportDate = DateTime.Now;
+                    //ADD TO REPORT TABLE IN DB (DOUBLE ENTRY)
+                    var financialReportDto = new FinancialReportDto
+                    {
+                        PostingType = "Interest Accrual",
+                        DebitAccount = "Interest Receivable Account",
+                        DebitAmount = accruedInterest,
+                        CreditAccount = "Interest Income Account",
+                        CreditAmount = accruedInterest,
+                        ReportDate = DateTime.Now
+                    };
 
                     CBA.AddReport(financialReportDto);
                     returnMsg = returnMsg + ", Interest Accrual Process Successful";

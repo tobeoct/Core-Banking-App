@@ -15,6 +15,7 @@
     <div class="row">
         <div class="col-md-12">
             <h1 class="underline animated fadeInLeft">Customer Account Management</h1>
+            <p class="grey-color"><i class="fa fa-arrows" ></i>(ALT+C+A)</p>
         </div>
     </div>
 </div>
@@ -206,37 +207,69 @@
                 accountTypeId = $("#accountTypeId").val();
                 accountTypeName = $("#accountTypeId option:selected").text();
                 $('#myAccountDetailsModal #accountTypeDisplay').text(accountTypeName);
-                if (accountTypeName == "Loan Account") {
-                    $('#myAccountDetailsModal #myAccountDetailsBtn').text('Next');
-                }
-                //alert(accountTypeId);
-                $("#myAccountTypeModal").fadeOut(400,
-                    function() {
-
-                        $("#myAccountDetailsModal").fadeIn();
-
+                if (accountTypeId == 0) {
+                    $("#myAccountTypeModal #errorMessage").fadeIn(0, function () {
+                        $("#myAccountTypeModal #errorMessage").html("Please select an Account Type");
                     });
+                   
+                }
+                else {
+                    if (accountTypeName == "Loan Account") {
+                        $('#myAccountDetailsModal #myAccountDetailsBtn').text('Next');
+                    }
+                    //alert(accountTypeId);
+                    $("#myAccountTypeModal").fadeOut(400,
+                        function () {
+
+                            $("#myAccountDetailsModal").fadeIn();
+
+                        });
+                }
             });
         // : To Create Customer Account using API call, If its a Loan account then OPEN Loan Details Modal;
         $("#myAccountDetailsBtn").on("click",
             function(e) {
 
                 e.preventDefault();
+                var errorDisplay = $("#myAccountDetailsModal #errorMessage");
+                errorDisplay.fadeOut();
+                var errorMessage = "";
                 customerId = $("#customerId").val();
                 branchId = $("#branchId").val();
                 accountName = $("#accountName").val();
                 accountNumber = String(accountTypeId) + String(customerId);
-                //alert("Account Type Id : " +accountTypeId +", Customer Id : " +customerId +", Branch Id : " +branchId +", Account Name : " + accountName +", Account Number : " + accountNumber);
-                    customerAccountDto = {
-                    Name: accountName,
-                    CustomerId: customerId,
-                    BranchId: branchId,
-                    AccountNumber: accountNumber,
-                    AccountTypeId: accountTypeId
-                };
-                CheckIfCustomerHasAccount(customerAccountDto);
-                
 
+                if (customerId == 0) {
+                    errorMessage = errorMessage + " : Please select a <b>Customer</b>";
+                }
+                if (branchId == 0) {
+                    errorMessage = errorMessage + " : Please select a <b>Branch</b>";
+                }
+                if (accountName == "" || accountName==null) {
+                    errorMessage = errorMessage + " : Please enter <b>Account Name</>";
+                }
+                if (errorMessage != "") {
+
+                    
+                    errorDisplay.fadeIn(100, function () {
+                        errorDisplay.html(errorMessage);
+                        $("#myAccountDetailsModal #myAccountDetailsBtn img").addClass("display-none");
+                        $("#myAccountDetailsModal #myAccountDetailsBtn .loader,#myAccountDetailsModal #myAccountDetailsBtn img").css("display", "none");
+                        
+                    });
+                }
+                else {
+                    //alert("Account Type Id : " +accountTypeId +", Customer Id : " +customerId +", Branch Id : " +branchId +", Account Name : " + accountName +", Account Number : " + accountNumber);
+                    customerAccountDto = {
+                        Name: accountName,
+                        CustomerId: customerId,
+                        BranchId: branchId,
+                        AccountNumber: accountNumber,
+                        AccountTypeId: accountTypeId
+                    };
+                    CheckIfCustomerHasAccount(customerAccountDto);
+
+                }
             });
 
         // : To GET Loan Details data entry and OPEN Loan Terms entry Modal;
@@ -399,11 +432,11 @@
                                     contentType: 'application/json; charset=utf-8',
                                     dataType: 'json',
                                     success: function (data) {
-                                        $('#successMessage').fadeIn(200,
+                                        $('#myAccountDetailsModal #successMessage').fadeIn(200,
                                             function () {
                                                 document.getElementById('customerAccountDetailsForm').reset();
                                                 accountId = data[1];
-                                                $('#successMessage').html(data[0])
+                                                $('#myAccountDetailsModal #successMessage').html(data[0])
                                             });
                                         return;
 
@@ -411,8 +444,8 @@
                                     error: function (errorMessage) {
                                         // alert('request failed');
                                         var msg = JSON.parse(errorMessage.responseText);
-                                        $('#errorMessage').fadeIn(200,
-                                            function () { $('#errorMessage').html(msg.message) });
+                                        $('#myAccountDetailsModal #errorMessage').fadeIn(200,
+                                            function () { $('#myAccountDetailsModal #errorMessage').html(msg.message) });
                                     }
 
                                 });

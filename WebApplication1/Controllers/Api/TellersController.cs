@@ -134,7 +134,7 @@ namespace WebApplication1.Controllers.Api
                 {
                     return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMessage);
                 }
-                if (CheckTillBalance(tellerPostingDto.Amount))
+                if (!CheckTillBalance(tellerPostingDto.Amount))
                 {
                     errorMessage = errorMessage + "Insufficient Till Account Balance";
 
@@ -173,11 +173,11 @@ namespace WebApplication1.Controllers.Api
         public bool CheckIfCustomerAccountIsClosed(int customerAccountId)
         {
             var customerAccount = _context.CustomerAccounts.SingleOrDefault(c => c.Id == customerAccountId);
-            if (customerAccount.IsClosed == true)
+            if (customerAccount.IsClosed != true)
             {
-                return true;
+                return false;
             }
-            return false;
+            return true;
         }
 
         [NonAction]

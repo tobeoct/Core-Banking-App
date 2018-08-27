@@ -40,5 +40,8 @@ namespace WebApplication1.Models
 
         public int? LoanDetailsId { get; set; }
         public LoanDetails LoanDetails { get; set; }
+
+
+        //public float COTReceivable { get; set; }
     }
 }

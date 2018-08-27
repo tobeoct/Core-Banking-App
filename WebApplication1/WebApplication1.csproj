@@ -727,6 +727,18 @@
     <Compile Include="Migrations\201808261301174_ChangeTypeOfAmount.Designer.cs">
       <DependentUpon>201808261301174_ChangeTypeOfAmount.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808270312326_AddFinancialDateTODb.cs" />
+    <Compile Include="Migrations\201808270312326_AddFinancialDateTODb.Designer.cs">
+      <DependentUpon>201808270312326_AddFinancialDateTODb.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808270313425_AddFinancialDateTODb2.cs" />
+    <Compile Include="Migrations\201808270313425_AddFinancialDateTODb2.Designer.cs">
+      <DependentUpon>201808270313425_AddFinancialDateTODb2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808270314279_AddFinancialDateTODb3.cs" />
+    <Compile Include="Migrations\201808270314279_AddFinancialDateTODb3.Designer.cs">
+      <DependentUpon>201808270314279_AddFinancialDateTODb3.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountRoles.cs" />
     <Compile Include="Models\AccountType.cs" />
@@ -734,6 +746,7 @@
     <Compile Include="Models\CBA.cs" />
     <Compile Include="Models\CurrentAccountType.cs" />
     <Compile Include="Models\CustomerAccount.cs" />
+    <Compile Include="Models\FinancialDates.cs" />
     <Compile Include="Models\FinancialReport.cs" />
     <Compile Include="Models\GLPostings.cs" />
     <Compile Include="Models\LoanAccountType.cs" />
@@ -1442,6 +1455,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808261301174_ChangeTypeOfAmount.resx">
       <DependentUpon>201808261301174_ChangeTypeOfAmount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808270312326_AddFinancialDateTODb.resx">
+      <DependentUpon>201808270312326_AddFinancialDateTODb.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808270313425_AddFinancialDateTODb2.resx">
+      <DependentUpon>201808270313425_AddFinancialDateTODb2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808270314279_AddFinancialDateTODb3.resx">
+      <DependentUpon>201808270314279_AddFinancialDateTODb3.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -96,27 +96,30 @@ namespace WebApplication1.Controllers.Api
             var savingsAccountType = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals("Savings Account"));
             var loanAccountType = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals("Loan Account"));
             var currentAccountType = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals("Current Account"));
-            var customerAccount = _context.CustomerAccounts.Where(c=>c.AccountTypeId!=loanAccountType.Id).SingleOrDefault(c => c.CustomerId == customerAccountDto.CustomerId);
-            
-            
-            if (customerAccount != null )
+            var customerAccounts = _context.CustomerAccounts.Where(c=>c.AccountTypeId!=loanAccountType.Id && c.CustomerId == customerAccountDto.CustomerId).ToList();
+            if (customerAccounts != null)
             {
-                if(customerAccount.AccountTypeId == savingsAccountType.Id && customerAccountDto.AccountTypeId == savingsAccountType.Id)
+                foreach (var customerAccount in customerAccounts)
                 {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Customer already has a Savings Account");
+                    if (customerAccount.IsClosed == true)
+                    {
+                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Customer Account has account but it is Closed");
+                    }
+
+                    if (customerAccount.AccountTypeId == savingsAccountType.Id && customerAccountDto.AccountTypeId == savingsAccountType.Id)
+                    {
+                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Customer already has a Savings Account");
+                    }
+                    if (customerAccount.AccountTypeId == currentAccountType.Id && customerAccountDto.AccountTypeId == currentAccountType.Id)
+                    {
+                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Customer already has a Current Account");
+                    }
+                
                 }
-                 if(customerAccount.AccountTypeId == currentAccountType.Id && customerAccountDto.AccountTypeId == currentAccountType.Id)
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Customer already has a Current Account");
-                }
-                 
+            }
+           
 
 
-            }
-            else if(customerAccount.IsClosed==true)
-            {
-                return Request.CreateResponse(HttpStatusCode.OK, "Ok");
-            }
             return Request.CreateResponse(HttpStatusCode.OK, "Ok");
 
         }

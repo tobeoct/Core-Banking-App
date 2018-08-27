@@ -176,8 +176,8 @@ var GetStatus = function () {
             //                            var msg = JSON.stringify(errorMessage);
             var msg = JSON.parse(errorMessage.responseText);
             alert(msg);
-            //$('myBusinessStatusModal #errorMessage').fadeIn(200,
-            //  function () { $('myBusinessStatusModal #errorMessage').html(msg.message) });
+        //    $('myBusinessStatusModal #errorMessage').fadeIn(200,
+        //      function () { $('myBusinessStatusModal #errorMessage').html(msg.message) });
         }
 
     });
@@ -264,12 +264,14 @@ $('#myBusinessStatusModal #myProceedBtn').on('click', function (e) {
 
         },
         error: function (errorMessage) {
-            // alert('request failed');
+             //alert('request failed');
             //                            var msg = JSON.stringify(errorMessage);
             var msg = JSON.parse(errorMessage.responseText);
 
-            $('myBusinessStatusModal #errorMessage').fadeIn(200,
-                function () { $('myBusinessStatusModal #errorMessage').html(msg.message) });
+            $('#myBusinessStatusModal #errorMessage').fadeIn(200,
+                function () {
+                    $('#myBusinessStatusModal #errorMessage').html(msg.message);
+                });
         }
 
     });
