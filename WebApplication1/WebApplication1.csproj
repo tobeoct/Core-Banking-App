@@ -233,6 +233,7 @@
     <Compile Include="Controllers\Api\UserAccountsController.cs" />
     <Compile Include="Controllers\BranchesController.cs" />
     <Compile Include="Controllers\CustomersController.cs" />
+    <Compile Include="Controllers\FinancialReportsController.cs" />
     <Compile Include="Controllers\GeneralLedgersController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -249,6 +250,7 @@
     <Compile Include="Dtos\GLCategoryDto.cs" />
     <Compile Include="Dtos\GLPostingDto.cs" />
     <Compile Include="Dtos\LoanDetailsDto.cs" />
+    <Compile Include="Dtos\ReportsDto.cs" />
     <Compile Include="Dtos\TellerDto.cs" />
     <Compile Include="Dtos\TellerPostingDto.cs" />
     <Compile Include="Dtos\TermsDto.cs" />
@@ -744,6 +746,14 @@
     <Compile Include="Migrations\201808271226095_AddNarrationToFinancialReportsInDb.Designer.cs">
       <DependentUpon>201808271226095_AddNarrationToFinancialReportsInDb.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808280730121_changeTypeofGlCatIdInGlAccount.cs" />
+    <Compile Include="Migrations\201808280730121_changeTypeofGlCatIdInGlAccount.Designer.cs">
+      <DependentUpon>201808280730121_changeTypeofGlCatIdInGlAccount.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808281150148_AddCategoryToFinancialReport.cs" />
+    <Compile Include="Migrations\201808281150148_AddCategoryToFinancialReport.Designer.cs">
+      <DependentUpon>201808281150148_AddCategoryToFinancialReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountRoles.cs" />
     <Compile Include="Models\AccountType.cs" />
@@ -756,6 +766,7 @@
     <Compile Include="Models\GLPostings.cs" />
     <Compile Include="Models\LoanAccountType.cs" />
     <Compile Include="Models\LoanDetails.cs" />
+    <Compile Include="Models\PLModel.cs" />
     <Compile Include="Models\PostingTypes.cs" />
     <Compile Include="Models\SavingsAccountType.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -1089,6 +1100,7 @@
     <Content Include="Views\Tellers\_AddTellerPosting.cshtml" />
     <Content Include="Views\Tellers\_ConfirmationModal.cshtml" />
     <Content Include="Views\Shared\_BusinessStatusModal.cshtml" />
+    <Content Include="Views\FinancialReports\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1472,6 +1484,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808271226095_AddNarrationToFinancialReportsInDb.resx">
       <DependentUpon>201808271226095_AddNarrationToFinancialReportsInDb.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808280730121_changeTypeofGlCatIdInGlAccount.resx">
+      <DependentUpon>201808280730121_changeTypeofGlCatIdInGlAccount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808281150148_AddCategoryToFinancialReport.resx">
+      <DependentUpon>201808281150148_AddCategoryToFinancialReport.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

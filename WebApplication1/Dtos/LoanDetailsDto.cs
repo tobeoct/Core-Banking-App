@@ -12,7 +12,7 @@ namespace WebApplication1.Dtos
         [Key]
         public int Id { get; set; }
 
-
+        public string CustomerLoanAccountName { get; set; }
         public int LinkedCustomerAccountId { get; set; }
 
         public int CustomerAccountId { get; set; }

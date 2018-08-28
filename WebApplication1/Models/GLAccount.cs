@@ -28,7 +28,7 @@ namespace WebApplication1.Models
         public GLCategory GlCategories { get; set; }
 
         [Display(Name = "Main Account Category ")]
-        public byte GlCategoriesId { get; set; }
+        public int GlCategoriesId { get; set; }
 
         [Display(Name = "Account Balance")]
         public float AccountBalance { get; set; }

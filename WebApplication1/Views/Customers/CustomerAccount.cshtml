@@ -90,7 +90,7 @@
         var loanDetailsDto; // Loan Details Data Transfer Object
         var termsDto; // Terms Data Transfer Object
         var customerAccountDto; // Customer Account Data Transfer Object
-            
+        var loanAccountName; 
         /**
             * TABLE FUNCTIONALITY
             * */
@@ -372,7 +372,8 @@
             var CheckEligibility = function () {
                 loanDetailsDto = {
                     LoanAmount: loanAmount,
-                    LinkedCustomerAccountId: linkedCustomerAccountId
+                    LinkedCustomerAccountId: linkedCustomerAccountId,
+                    CustomerLoanAccountName : accountName
                     
                 };
                 $.ajax

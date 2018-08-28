@@ -16,6 +16,10 @@
 .display-none{
     display:none !important;
 }
+
+#dateDisplay{
+    display: none;
+}
 /* Set width on the form input elements since they're 100% wide by default */
 input,
 select,
@@ -30,9 +34,22 @@ textarea {
     position:relative; 
     transform:rotateY(180deg);
 }
-
-
-/*
+.tab-report .tab {
+    transition:background 0.3s ease-in;
+    cursor: pointer;
+}
+.tab-report .active {
+    background: #674172;
+}
+.tab-report .tab:hover {
+   
+    background: #c5c3c3 !important;
+    
+}
+.tab-report .tab:hover p {
+    color: white;
+}
+    /*
 *
 *
 *
@@ -41,15 +58,11 @@ textarea {
 *
 *
 */
-
-/* GENERIC SETTINGS */
-
-
-
-a, a:focus, a:hover, a:active, a:visited {
-    color: inherit;
-    text-decoration: none;
-}
+    /* GENERIC SETTINGS */
+    a, a:focus, a:hover, a:active, a:visited {
+        color: inherit;
+        text-decoration: none;
+    }
 .link
 {
     text-decoration: underline;

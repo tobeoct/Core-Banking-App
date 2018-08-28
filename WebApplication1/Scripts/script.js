@@ -175,7 +175,7 @@ var GetStatus = function () {
             // alert('request failed');
             //                            var msg = JSON.stringify(errorMessage);
             var msg = JSON.parse(errorMessage.responseText);
-            alert(msg);
+            alert(msg,message);
         //    $('myBusinessStatusModal #errorMessage').fadeIn(200,
         //      function () { $('myBusinessStatusModal #errorMessage').html(msg.message) });
         }
@@ -241,12 +241,12 @@ $('#myBusinessStatusModal #myProceedBtn').on('click', function (e) {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
         success: function (data) {
-
+            $('#myBusinessStatusModal #confirmationForm').fadeOut();
 
             $('#myBusinessStatusModal #successMessage').fadeIn(200,
                 function () {
 
-                    
+                   
                     $('#myBusinessStatusModal #successMessage').html(data);
                     $('.switch input').prop('checked', false);
                     if (presentAction == "Open") {

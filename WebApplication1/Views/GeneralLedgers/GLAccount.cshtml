@@ -58,7 +58,7 @@
         $(document).ready(function () {
             $("#gl-account").DataTable({
                 ajax: {
-                    url: "/api/generalledgers/getaccount",
+                    url: "/api/generalledgers/GetGLAccounts",
                     dataSrc: ""
                 },
                 columns: [
@@ -69,7 +69,7 @@
                         data: "code"
                     },
                     {
-                        data: "categories.name"
+                        data: "glCategories.mainAccountCategory"
                     },
                     {
                         data: "branch.name"

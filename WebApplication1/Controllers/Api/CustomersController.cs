@@ -59,9 +59,11 @@ namespace WebApplication1.Controllers.Api
 
             _context.CustomerAccounts.Add(customerAccount);
             _context.SaveChanges();
-            List<string> message = new List<string>();
-            message.Add("Account Created Successfully");
-            message.Add(customerAccount.Id.ToString());
+            List<string> message = new List<string>
+            {
+                "Account Created Successfully",
+                customerAccount.Id.ToString()
+            };
             return Request.CreateResponse(HttpStatusCode.OK, message);
         }
 
@@ -135,16 +137,17 @@ namespace WebApplication1.Controllers.Api
 
             loanDetails = Mapper.Map<LoanDetailsDto, LoanDetails>(loanDetailsDto);
             _context.LoanDetails.Add(loanDetails);
+            _context.SaveChanges();
 
             var customerAccount = _context.CustomerAccounts.Single(c => c.Id == loanDetailsDto.LinkedCustomerAccountId);
-            customerAccount.LoanDetailsId = loanDetails.Id;
-            customerAccount.AccountBalance = customerAccount.AccountBalance + loanDetails.LoanAmount;
 
-            //Loan Account
-            var accountType = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals("Loan Account"));
-            //Customers Linked (Onyema George Loan)
-
-            _context.SaveChanges();
+            customerAccount.LoanDetailsId = loanDetails.Id; // DEBIT
+            customerAccount.AccountBalance = customerAccount.AccountBalance + loanDetails.LoanAmount; // CREDIT
+            
+            var customerLoanAccount = _context.CustomerAccounts.Where(c=>c.AccountTypeId==CBA.LOAN_ACCOUNT_TYPE_ID && c.CustomerId==customerAccount.CustomerId).FirstOrDefault();
+            
+            // : Financial Report Entry
+            AddToReport("LoanDisbursement",loanDetailsDto.CustomerLoanAccountName, customerAccount.Name, loanDetails.LoanAmount);
 
             //            if (customerLinkedAccount.AccountTypeId == accountType.Id)//if linked Account is a Loan Account
             //            {
@@ -157,9 +160,11 @@ namespace WebApplication1.Controllers.Api
             //
             //            }
 
-            List<string> message = new List<string>();
-            message.Add("Loan Disbursed Successfully");
-            message.Add(loanDetails.Id.ToString());
+            List<string> message = new List<string>
+            {
+                "Loan Disbursed Successfully",
+                loanDetails.Id.ToString()
+            };
             return Request.CreateResponse(HttpStatusCode.OK, message);
         }
 
@@ -169,12 +174,14 @@ namespace WebApplication1.Controllers.Api
             var terms = new Terms();
             terms = Mapper.Map<TermsDto, Terms>(termsDto);
 
-
+            
             _context.Terms.Add(terms);
             _context.SaveChanges();
-            List<string> message = new List<string>();
-            message.Add("Terms Added Successfully");
-            message.Add(terms.Id.ToString());
+            List<string> message = new List<string>
+            {
+                "Terms Added Successfully",
+                terms.Id.ToString()
+            };
             return Request.CreateResponse(HttpStatusCode.OK, message);
         }
 
@@ -208,6 +215,27 @@ namespace WebApplication1.Controllers.Api
             return error;
             //var customers 
         }
+
+        // Create Financial Report Entry
+        [NonAction]
+        public void AddToReport(string postingType, string debitAccountName, string creditAccountName, float amount)
+        {
+            var creditAmount = amount;
+            var debitAmount = amount;
+            var financialReportDto = new FinancialReportDto
+            {
+                PostingType = postingType,
+                DebitAccount = debitAccountName,
+                DebitAmount = debitAmount,
+                CreditAccount = creditAccountName,
+                CreditAmount = creditAmount,
+                ReportDate = DateTime.Now
+            };
+
+            CBA.AddReport(financialReportDto);
+        }
+
+
         // PUT api/<controller>/5
         public void Put(int id, [FromBody]string value)
         {

@@ -15,6 +15,8 @@ namespace WebApplication1.Models
         public static string INTEREST_RECEIVABLE_ACC_NAME = "Interest Receivable GL Account";
         public static string INTEREST_INCOME_ACC_NAME = "Interest Income GL Account";
         public static string PRINCIPAL_OVERDUE_ACC_NAME = "Principal Overdue GL Account";
+        public static string COT_INCOME_GL_ACCOUNT = "COT Income GL Account";
+        public static string INTEREST_EXPENSE_GL_ACCOUNT = "Interest Expense GL Account";
         public static int LOAN_ACCOUNT_TYPE_ID = 3;
         public static int CURRENT_ACCOUNT_TYPE_ID = 2;
         public static int SAVINGS_ACCOUNT_TYPE_ID = 1;
@@ -31,11 +33,11 @@ namespace WebApplication1.Models
             }
             if (savingsAccountType != null)
             {
-                SAVINGS_ACCOUNT_TYPE_ID = loanAccountType.Id;
+                SAVINGS_ACCOUNT_TYPE_ID = savingsAccountType.Id;
             }
             if (currentAccountType != null)
             {
-                CURRENT_ACCOUNT_TYPE_ID = loanAccountType.Id;
+                CURRENT_ACCOUNT_TYPE_ID = currentAccountType.Id;
             }
            
         }
@@ -51,19 +53,33 @@ namespace WebApplication1.Models
         {
             financialReportDto.ReportDate = DateTime.Now;
            ApplicationDbContext _context = new ApplicationDbContext();
+            var creditAccountCategory = GetCategory(financialReportDto.CreditAccount.ToString());
+            var debitAccountCategory = GetCategory(financialReportDto.DebitAccount.ToString());
             var financialReport = new FinancialReport
             {
                 ReportDate = financialReportDto.ReportDate,
                 CreditAccount = financialReportDto.CreditAccount,
                 CreditAmount = financialReportDto.CreditAmount,
+                CreditAccountCategory = creditAccountCategory,
                 DebitAccount = financialReportDto.DebitAccount,
                 DebitAmount = financialReportDto.DebitAmount,
+                DebitAccountCategory = debitAccountCategory,
                 PostingType = financialReportDto.PostingType
                 
             };
             _context.FinancialReports.Add(financialReport);
             _context.SaveChanges();
             
+        }
+
+        public static string GetCategory(string accountName)
+        {
+            var category = "";
+            ApplicationDbContext _context = new ApplicationDbContext();
+            var glAccount = _context.GlAccounts.Where(c => c.Name.Equals(accountName)).Include(c => c.GlCategories).SingleOrDefault();
+            category = glAccount.GlCategories.MainAccountCategory.ToString();
+
+            return category;
         }
 
         public static void BasedOnGLCategories(GLAccount glAccount,string type, long amount )

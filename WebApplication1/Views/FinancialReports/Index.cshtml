@@ -1,0 +1,274 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="underline animated fadeInLeft">Financial Reports</h1>
+        </div>
+    </div>
+</div>
+<div class="row margin-vertical">
+
+    <div class="container bg-white shadow">
+
+        <div class="row align-center tab-report">
+
+            <div class="col-md-4 col-sm-4 col-xs-4 active white-color strip">
+                <div class="tab max-width padding-vertical" style="padding-top:20px;">
+                    <p>Profit & Loss Report</p>
+                </div>
+
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-4 strip " id="tab">
+                <div class="tab max-width padding-vertical" style="padding-top:20px;">
+                    <p>Trial Balance</p>
+                </div>
+
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-4 strip" id="tab">
+                <div class="tab max-width padding-vertical" style="padding-top:20px;">
+                    <p>Balance Sheet</p>
+                </div>
+            </div>
+        </div>
+        <div class="row bg-light-grey" id="selectDateInterval">
+            @*<div class="col-md-4 col-sm-4 col-xs-4  padding-vertical">
+                    <p style="text-decoration:underline;"><b>Profit & Loss Statement</b></p>
+                </div>*@
+            <div class="col-md-12 col-sm-12 col-xs-12 padding-vertical">
+                <form class="row">
+                    <div class="alert alert-danger" id="errorMessage"></div>
+                    <div class="col-md-4 form-group strip">
+                        <div class="row">
+                            <div class="col-md-2 ">
+                                <label for="fromDate">From</label>
+                            </div>
+                            <div class="col-md-10">
+                                <input type="date" name="fromDate" id="fromDate" class="fromDate form-control">
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="col-md-4 form-group strip">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="toDate">To</label>
+                            </div>
+                            <div class="col-md-10">
+                                <input type="date" name="toDate" id="toDate" class="toDate form-control">
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="form-group col-md-2 col-sm-2 col-xs-4 strip align-right">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p id="reportIntervalBtn" class="btn btn-success">Go</p>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="form-group col-md-2 col-sm-2 col-xs-4 strip ">
+                        <div class="row">
+                            <div class="col-md-12 align-right">
+                                <p id="printBtn" class=" alt-color btn btn-default margin-horizontal-min"><i class="fa fa-print" style="padding-right: 5px;"></i>Print</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row" id="dateDisplay">
+            <div class="col-md-4 col-sm-4 col-xs-6 strip">
+                <p>
+                    <span>FROM : </span>
+                    <span id="fromDateDisplay">
+                        <b> </b>
+                    </span>
+                    
+                </p>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-6">
+                <p>
+                    <span>TO : </span>
+                    <span id="toDateDisplay">
+                        <b> </b>
+                    </span>
+                </p>
+            </div>
+        </div>
+        <div class="row" id="plReport">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr class="padding-vertical">
+                        <th style="padding-top:20px; padding-bottom:20px;">General Ledger Category</th>
+                        <th style="padding-top:20px; padding-bottom:20px;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @*<tr>
+                            <td><b>Income</b></td>
+                            <td></td>
+                        </tr>
+                        <tr id="income"></tr>
+                        <tr>
+                            <td><b>Total Income</b></td>
+                            <td id="totalIncome"></td>
+                        </tr>
+
+                        <tr>
+                            <td><b>Expense</b></td>
+                            <td></td>
+                        </tr>
+                        <tr id="expense"></tr>
+                        <tr>
+                            <td><b>Total Income</b></td>
+                            <td id="totalIncome"></td>
+                        </tr>
+                        <tr class="bg-light-grey">
+                            <td><b>Profit/Loss</b></td>
+                            <td id="profitOrLoss"></td>
+                        </tr>*@
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+@section scripts
+{
+    <script>
+
+        $.ajax
+            ({
+                type: 'GET',
+                url: '/api/FinancialReports/ProfitAndLoss',
+
+                success: function (data) {
+
+                    //document.getElementById('customerAccountDetailsForm').reset();
+                    var totalIncome = parseFloat(data[1]) + parseFloat(data[3]);
+                    var totalExpense = parseFloat(data[5]);
+                    $('#plReport tbody')
+                        .html("<tr class='bg-grey'><td><b>Income</b></td><td></td></tr>"
+                            + "<tr><td>"
+                            + data[0] + "</td><td>"
+                            + data[1] + "</td></tr><tr> <td>"
+                            + data[2] + "</td><td>"
+                            + data[3] + "</td></tr> <tr> <td> <b>Total Income</b></td><td><b>"
+                            + totalIncome + "</b></td></tr><tr class='bg-grey'><td><b>Expense</b></td><td></td></tr><tr><td>"
+                            + data[4] + "</td><td>"
+                            + data[5] + "</td></tr><tr><td> <b>Total Expense</b></td><td><b>"
+                            + totalExpense + "</b></td></tr><tr class='bg-light-grey'><td class='bg-grey' ><b>Profit/Loss</b></td><td class='alt-bg white-color'><b>"
+                            + (totalIncome - totalExpense)
+                            + "</b></td></tr>");
+
+
+                },
+                error: function (errorMessage) {
+                    // alert('request failed');
+
+                    var msg = JSON.parse(errorMessage.responseText);
+
+                    alert(msg);
+                }
+
+            });
+
+        $(document).ready(function () {
+
+            $('#selectDateInterval #reportIntervalBtn').on('click', function () {
+                $('form #errorMessage').fadeOut();
+                //alert('clicked');
+                var fromDate = String($('#fromDate').val());
+                var toDate = String($('#toDate').val());
+                if (fromDate != "" && fromDate != null) {
+                    if ($('#fromDate').val() > $('#toDate').val()) {
+                        $('form #errorMessage').fadeIn();
+                        $('form #errorMessage').html("<b>TO Date</b> must be ahead of <b>FROM Date</b>");
+                        return;
+                    } else {
+                        var reportDto = {
+                            FromDate: fromDate,
+                            ToDate: toDate
+                        }
+                        $.ajax
+                        ({
+                            type: 'POST',
+                            url: '/api/FinancialReports/ProfitAndLossQuery',
+                            data: JSON.stringify(reportDto),
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json',
+                            success: function(data) {
+
+                                //document.getElementById('customerAccountDetailsForm').reset();
+                                $('#dateDisplay').fadeIn(0,
+                                    function() {
+                                        $('#dateDisplay #fromDateDisplay b').text(fromDate);
+                                        $('#dateDisplay #toDateDisplay b').text(toDate);
+                                    });
+                                var totalIncome = parseFloat(data[1]) + parseFloat(data[3]);
+                                var totalExpense = parseFloat(data[5]);
+                                $('#plReport tbody')
+                                    .html("<tr class='bg-grey'><td><b>Income</b></td><td></td></tr>" +
+                                        "<tr><td>" +
+                                        data[0] +
+                                        "</td><td>" +
+                                        data[1] +
+                                        "</td></tr><tr> <td>" +
+                                        data[2] +
+                                        "</td><td>" +
+                                        data[3] +
+                                        "</td></tr> <tr> <td> <b>Total Income</b></td><td><b>" +
+                                        totalIncome +
+                                        "</b></td></tr><tr class='bg-grey'><td><b>Expense</b></td><td></td></tr><tr><td>" +
+                                        data[4] +
+                                        "</td><td>" +
+                                        data[5] +
+                                        "</td></tr><tr><td> <b>Total Expense</b></td><td><b>" +
+                                        totalExpense +
+                                        "</b></td></tr><tr class='bg-light-grey'><td class='bg-grey' ><b>Profit/Loss</b></td><td class='alt-bg white-color'><b>" +
+                                        (totalIncome - totalExpense) +
+                                        "</b></td></tr>");
+
+
+                            },
+                            error: function(errorMessage) {
+                                // alert('request failed');
+
+                                var msg = JSON.parse(errorMessage.responseText);
+
+                                alert(msg);
+                            }
+
+                        });
+                    }
+                } else {
+                    if (fromDate == null || fromDate == "") {
+                        $('form #errorMessage').fadeIn();
+                        
+                        $('form #errorMessage').html("Please select <b>FROM Date</b>");
+                    }
+                    if (toDate == null || toDate == "") {
+                        $('form #errorMessage').fadeIn();
+
+                        $('form #errorMessage').append("<br> Please select <b>TO Date</b>");
+                    }
+                }
+
+            });
+        });
+    </script>
+}
+
+

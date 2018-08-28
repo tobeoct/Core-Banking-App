@@ -22,6 +22,9 @@ namespace WebApplication1.Controllers.Api
         }
 
         // GET: /api/generalledgers
+        [AcceptVerbs("GET", "POST")]
+        [HttpGet]
+        [Route("api/GeneralLedgers/GetCategories")]
         public IHttpActionResult GetCategories()
         {
 
@@ -30,14 +33,17 @@ namespace WebApplication1.Controllers.Api
             return Ok(categoriesDto);
             
         }
-
-        [Route("api/GeneralLedgers/GetAccount")]
-        public IHttpActionResult GetAccount()
+        [AcceptVerbs("GET", "POST")]
+        [HttpGet]
+        [Route("api/GeneralLedgers/GetGLAccounts")]
+        public IHttpActionResult GetGLAccounts()
         {
-            var accountDto = _context.GlAccounts.Include(c => c.GlCategories).Include(b => b.Branch).ToList();
+            var accountDto = _context.GlAccounts.Include(c => c.GlCategories).Include(c=>c.GlCategories.Categories).Include(b => b.Branch).ToList();
 
             return Ok(accountDto);
         }
+        [AcceptVerbs("GET", "POST")]
+        [HttpGet]
         [Route("api/GeneralLedgers/GetPostings")]
         public IHttpActionResult GetPostings()
         {
@@ -78,7 +84,9 @@ namespace WebApplication1.Controllers.Api
             };
             _context.GlPostings.Add(glPosting);
             _context.SaveChanges();
+
             CBA.CreditAndDebitAccounts(glPostingDto);
+
             var financialReportDto = new FinancialReportDto();
             financialReportDto.PostingType = "GL Posting";
             

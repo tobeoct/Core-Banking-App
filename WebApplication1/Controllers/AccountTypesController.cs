@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Identity.Owin;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -10,11 +13,27 @@ namespace WebApplication1.Controllers
 {
     public class AccountTypesController : Controller
     {
+       
         private ApplicationDbContext _context;
+        private string userId = "";
+        protected UserManager<ApplicationUser> UserManager { get; set; }
+        //protected SignInManager<ApplicationSignInManager> SignInManager { get; set; }
         public AccountTypesController()
         {
+            _context = new ApplicationDbContext();
+
+            userId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+            this.UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(_context));
+            ApplicationUser user = System.Web.HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
+
+            if (user != null)
+            {
+                RoleName.USER_NAME = user.FullName;
+                RoleName.EMAIL = user.Email;
+            }
+        
             ViewBag.Message = RoleName.USER_NAME;
-            _context= new ApplicationDbContext();
+            
         }
         // GET: AccountTypes
         public ActionResult Index()
