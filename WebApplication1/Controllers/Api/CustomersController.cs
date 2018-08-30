@@ -139,27 +139,34 @@ namespace WebApplication1.Controllers.Api
             _context.LoanDetails.Add(loanDetails);
             _context.SaveChanges();
 
-            var customerAccount = _context.CustomerAccounts.Single(c => c.Id == loanDetailsDto.LinkedCustomerAccountId);
+            var customerAccount = _context.CustomerAccounts.SingleOrDefault(c => c.Id == loanDetailsDto.LinkedCustomerAccountId);
+            var glLoanAccount = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals(CBA.CUSTOMER_LOAN_ACCOUNT));
+            if (customerAccount != null)
+            {
+                customerAccount.LoanDetailsId = loanDetails.Id;
+                if (glLoanAccount != null)
+                {
+                    glLoanAccount.AccountBalance = glLoanAccount.AccountBalance - loanDetails.LoanAmount; // DEBIT
+                }
 
-            customerAccount.LoanDetailsId = loanDetails.Id; // DEBIT
-            customerAccount.AccountBalance = customerAccount.AccountBalance + loanDetails.LoanAmount; // CREDIT
-            
-            var customerLoanAccount = _context.CustomerAccounts.Where(c=>c.AccountTypeId==CBA.LOAN_ACCOUNT_TYPE_ID && c.CustomerId==customerAccount.CustomerId).FirstOrDefault();
-            
+                customerAccount.AccountBalance = customerAccount.AccountBalance + loanDetails.LoanAmount; // CREDIT
+
+            }
+
+            //var customerLoanAccount = _context.CustomerAccounts.Where(c=>c.AccountTypeId==CBA.LOAN_ACCOUNT_TYPE_ID && c.CustomerId==customerAccount.CustomerId).FirstOrDefault();
+
             // : Financial Report Entry
-            AddToReport("LoanDisbursement",loanDetailsDto.CustomerLoanAccountName, customerAccount.Name, loanDetails.LoanAmount);
-
-            //            if (customerLinkedAccount.AccountTypeId == accountType.Id)//if linked Account is a Loan Account
-            //            {
-            //                var initialLinkedLoanDetail = _context.LoanDetails.SingleOrDefault(c => c.LinkedCustomerAccountId == loanDetailsDto.LinkedCustomerAccountId);
-            //                var customerAcc =
-            //                    _context.CustomerAccounts.SingleOrDefault(c => c.LoanDetailsId == customerAccount.LoanDetailsId);
-            //                customerAcc.AccountBalance = customerAcc.AccountBalance + loanDetailsDto.LoanAmount;
-            //                initialLinkedLoanDetail.LoanAmount = loanDetailsDto.LoanAmount + initialLinkedLoanDetail.LoanAmount;
-            //                _context.SaveChanges();
-            //
-            //            }
-
+            AddToReport("LoanDisbursement",CBA.CUSTOMER_LOAN_ACCOUNT, customerAccount.Name, loanDetails.LoanAmount);
+//            var glPostingDto= new GLPostingDto()
+//            {
+//                CreditAmount = loanDetails.LoanAmount,
+//                CreditNarration = "Loan Disbursement",
+//                DebitAmount = loanDetails.LoanAmount,
+//                DebitNarration = "Loan Disbursement",
+//                GlCreditAccountId = loanDetails.LinkedCustomerAccountId,
+//                GlDebitAccountId = glLoanAccount.Id
+//            };
+            _context.SaveChanges();
             List<string> message = new List<string>
             {
                 "Loan Disbursed Successfully",

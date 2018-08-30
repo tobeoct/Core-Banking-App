@@ -43,10 +43,12 @@ namespace WebApplication1.Controllers
         {
             ViewBag.Message = RoleName.USER_NAME;
             var categories = _context.Categories.ToList();
+            var count = _context.GlCategories.Count();
             var viewModel = new GLCategoryViewModel
             {
                 GlCategory = new GLCategory(),
-                Categories = categories
+                Categories = categories,
+                count = count
             };
             return View("GLCategory", viewModel);
         }
@@ -57,10 +59,12 @@ namespace WebApplication1.Controllers
             ViewBag.Message = RoleName.USER_NAME;
             var GLCategory = _context.GlCategories.ToList();
             var branches = _context.Branches.ToList();
+            var count = _context.GlAccounts.Count();
             var viewModel = new GLAccountViewModel()
             {
                 GLCategories = GLCategory,
-                Branch = branches
+                Branch = branches,
+                count = count
             };
             return View("GLAccount", viewModel);
         }
@@ -70,7 +74,7 @@ namespace WebApplication1.Controllers
             var _context = new ApplicationDbContext();
             ViewBag.Message = RoleName.USER_NAME;
             var glAccount = _context.GlAccounts.Include(c=>c.GlCategories).Include(c=>c.Branch).ToList();
-            var count = _context.GlAccounts.Count();
+            var count = _context.GlPostings.Count();
             ViewBag.Count = count;
             var viewModel = new GLPostingViewModel()
             {

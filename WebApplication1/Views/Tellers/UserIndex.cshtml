@@ -1,20 +1,9 @@
 ﻿
-
-
-@using WebApplication1.Models
 @model WebApplication1.ViewModels.TellerViewModel
 @{
-    ViewBag.Title = "Index";
-    if (User.IsInRole(RoleName.ADMIN_ROLE))
-    {
-        Layout = "~/Views/Shared/_Layout.cshtml";
-    }
-    else
-    {
-        Layout = "~/Views/Shared/_UserLayout.cshtml";
-    }
+    ViewBag.Title = "_UserIndex";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
 }
-
 @Html.Partial("_AddTellerModal")
 <div class="container">
     <div class="row">
@@ -67,10 +56,10 @@
     <script>
 
 
-        $(document).ready(function() {
+        $(document).ready(function () {
 
-            $('#myOpenTellerModalBtn').on('click', function() {
-                $('#myAddTellerModal').fadeIn(0, function() {
+            $('#myOpenTellerModalBtn').on('click', function () {
+                $('#myAddTellerModal').fadeIn(0, function () {
                     $(this).addClass('fadeInDown');
                 });
             });
@@ -91,7 +80,7 @@
                     },
                     {
                         data: "id",
-                        render: function(data) {
+                        render: function (data) {
                             return "<a class='js-delete' data-branch-id='" + data + "'>Edit|Delete</a>"
                         }
                     }
@@ -111,19 +100,19 @@
                         return;
                     }
                     if (tillAccountId == 0) {
-//                        if ($('#tillAccountId').text().contains( "No Available Till Accounts")) {
-//                            $('#myAddTellerModal #errorMessage').fadeIn();
-//                            $('#myAddTellerModal #errorMessage').html("All Accounts Are Currently Assigned To A User");
-//                            return;
-//                        }
+                        //                        if ($('#tillAccountId').text().contains( "No Available Till Accounts")) {
+                        //                            $('#myAddTellerModal #errorMessage').fadeIn();
+                        //                            $('#myAddTellerModal #errorMessage').html("All Accounts Are Currently Assigned To A User");
+                        //                            return;
+                        //                        }
                         $('#myAddTellerModal #errorMessage').fadeIn();
                         $('#myAddTellerModal #errorMessage').html("Please Select a Till Account");
                         return;
                     }
                     alert("Till Account Id : " +
-                        tillAccountId+
+                        tillAccountId +
                         ", User Id : " +
-                        userId );
+                        userId);
 
                     var tellerDto = {
                         UserTellerId: userId,
@@ -139,19 +128,19 @@
                         dataType: 'json',
                         success: function (data) {
 
-                            
+
                             $('#myAddTellerModal #successMessage').fadeIn(200,
-                                    function () {
-                                        document.getElementById('tellerForm').reset();
-                                        
-                                        $('#myAddTellerModal #successMessage').html(data)
-                                    });
-                                return;
+                                function () {
+                                    document.getElementById('tellerForm').reset();
+
+                                    $('#myAddTellerModal #successMessage').html(data)
+                                });
+                            return;
 
 
                         },
                         error: function (errorMessage) {
-                           // alert('request failed');
+                            // alert('request failed');
                             //                            var msg = JSON.stringify(errorMessage);
                             var msg = JSON.parse(errorMessage.responseText);
 

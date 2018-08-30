@@ -754,6 +754,10 @@
     <Compile Include="Migrations\201808281150148_AddCategoryToFinancialReport.Designer.cs">
       <DependentUpon>201808281150148_AddCategoryToFinancialReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808292033112_updateGLPostingTypesInDb.cs" />
+    <Compile Include="Migrations\201808292033112_updateGLPostingTypesInDb.Designer.cs">
+      <DependentUpon>201808292033112_updateGLPostingTypesInDb.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountRoles.cs" />
     <Compile Include="Models\AccountType.cs" />
@@ -913,6 +917,7 @@
     <Content Include="Content\DataTables\swf\flashExport.swf" />
     <Content Include="Content\Images\account-balance.png" />
     <Content Include="Content\Images\add.png" />
+    <Content Include="Content\Images\page-loader.gif" />
     <Content Include="Content\Images\arrows-pointing-to-center.png" />
     <Content Include="Content\Images\bait.png" />
     <Content Include="Content\Images\bg.png" />
@@ -1092,15 +1097,17 @@
     <Content Include="Views\Tellers\Index.cshtml" />
     <Content Include="Views\Tellers\_AddTellerModal.cshtml" />
     <Content Include="Views\Tellers\TellerPosting.cshtml" />
-    <Content Include="Views\Tellers\_AddTellerPostingModal.cshtml" />
     <Content Include="Views\GeneralLedgers\GLPosting.cshtml" />
-    <Content Include="Views\GeneralLedgers\_AddGLPostingModal.cshtml" />
     <Content Include="Views\GeneralLedgers\_ConfirmationModal.cshtml" />
-    <Content Include="Views\GeneralLedgers\_AddAccount.cshtml" />
+    <Content Include="Views\GeneralLedgers\_AddPostings.cshtml" />
     <Content Include="Views\Tellers\_AddTellerPosting.cshtml" />
     <Content Include="Views\Tellers\_ConfirmationModal.cshtml" />
     <Content Include="Views\Shared\_BusinessStatusModal.cshtml" />
     <Content Include="Views\FinancialReports\Index.cshtml" />
+    <Content Include="Views\UserAccounts\ActivationAccount.cshtml" />
+    <Content Include="Views\Shared\_UserTop.cshtml" />
+    <Content Include="Views\Tellers\UserIndex.cshtml" />
+    <Content Include="Views\Tellers\UserTellerPosting.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1490,6 +1497,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808281150148_AddCategoryToFinancialReport.resx">
       <DependentUpon>201808281150148_AddCategoryToFinancialReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808292033112_updateGLPostingTypesInDb.resx">
+      <DependentUpon>201808292033112_updateGLPostingTypesInDb.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

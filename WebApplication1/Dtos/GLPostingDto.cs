@@ -18,7 +18,7 @@ namespace WebApplication1.Dtos
         public int GlDebitAccountId { get; set; }     
 
         [Display(Name = "Debit Amount")]
-        public long DebitAmount { get; set; }
+        public float DebitAmount { get; set; }
 
         [Display(Name = "Narration")]
         public string DebitNarration { get; set; }
@@ -27,7 +27,7 @@ namespace WebApplication1.Dtos
         public int GlCreditAccountId { get; set; }
 
         [Display(Name = "Credit Amount")]
-        public long CreditAmount { get; set; }
+        public float CreditAmount { get; set; }
 
         [Display(Name = "Narration")]
         public string CreditNarration { get; set; }

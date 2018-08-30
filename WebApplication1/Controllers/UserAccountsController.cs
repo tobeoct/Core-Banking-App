@@ -168,7 +168,7 @@ namespace WebApplication1.Controllers
                 if (result.Succeeded)
                 {
                     await UserManager.AddToRoleAsync(user.Id, model.RoleName);
-                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    //await SignInManager.SignInAsync(user, isPersistent: true, rememberBrowser: false);
 
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
@@ -178,7 +178,7 @@ namespace WebApplication1.Controllers
                     //                    await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
                     ViewBag.Message = messageRegistration + passWord;
                     //Verification Email  
-                    //   VerificationEmail(model.Email, activationCode.ToString(), passWord);
+                       VerificationEmail(model.Email, activationCode.ToString(), passWord);
 
                     messageRegistration = "Your account has been created successfully. Check your mail to Activate Your Account";
                     statusRegistration = true;

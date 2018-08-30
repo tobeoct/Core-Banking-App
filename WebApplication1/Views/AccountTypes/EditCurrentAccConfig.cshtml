@@ -43,11 +43,11 @@
             <div class="row form-group ">
                 <div class="margin-vertical">
                     <div class="col-md-3">
-                        @Html.LabelFor(m => m.CurrentAccountType.GLAccountId)
+                        @Html.LabelFor(m => m.CurrentAccountType.InterestExpenseGLAccountId)
                     </div>
                     <div class="col-md-9">
-                        @Html.DropDownListFor(m => m.CurrentAccountType.GLAccountId, new SelectList(Model.GlAccounts, "Id", "Name"), "Select Interest Expense GL ", new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.CurrentAccountType.GlAccount)
+                        @Html.DropDownListFor(m => m.CurrentAccountType.InterestExpenseGLAccountId, new SelectList(Model.GlAccounts, "Id", "Name"), "Select Interest Expense GL ", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.CurrentAccountType.InterestExpenseGLAccountId)
                     </div>
                 </div>
             </div>
@@ -66,12 +66,12 @@
             <div class="row form-group ">
                 <div class="margin-vertical">
                     <div class="col-md-3">
-                        @Html.LabelFor(m => m.CurrentAccountType.GLAccountId) 
+                        @Html.LabelFor(m => m.CurrentAccountType.COTIncomeGLAccountId) 
                        
                     </div>
                     <div class="col-md-9">
-                        @Html.DropDownListFor(m => m.CurrentAccountType.GLAccountId, new SelectList(Model.GlAccounts, "Id", "Name"), "Select COT Income GL ", new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.CurrentAccountType.GlAccount)
+                        @Html.DropDownListFor(m => m.CurrentAccountType.COTIncomeGLAccountId, new SelectList(Model.GlAccounts, "Id", "Name"), "Select COT Income GL ", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.CurrentAccountType.COTIncomeGLAccountId)
                     </div>
                 </div>
             </div>

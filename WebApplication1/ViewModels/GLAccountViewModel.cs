@@ -11,5 +11,6 @@ namespace WebApplication1.ViewModels
         public IEnumerable<GLCategory> GLCategories { get; set; }
         public GLAccount GlAccount { get; set; }
         public IEnumerable<Branch> Branch { get; set; }
+        public int count { get; set; }
     }
 }

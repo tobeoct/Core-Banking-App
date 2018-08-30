@@ -1,7 +1,8 @@
-﻿
+﻿@using WebApplication1.Models
+
 @{
     ViewBag.Title = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = User.IsInRole(RoleName.ADMIN_ROLE) ? "~/Views/Shared/_Layout.cshtml" : "~/Views/Shared/_UserLayout.cshtml";
 }
 
 
@@ -18,19 +19,19 @@
 
         <div class="row align-center tab-report">
 
-            <div class="col-md-4 col-sm-4 col-xs-4 active white-color strip">
+            <div class="col-md-4 col-sm-4 col-xs-4 active strip" id="plTab">
                 <div class="tab max-width padding-vertical" style="padding-top:20px;">
                     <p>Profit & Loss Report</p>
                 </div>
 
             </div>
-            <div class="col-md-4 col-sm-4 col-xs-4 strip " id="tab">
+            <div class="col-md-4 col-sm-4 col-xs-4 strip " id="trialBalanceTab">
                 <div class="tab max-width padding-vertical" style="padding-top:20px;">
                     <p>Trial Balance</p>
                 </div>
 
             </div>
-            <div class="col-md-4 col-sm-4 col-xs-4 strip" id="tab">
+            <div class="col-md-4 col-sm-4 col-xs-4 strip" id="balanceSheetTab">
                 <div class="tab max-width padding-vertical" style="padding-top:20px;">
                     <p>Balance Sheet</p>
                 </div>
@@ -61,7 +62,7 @@
                                 <label for="toDate">To</label>
                             </div>
                             <div class="col-md-10">
-                                <input type="date" name="toDate" id="toDate" class="toDate form-control">
+                                <input type="date" name="toDate" id="toDate" class=" toDate form-control">
                             </div>
                         </div>
 
@@ -93,7 +94,7 @@
                     <span id="fromDateDisplay">
                         <b> </b>
                     </span>
-                    
+
                 </p>
             </div>
             <div class="col-md-4 col-sm-4 col-xs-6">
@@ -106,37 +107,113 @@
             </div>
         </div>
         <div class="row" id="plReport">
+            <div class="max-width align-center row padding-vertical">
+                <h3><b>Profit & Loss Report - Aug 29</b></h3>
+            </div>
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr class="padding-vertical">
-                        <th style="padding-top:20px; padding-bottom:20px;">General Ledger Category</th>
-                        <th style="padding-top:20px; padding-bottom:20px;">Amount</th>
+                        <th style="padding-top: 20px; padding-bottom: 20px;">General Ledger Category</th>
+                        <th style="padding-top: 20px; padding-bottom: 20px;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+
+
+        <div class="row" id="trialBalanceReport">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr class="padding-vertical">
+                        <th style="padding-top: 20px; padding-bottom: 20px;">General Ledger Category</th>
+                        <th style="padding-top: 20px; padding-bottom: 20px;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="row" id="balanceSheetReport">
+            <div class="max-width align-center row" style="padding-top: 10px; padding-bottom: 20px;">
+                <h3><b>Balance Sheet - Aug 29</b></h3>
+            </div>
+            <table class="table table-bordered table-striped">
+
+                <thead>
+                    <tr class="padding-vertical">
+                        <th style="padding-top: 20px; padding-bottom: 20px;">Account Name</th>
+                        <th style="padding-top: 20px; padding-bottom: 20px;"></th>
+                        <th style="padding-top: 20px; padding-bottom: 20px;"></th>
+
                     </tr>
                 </thead>
                 <tbody>
-                    @*<tr>
-                            <td><b>Income</b></td>
-                            <td></td>
-                        </tr>
-                        <tr id="income"></tr>
-                        <tr>
-                            <td><b>Total Income</b></td>
-                            <td id="totalIncome"></td>
-                        </tr>
+                    <tr class="bg-grey" id="asset">
+                        <td><b>ASSET</b></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
 
-                        <tr>
-                            <td><b>Expense</b></td>
-                            <td></td>
-                        </tr>
-                        <tr id="expense"></tr>
-                        <tr>
-                            <td><b>Total Income</b></td>
-                            <td id="totalIncome"></td>
-                        </tr>
-                        <tr class="bg-light-grey">
-                            <td><b>Profit/Loss</b></td>
-                            <td id="profitOrLoss"></td>
-                        </tr>*@
+                    <tr >
+                        <td colspan="2"><b>Total Asset</b></td>
+                        
+                        <td class="bg-grey " id="totalAsset"><b></b></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="bg-grey">
+                        <td><b>LIABILITY & EQUITY</b></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    
+
+                    <tr id="liability">
+                        <td><b>LIABILITY</b></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr >
+                        <td colspan="2"><b>Total Liability</b></td>
+                        
+                        <td class="bg-grey " id="totalLiability"><b></b></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+
+                    <tr>
+                        <td><b>EQUITY</b></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr id="capital" >
+                        <td><b>Capital</b></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="bg-grey" >
+                        <td colspan="2"><b>Total Equity</b></td>
+                        <td id="totalLE"><b></b></td>
+                        
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="bg-grey" id="totalCredDeb">
+                        <td colspan="2"><b>TOTAL LIABILITIES & EQUITY</b></td>
+
+
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -169,7 +246,7 @@
                             + totalIncome + "</b></td></tr><tr class='bg-grey'><td><b>Expense</b></td><td></td></tr><tr><td>"
                             + data[4] + "</td><td>"
                             + data[5] + "</td></tr><tr><td> <b>Total Expense</b></td><td><b>"
-                            + totalExpense + "</b></td></tr><tr class='bg-light-grey'><td class='bg-grey' ><b>Profit/Loss</b></td><td class='alt-bg white-color'><b>"
+                            + totalExpense + "</b></td></tr><tr class='bg-light-grey'><td class='bg-grey' ><b>PROFIT/LOSS</b></td><td class='alt-bg white-color'><b>"
                             + (totalIncome - totalExpense)
                             + "</b></td></tr>");
 
@@ -184,8 +261,158 @@
                 }
 
             });
+        $.ajax
+        ({
+            type: 'GET',
+            url: '/api/FinancialReports/TrialBalance',
+
+            success: function (data) {
+
+                //document.getElementById('customerAccountDetailsForm').reset();
+                var totalIncome = parseFloat(data[1]) + parseFloat(data[3]);
+                var totalExpense = parseFloat(data[5]);
+                $('#trialBalanceReport tbody')
+                    .html("<tr class='bg-grey'><td><b>Income</b></td><td></td></tr>"
+                        + "<tr><td>"
+                        + data[0] + "</td><td>"
+                        + data[1] + "</td></tr><tr> <td>"
+                        + data[2] + "</td><td>"
+                        + data[3] + "</td></tr> <tr> <td> <b>Total Income</b></td><td><b>"
+                        + totalIncome + "</b></td></tr><tr class='bg-grey'><td><b>Expense</b></td><td></td></tr><tr><td>"
+                        + data[4] + "</td><td>"
+                        + data[5] + "</td></tr><tr><td> <b>Total Expense</b></td><td><b>"
+                        + totalExpense + "</b></td></tr><tr class='bg-light-grey'><td class='bg-grey' ><b>PROFIT/LOSS</b></td><td class='alt-bg white-color'><b>"
+                        + (totalIncome - totalExpense)
+                        + "</b></td></tr>");
+
+
+            },
+            error: function (errorMessage) {
+                // alert('request failed');
+
+                var msg = JSON.parse(errorMessage.responseText);
+
+                //alert(msg);
+            }
+
+        });
+        $.ajax
+            ({
+                type: 'GET',
+                url: '/api/FinancialReports/BalanceSheet',
+
+                success: function (data) {
+
+                    //document.getElementById('customerAccountDetailsForm').reset();
+                    var assetEntry = "";
+                    var incomeEntry = "";
+                    var expenseEntry = "";
+                    var liabilityEntry = "";
+                    var capitalEntry = "";
+                    var totalDebit = 0;
+                    var totalCredit = 0;
+                    var equity = 0;
+                    //alert(data[2][1]["accountName"]);
+                    for (var i = 0; i < data.length; i++) {
+                        for (var j = 0; j < data[i].length; j++) {
+                            var currentLevelData = data[i][j];
+                            var currentDebitAmount = Number.parseFloat(currentLevelData['debitAmount'].toFixed(2));
+                            var currentCreditAmount = Number.parseFloat(currentLevelData['creditAmount'].toFixed(2));
+                            if (currentCreditAmount === 0) {
+                                currentCreditAmount = "";
+                            }
+                            if (currentDebitAmount === 0) {
+                                currentDebitAmount = "";
+                            }
+                            //alert(currentLevelData);
+                            if (i === 0) {
+                                assetEntry = assetEntry + "<tr><td style='padding-left:2.5%;'>" + currentLevelData['accountName'] +
+                                    "</td><td>" + currentDebitAmount + "</td><td>" + currentCreditAmount + "</td></tr>";
+                                totalDebit = totalDebit + currentDebitAmount;
+                                //totalCredit = totalCredit + currentCreditAmount;
+
+                            }
+
+                            if (i === 3) {
+                                liabilityEntry = liabilityEntry + "<tr><td  style='padding-left:2.5%;'>" + currentLevelData['accountName'] +
+                                    "</td><td>" + currentCreditAmount + "</td><td>" + currentDebitAmount + "</td></tr>";
+                                //totalDebit = totalDebit + currentDebitAmount;
+                                totalCredit = Number.parseFloat(totalCredit) + currentCreditAmount;
+                            }
+                            if (i === 4) {
+                                if (currentCreditAmount !== 0 || debitAmount!=0) {
+                                    capitalEntry = capitalEntry + "<tr><td  style='padding-left:2.5%;'>" + currentLevelData['accountName'] +
+                                        "</td><td>" + currentCreditAmount + "</td><td></td></tr>";
+                                    
+                                }
+                                equity = Number.parseFloat(equity) + currentCreditAmount;
+                                //totalCredit = totalCredit + currentCreditAmount;
+                            }
+
+
+                            // alert(incomeEntry);
+                        }
+
+
+
+                    }
+                    var totalLiability = Number.parseFloat(totalCredit);
+                    var totalAsset = totalDebit;  // minus Equity
+
+                    $('#balanceSheetReport #asset').after(assetEntry);
+                    $('#balanceSheetReport #income').after(incomeEntry);
+                    $('#balanceSheetReport #expense').after(expenseEntry);
+                    $('#balanceSheetReport #liability').after(liabilityEntry);
+                    $('#balanceSheetReport #capital').after(capitalEntry);
+                    $('#totalLE b').html(equity);
+                    $('#totalAsset b').html(totalAsset);
+                    $('#totalLiability b').html(totalLiability);
+                    $('#balanceSheetReport #totalCredDeb').append("<td ><b>" + (Number.parseFloat(totalLiability) + Number.parseFloat(equity)) + "</b></td>");
+                    
+
+
+                },
+                error: function (errorMessage) {
+                    // alert('request failed');
+
+                    var msg = JSON.parse(errorMessage.responseText);
+
+                    alert(msg);
+                }
+
+            });
 
         $(document).ready(function () {
+
+            // : TAB FUNCTIONALITY
+            $("#balanceSheetTab").on('click',
+                function () {
+                    $('.tab-report .col-md-4').removeClass('active');
+                    $('#plReport,#trialBalanceReport,#balanceSheetReport').fadeOut(100, function () {
+                        $('.tab-report #balanceSheetTab').addClass('active');
+                        $('#balanceSheetReport').fadeIn();
+                    });
+
+                });
+            $("#plTab").on('click',
+                function () {
+                    $('.tab-report .col-md-4').removeClass('active');
+                    $('#plReport,#trialBalanceReport,#balanceSheetReport').fadeOut(100, function () {
+                        $('.tab-report #plTab').addClass('active');
+                        $('#plReport').fadeIn();
+                    });
+
+                });
+            $("#trialBalanceTab").on('click',
+                function () {
+                    $('.tab-report .col-md-4').removeClass('active');
+                    $('#plReport,#trialBalanceReport,#balanceSheetReport').fadeOut(100, function () {
+                        $('.tab-report #trialBalanceTab').addClass('active');
+                        $('#trialBalanceReport').fadeIn();
+                    });
+
+                });
+
 
             $('#selectDateInterval #reportIntervalBtn').on('click', function () {
                 $('form #errorMessage').fadeOut();
@@ -203,60 +430,60 @@
                             ToDate: toDate
                         }
                         $.ajax
-                        ({
-                            type: 'POST',
-                            url: '/api/FinancialReports/ProfitAndLossQuery',
-                            data: JSON.stringify(reportDto),
-                            contentType: 'application/json; charset=utf-8',
-                            dataType: 'json',
-                            success: function(data) {
+                            ({
+                                type: 'POST',
+                                url: '/api/FinancialReports/ProfitAndLossQuery',
+                                data: JSON.stringify(reportDto),
+                                contentType: 'application/json; charset=utf-8',
+                                dataType: 'json',
+                                success: function (data) {
 
-                                //document.getElementById('customerAccountDetailsForm').reset();
-                                $('#dateDisplay').fadeIn(0,
-                                    function() {
-                                        $('#dateDisplay #fromDateDisplay b').text(fromDate);
-                                        $('#dateDisplay #toDateDisplay b').text(toDate);
-                                    });
-                                var totalIncome = parseFloat(data[1]) + parseFloat(data[3]);
-                                var totalExpense = parseFloat(data[5]);
-                                $('#plReport tbody')
-                                    .html("<tr class='bg-grey'><td><b>Income</b></td><td></td></tr>" +
-                                        "<tr><td>" +
-                                        data[0] +
-                                        "</td><td>" +
-                                        data[1] +
-                                        "</td></tr><tr> <td>" +
-                                        data[2] +
-                                        "</td><td>" +
-                                        data[3] +
-                                        "</td></tr> <tr> <td> <b>Total Income</b></td><td><b>" +
-                                        totalIncome +
-                                        "</b></td></tr><tr class='bg-grey'><td><b>Expense</b></td><td></td></tr><tr><td>" +
-                                        data[4] +
-                                        "</td><td>" +
-                                        data[5] +
-                                        "</td></tr><tr><td> <b>Total Expense</b></td><td><b>" +
-                                        totalExpense +
-                                        "</b></td></tr><tr class='bg-light-grey'><td class='bg-grey' ><b>Profit/Loss</b></td><td class='alt-bg white-color'><b>" +
-                                        (totalIncome - totalExpense) +
-                                        "</b></td></tr>");
+                                    //document.getElementById('customerAccountDetailsForm').reset();
+                                    $('#dateDisplay').fadeIn(0,
+                                        function () {
+                                            $('#dateDisplay #fromDateDisplay b').text(fromDate);
+                                            $('#dateDisplay #toDateDisplay b').text(toDate);
+                                        });
+                                    var totalIncome = parseFloat(data[1]) + parseFloat(data[3]);
+                                    var totalExpense = parseFloat(data[5]);
+                                    $('#plReport tbody')
+                                        .html("<tr class='bg-grey'><td><b>Income</b></td><td></td></tr>" +
+                                            "<tr><td>" +
+                                            data[0] +
+                                            "</td><td>" +
+                                            data[1] +
+                                            "</td></tr><tr> <td>" +
+                                            data[2] +
+                                            "</td><td>" +
+                                            data[3] +
+                                            "</td></tr> <tr> <td> <b>Total Income</b></td><td><b>" +
+                                            totalIncome +
+                                            "</b></td></tr><tr class='bg-grey'><td><b>Expense</b></td><td></td></tr><tr><td>" +
+                                            data[4] +
+                                            "</td><td>" +
+                                            data[5] +
+                                            "</td></tr><tr><td> <b>Total Expense</b></td><td><b>" +
+                                            totalExpense +
+                                            "</b></td></tr><tr class='bg-light-grey'><td class='bg-grey' ><b>Profit/Loss</b></td><td class='alt-bg white-color'><b>" +
+                                            (totalIncome - totalExpense) +
+                                            "</b></td></tr>");
 
 
-                            },
-                            error: function(errorMessage) {
-                                // alert('request failed');
+                                },
+                                error: function (errorMessage) {
+                                    // alert('request failed');
 
-                                var msg = JSON.parse(errorMessage.responseText);
+                                    var msg = JSON.parse(errorMessage.responseText);
 
-                                alert(msg);
-                            }
+                                    alert(msg);
+                                }
 
-                        });
+                            });
                     }
                 } else {
                     if (fromDate == null || fromDate == "") {
                         $('form #errorMessage').fadeIn();
-                        
+
                         $('form #errorMessage').html("Please select <b>FROM Date</b>");
                     }
                     if (toDate == null || toDate == "") {

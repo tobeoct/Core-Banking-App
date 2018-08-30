@@ -88,8 +88,13 @@ namespace WebApplication1.Controllers.Api
         [HttpPost]
         [Route("api/Tellers/AddTellerPosting")]
         public HttpResponseMessage AddTellerPosting(TellerPostingDto tellerPostingDto)
-        {     
-
+        {
+            var businessStatus = _context.BusinessStatus.SingleOrDefault();
+            
+            if (businessStatus.Status == false)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest,CBA.BUSINESS_CLOSED_REFRESH_MSG );
+            }
             tellerPostingDto.TransactionDate = DateTime.Now;  
             
             var tellerPosting = new TellerPosting();

@@ -59,6 +59,14 @@ namespace WebApplication1.Controllers.Api
         public HttpResponseMessage AddGLPosting(GLPostingDto glPostingDto)
         {
 
+            var businessStatus = _context.BusinessStatus.SingleOrDefault();
+            
+            if (businessStatus.Status == false)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, CBA.BUSINESS_CLOSED_REFRESH_MSG);
+            }
+                
+
             glPostingDto.TransactionDate = DateTime.Now;
 //            if (!checkAccountBalance(glPostingDto.GlCreditAccountId,glPostingDto.CreditAmount))
 //            {
@@ -87,16 +95,18 @@ namespace WebApplication1.Controllers.Api
 
             CBA.CreditAndDebitAccounts(glPostingDto);
 
-            var financialReportDto = new FinancialReportDto();
-            financialReportDto.PostingType = "GL Posting";
-            
-            financialReportDto.CreditAccount = GetCreditAccountName(glPostingDto.GlCreditAccountId);
-            financialReportDto.CreditAmount = glPostingDto.CreditAmount;
-            financialReportDto.DebitAccount = GetDebitAccountName(glPostingDto.GlDebitAccountId);
-            financialReportDto.DebitAmount = glPostingDto.DebitAmount;
-            
+            var financialReportDto = new FinancialReportDto
+            {
+                PostingType = "GL Posting",
+                CreditAccount = GetCreditAccountName(glPostingDto.GlCreditAccountId),
+                CreditAmount = glPostingDto.CreditAmount,
+                DebitAccount = GetDebitAccountName(glPostingDto.GlDebitAccountId),
+                DebitAmount = glPostingDto.DebitAmount,
+                ReportDate = DateTime.Now
+            };
 
-            financialReportDto.ReportDate = DateTime.Now;
+
+
 
             CBA.AddReport(financialReportDto);
             return Request.CreateResponse(HttpStatusCode.OK, "GL Posted Successfully");
@@ -109,17 +119,18 @@ namespace WebApplication1.Controllers.Api
         [Route("api/GeneralLedgers/ValidationChecks")]
         public HttpResponseMessage ValidationChecks(GLPostingDto glPostingDto)
         {
+            
            
-            if (!checkAccountBalance(glPostingDto.GlCreditAccountId, glPostingDto.CreditAmount))
-            {
-                if (errorMessage.Equals(""))
-                {
-                    errorMessage = errorMessage + "GL Credit Account Balance Insufficient";
-                }
-                errorMessage = errorMessage + ", GL Credit Account Balance Insufficient";
-                
-
-            }
+//            if (!checkAccountBalance(glPostingDto.GlCreditAccountId, glPostingDto.CreditAmount))
+//            {
+//                if (errorMessage.Equals(""))
+//                {
+//                    errorMessage = errorMessage + "GL Credit Account Balance Insufficient";
+//                }
+//                errorMessage = errorMessage + ", GL Credit Account Balance Insufficient";
+//                
+//
+//            }
             if (!checkAccountBalance(glPostingDto.GlDebitAccountId, glPostingDto.DebitAmount))
             {
                 if (errorMessage.Equals(""))
@@ -136,7 +147,7 @@ namespace WebApplication1.Controllers.Api
             }
             return Request.CreateResponse(HttpStatusCode.OK, "Proceed");
         }
-        public bool checkAccountBalance(int accountId, long amount)
+        public bool checkAccountBalance(int accountId, float amount)
         {
             var account = _context.GlAccounts.SingleOrDefault(c => c.Id == accountId);
             var accountBalance = account.AccountBalance;

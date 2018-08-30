@@ -13,13 +13,19 @@
     padding-left: 15px;
     padding-right: 15px;
 }
-.display-none{
-    display:none !important;
+
+.display-none {
+    display: none !important;
 }
 
-#dateDisplay{
+#dateDisplay {
     display: none;
 }
+
+#balanceSheetReport,#trialBalanceReport {
+    display: none;
+}
+
 /* Set width on the form input elements since they're 100% wide by default */
 input,
 select,
@@ -27,29 +33,71 @@ textarea {
     max-width: 280px;
 }
 
-#warning{
-    display:none;
+#warning {
+    display: none;
 }
+
 #bg {
-    position:relative; 
-    transform:rotateY(180deg);
+    position: relative;
+    transform: rotateY(180deg);
 }
-.tab-report .tab {
-    transition:background 0.3s ease-in;
-    cursor: pointer;
-}
-.tab-report .active {
-    background: #674172;
-}
-.tab-report .tab:hover {
-   
-    background: #c5c3c3 !important;
+/* */
+/* .loader { */
+/*     border: 16px solid #f3f3f3; /* Light grey !1! */
+/*     border-top: 16px solid #3498db; /* Blue !1! */
+/*     border-radius: 50%; */
+/*     width: 120px; */
+/*     height: 120px; */
+/*     z-index: 9999999; */
+/*     position: absolute; */
+/*     top: 5%; */
+/*     margin: auto; */
+/*     animation: spin 2s linear infinite; */
+/* } */
+.loader-container img {
+    position: absolute;
+    top: 45%;
+    width: 30px;
+    margin: auto;
+    left: 40%;
     
 }
-.tab-report .tab:hover p {
+.loader-container {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    text-align: center;
+    z-index: 99999;
+    background: rgba(255, 255, 255, 0.9);
+}
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.tab-report .tab {
+    transition: background 0.3s ease-in;
+    cursor: pointer;
+}
+
+.tab-report .active {
+    background: #674172;
     color: white;
 }
-    /*
+
+.tab-report .tab:hover {
+    background: #c5c3c3 !important;
+}
+
+    .tab-report .tab:hover p {
+        color: white;
+    }
+/*
 *
 *
 *
@@ -58,16 +106,17 @@ textarea {
 *
 *
 */
-    /* GENERIC SETTINGS */
-    a, a:focus, a:hover, a:active, a:visited {
-        color: inherit;
-        text-decoration: none;
-    }
-.link
-{
+/* GENERIC SETTINGS */
+a, a:focus, a:hover, a:active, a:visited {
+    color: inherit;
+    text-decoration: none;
+}
+
+.link {
     text-decoration: underline;
     cursor: pointer;
 }
+
 td, thead {
     padding-top: 15px !important;
     padding-bottom: 15px !important;
@@ -133,7 +182,7 @@ input {
     border-bottom: 1px solid rgba(99,99,99,0.2) !important;
 }
 
-    input:placeholder, textarea::placeholder {
+    input::placeholder, textarea::placeholder {
         text-align: right !important;
         color: #bdbdbd;
         opacity: 0.5;
@@ -191,6 +240,7 @@ input {
 .margin-horizontal {
     margin: auto 20px;
 }
+
 .margin-horizontal-min {
     margin: auto 10px;
 }
@@ -207,9 +257,11 @@ input {
 .margin-vertical {
     margin: 20px auto;
 }
+
 .margin-vertical-max {
     margin: 10vh auto;
 }
+
 .margin-vertical-mid {
     margin: 7vh auto;
 }
@@ -345,12 +397,15 @@ input {
 .bg-active-indicator {
     background: #a574b3 !important;
 }
+
 .bg-red {
     background: #F22613 !important;
 }
+
 .bg-green {
     background: #2ECC71 !important;
 }
+
 .bg-dark {
     background: #202020;
 }
@@ -496,8 +551,7 @@ input {
 
 /* CUSTOM SETTINGS */
 
-#errorMessage,#successMessage
-{
+#errorMessage, #successMessage {
     display: none;
 }
 /*Modal Settings*/
@@ -523,8 +577,7 @@ input {
     width: 50%; /* Could be more or less, depending on screen size */
 }
 
- td
-{
+td {
     padding-right: 15px !important;
 }
 
@@ -634,7 +687,7 @@ input {
     width: 97.5%;
 }
 
-.myBtn,#myBtn {
+.myBtn, #myBtn {
     cursor: pointer;
 }
 

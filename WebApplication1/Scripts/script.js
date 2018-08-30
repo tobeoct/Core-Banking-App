@@ -136,21 +136,6 @@ var shortcutLogic = function(iKeyActive,lastKey)
 }
 
 
-    // the fetching...
-//    $.each(elements, function(i, e) { // i is element index. e is element as text.
-//        var newElement = ( /[\+]+/.test(elements[i]) ) ? elements[i].replace("+","_") : elements[i];
-                   
-//        // Binding keys
-//        $(document).bind('keydown', elements[i], function assets() {
-//            //$('#_'+ newElement).addClass("dirty");
-//            if (element == "Shift+u") {
-//                window.location = $("#nav-users").attr("href");
-//                return;
-//            }
-//            return ;
-//        });
-//});
-
 
 var GetStatus = function () {
     $.ajax({
@@ -163,11 +148,17 @@ var GetStatus = function () {
 
             $('.switch input').prop('checked', false);
             if (data == "Opened") {
-
+                $('#postWarning').fadeOut();
                 $('.switch #radio-d').prop('checked', true);
+                $('#myAddGLPostingModal').css('display', 'block');
+                $('#myAddTellerPostingModal').css('display', 'block');
             }
             else {
+                $('#myAddGLPostingModal').css('display', 'none');
+                $('#myAddTellerPostingModal').css('display', 'none');
+                $('#postWarning').fadeIn();
                 $('.switch #radio-c').prop('checked', true);
+                
             }
 
         },
@@ -183,15 +174,7 @@ var GetStatus = function () {
     });
 }
 GetStatus();
-//$('input:radio').removeAttr('checked');
-//$('.switch #radio-c').prop('checked', false);
-//$('.switch #radio-d').prop('checked', true);
-//$('.switch #radio-c, .switch #closedLabel').on('click', function () {
-    
-//});
-//$('.switch #radio-d, .switch #openedLabel').on('click', function () {
-  //  alert('opened');
-//});
+
 var action, intendedAction, presentAction;
 var businessStatusDto;
 // : Switching From Open to Close
@@ -282,7 +265,7 @@ $('#myBusinessStatusModal #myCancelBtn').on('click', function (e) {
 
 });
 $(document).ready(function () {
-
+    $('.loader-container').fadeOut();
     $(".nav-list .row").removeClass('active');
     var navIndex = localStorage.getItem("nav-index");
     var trueIndex = parseInt(navIndex / 7, 10);

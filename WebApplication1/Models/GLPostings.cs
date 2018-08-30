@@ -19,7 +19,7 @@ namespace WebApplication1.Models
         public GLAccount GlDebitAccount { get; set; }
 
         [Display(Name = "Debit Amount")]
-        public long DebitAmount { get; set; }
+        public float DebitAmount { get; set; }
 
         [Display(Name = "Narration")]
         public string DebitNarration { get; set; }
@@ -30,7 +30,7 @@ namespace WebApplication1.Models
         public GLAccount GlCreditAccount { get; set; }
 
         [Display(Name = "Credit Amount")]
-        public long CreditAmount { get; set; }
+        public float CreditAmount { get; set; }
 
         [Display(Name = "Narration")]
         public string CreditNarration { get; set; }

@@ -33,11 +33,11 @@
             <div class="row form-group ">
                 <div class="margin-vertical">
                     <div class="col-md-3">
-                        @Html.LabelFor(m => m.LoanAccountType.GlAccountId)
+                        @Html.LabelFor(m => m.LoanAccountType.InterestIncomeGLAccountId)
                     </div>
                     <div class="col-md-9">
-                        @Html.DropDownListFor(m => m.LoanAccountType.GlAccountId, new SelectList(Model.GlAccounts, "Id", "Name"), "Select Main Account Category", new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.LoanAccountType.GlAccount)
+                        @Html.DropDownListFor(m => m.LoanAccountType.InterestIncomeGLAccountId, new SelectList(Model.GlAccounts, "Id", "Name"), "Select Interest Income GL Account", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.LoanAccountType.InterestIncomeGLAccountId)
                     </div>
                 </div>
             </div>

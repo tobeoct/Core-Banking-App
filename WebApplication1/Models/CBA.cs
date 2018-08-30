@@ -17,17 +17,21 @@ namespace WebApplication1.Models
         public static string PRINCIPAL_OVERDUE_ACC_NAME = "Principal Overdue GL Account";
         public static string COT_INCOME_GL_ACCOUNT = "COT Income GL Account";
         public static string INTEREST_EXPENSE_GL_ACCOUNT = "Interest Expense GL Account";
+        public static string CAPITAL_ACCOUNT = "Capital Account";
+        public static string CUSTOMER_LOAN_ACCOUNT = "Customer Loan Account";
+        public static string CUSTOMER_SAVINGS_CURRENT_ACCOUNT = "Customer Savings/Current Account";
+        public static string VAULT_ACCOUNT = "Vault Account";
         public static int LOAN_ACCOUNT_TYPE_ID = 3;
         public static int CURRENT_ACCOUNT_TYPE_ID = 2;
         public static int SAVINGS_ACCOUNT_TYPE_ID = 1;
-
+        public static string BUSINESS_CLOSED_REFRESH_MSG ="You cannot perform postings, Business is Closed : <b onclick='window.location.reload();' style='cursor:pointer;'>Refresh Page</b>";
         public CBA()
         {
-           _context = new ApplicationDbContext();
-            var loanAccountType = _context.AccountTypes.Where(c => c.Name.Equals("Loan Account")).SingleOrDefault();
-            var savingsAccountType = _context.AccountTypes.Where(c => c.Name.Equals("Savings Account")).SingleOrDefault();
-            var currentAccountType = _context.AccountTypes.Where(c => c.Name.Equals("Current Account")).SingleOrDefault();
-            if(loanAccountType!=null)
+            _context = new ApplicationDbContext();
+            var loanAccountType = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals("Loan Account"));
+            var savingsAccountType = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals("Savings Account"));
+            var currentAccountType = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals("Current Account"));
+            if (loanAccountType != null)
             {
                 LOAN_ACCOUNT_TYPE_ID = loanAccountType.Id;
             }
@@ -39,12 +43,12 @@ namespace WebApplication1.Models
             {
                 CURRENT_ACCOUNT_TYPE_ID = currentAccountType.Id;
             }
-           
+
         }
-        
+
         public static string RandomString(int length)
         {
-            Random random = new Random();
+            var random = new Random();
             const string chars = "01234567890123456789";
             return new string(Enumerable.Repeat(chars, length)
                 .Select(s => s[random.Next(s.Length)]).ToArray());
@@ -52,56 +56,80 @@ namespace WebApplication1.Models
         public static void AddReport(FinancialReportDto financialReportDto)
         {
             financialReportDto.ReportDate = DateTime.Now;
-           ApplicationDbContext _context = new ApplicationDbContext();
+            var _context = new ApplicationDbContext();
             var creditAccountCategory = GetCategory(financialReportDto.CreditAccount.ToString());
             var debitAccountCategory = GetCategory(financialReportDto.DebitAccount.ToString());
+            var creditAmount = (float)System.Math.Round(financialReportDto.CreditAmount, 2);
+            var debitAmount = (float)System.Math.Round(financialReportDto.DebitAmount, 2);
             var financialReport = new FinancialReport
             {
                 ReportDate = financialReportDto.ReportDate,
                 CreditAccount = financialReportDto.CreditAccount,
-                CreditAmount = financialReportDto.CreditAmount,
+                CreditAmount = creditAmount,
                 CreditAccountCategory = creditAccountCategory,
                 DebitAccount = financialReportDto.DebitAccount,
-                DebitAmount = financialReportDto.DebitAmount,
+                DebitAmount = debitAmount,
                 DebitAccountCategory = debitAccountCategory,
                 PostingType = financialReportDto.PostingType
-                
+
             };
             _context.FinancialReports.Add(financialReport);
             _context.SaveChanges();
-            
+
         }
 
         public static string GetCategory(string accountName)
         {
             var category = "";
-            ApplicationDbContext _context = new ApplicationDbContext();
-            var glAccount = _context.GlAccounts.Where(c => c.Name.Equals(accountName)).Include(c => c.GlCategories).SingleOrDefault();
-            category = glAccount.GlCategories.MainAccountCategory.ToString();
-
+            accountName = accountName.ToString().Trim();
+            var _context = new ApplicationDbContext();
+            var glAccount = _context.GlAccounts.Where(c => c.Name.Equals(accountName)).Include(c => c.GlCategories).Include(c => c.GlCategories.Categories).SingleOrDefault();
+            if (glAccount == null)
+            {
+                category = "Liability";
+                return category;
+            }
+            if (glAccount != null) category = glAccount.GlCategories.Categories.Name.ToString();
+            //            return category;
+            //            if (accountName.Equals(COT_INCOME_GL_ACCOUNT) 
+            //                || accountName.Equals(INTEREST_RECEIVABLE_ACC_NAME) 
+            //                || accountName.Equals(INTEREST_EXPENSE_GL_ACCOUNT) 
+            //                || accountName.Equals(INTEREST_INCOME_ACC_NAME) 
+            //                || accountName.Equals(INTEREST_OVERDUE_ACC_NAME) 
+            //                || accountName.Equals(INTEREST_IN_SUSPENSE_ACC_NAME) 
+            //                || accountName.Equals(PRINCIPAL_OVERDUE_ACC_NAME))
+            //            {
+            //               
+            //                if (glAccount != null) category = glAccount.GlCategories.Categories.Name.ToString();
+            //                return category;
+            //            }
+            //            category = "Liability";
             return category;
+
+
         }
 
-        public static void BasedOnGLCategories(GLAccount glAccount,string type, long amount )
+        public static void BasedOnGLCategories(GLAccount glAccount, string type, float amount)
         {
-            ApplicationDbContext  _context = new ApplicationDbContext();
-            var glCategories = _context.GlCategories.Include(c=>c.Categories).SingleOrDefault(c=>c.Id==glAccount.GlCategoriesId);
+            var _context = new ApplicationDbContext();
+            var glCategories = _context.GlCategories.Include(c => c.Categories).SingleOrDefault(c => c.Id == glAccount.GlCategoriesId);
             var category = _context.Categories.SingleOrDefault(c => c.Id == glCategories.CategoriesId);
             if (type == "Credit")
             {
-                if (category.Name == "Asset" || category.Name == "Expense")
+                if (category != null && (category.Name == "Asset" || category.Name == "Expense"))
                 {
                     glAccount.AccountBalance = glAccount.AccountBalance - amount;
 
                 }
-                else 
+                
+                else
                 {
                     glAccount.AccountBalance = glAccount.AccountBalance + amount;
                 }
             }
             else
             {
-                if (category.Name == "Asset" || category.Name == "Expense")
+                if (category != null && (category.Name == "Asset" || category.Name == "Expense"))
                 {
                     glAccount.AccountBalance = glAccount.AccountBalance + amount;
                 }
@@ -111,21 +139,31 @@ namespace WebApplication1.Models
                 }
             }
             
+
         }
-    
+
         public static void CreditAndDebitAccounts(GLPostingDto glPostingDto)
         {
-            ApplicationDbContext _context = new ApplicationDbContext();
-            var glCreditAccount = _context.GlAccounts.Include(c=>c.GlCategories).SingleOrDefault(c => c.Id == glPostingDto.GlCreditAccountId);
+            var _context = new ApplicationDbContext();
+            var glCreditAccount = _context.GlAccounts.Include(c => c.GlCategories).SingleOrDefault(c => c.Id == glPostingDto.GlCreditAccountId);
             var glDebitAccount = _context.GlAccounts.Include(c => c.GlCategories).SingleOrDefault(c => c.Id == glPostingDto.GlDebitAccountId);
-           
-            BasedOnGLCategories(glCreditAccount,"Credit",glPostingDto.CreditAmount);
-            BasedOnGLCategories(glDebitAccount,"Debit",glPostingDto.DebitAmount);
+            if (glDebitAccount.GlCategories.MainAccountCategory.Equals("Equity") &&
+                    ( glCreditAccount.GlCategories.MainAccountCategory.Equals("Cash") || glCreditAccount.GlCategories.MainAccountCategory.Equals("Expense")))
+            {
+                glDebitAccount.AccountBalance = glDebitAccount.AccountBalance - glPostingDto.DebitAmount;
+                glCreditAccount.AccountBalance = glCreditAccount.AccountBalance + glPostingDto.CreditAmount;
+            }
+            else
+            {
+                BasedOnGLCategories(glCreditAccount, "Credit", glPostingDto.CreditAmount);
+                BasedOnGLCategories(glDebitAccount, "Debit", glPostingDto.DebitAmount);
+
+            }
 
             _context.SaveChanges();
-            
-            
+
+
         }
-        
+
     }
 }

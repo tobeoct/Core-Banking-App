@@ -10,5 +10,6 @@ namespace WebApplication1.ViewModels
     {
         public IEnumerable<Categories> Categories { get; set; }
         public GLCategory GlCategory { get; set; }
+        public int count { get; set; }
     }
 }

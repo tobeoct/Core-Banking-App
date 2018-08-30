@@ -1,8 +1,9 @@
 ﻿
+@using WebApplication1.Models
 @model WebApplication1.ViewModels.GLAccountViewModel
 @{
     ViewBag.Title = "GLAccount";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = User.IsInRole(RoleName.ADMIN_ROLE) ? "~/Views/Shared/_Layout.cshtml" : "~/Views/Shared/_UserLayout.cshtml";
 }
 
 
@@ -15,17 +16,17 @@
     </div>
 </div>
 <div class="row margin-vertical">
-    <div class="row padding-horizontal padding-vertical">
-        <div class="container container-fluid">
-            <p class="align-right grey-color animated fadeInRight ">3 Branches</p>
-        </div>
-
-    </div>
+   
     <div class="container bg-white shadow">
-
-        <div class="row align-right padding-horizontal">
-            <button id="myBtn">Add new Account</button>
+        <div class="row  padding-horizontal">
+            <div class="col-md-6 col-sm-6 col-xs-6 align-left " style="padding-top: 35px;">
+                <p class=" grey-color animated fadeInRight "><span id="count">@Model.count</span> GL Accounts</p>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6 align-right">
+                <button id="myBtn">Add new Account</button>
+            </div>
         </div>
+       
 
 
 
@@ -39,7 +40,7 @@
                         <th>GL Account Code</th>
                         <th>Gl Category</th>
                         <th>Branch</th>
-
+                        <th>Action</th>
                     </tr>
                 </thead>
 
@@ -73,8 +74,19 @@
                     },
                     {
                         data: "branch.name"
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return "<a class='js-delete' data-branch-id='" + data + "'>Edit</a>";
+                        }
                     }
                 ]
+            });
+            
+            // : To GET number of Customer Accounts Available
+            table.ajax.reload(function () {
+                $('#count').html(table.data().count());
             });
             //            $("#branches ").on("click","js-delete", function () {
             //                var button = $(this);

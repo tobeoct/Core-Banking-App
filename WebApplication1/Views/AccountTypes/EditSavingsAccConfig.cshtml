@@ -46,11 +46,11 @@
             <div class="row form-group ">
                 <div class="margin-vertical">
                     <div class="col-md-3">
-                        @Html.LabelFor(m => m.SavingsAccountType.GLAccountId)
+                        @Html.LabelFor(m => m.SavingsAccountType.InterestExpenseGLAccountId)
                     </div>
                     <div class="col-md-9">
-                        @Html.DropDownListFor(m => m.SavingsAccountType.GLAccountId, new SelectList(Model.GlAccounts, "Id", "Name"), "Select Main Account Category", new {@class = "form-control"})
-                        @Html.ValidationMessageFor(m => m.SavingsAccountType.GLAccount)
+                        @Html.DropDownListFor(m => m.SavingsAccountType.InterestExpenseGLAccountId, new SelectList(Model.GlAccounts, "Id", "Name"), "Select Interest Expense GL Account", new {@class = "form-control"})
+                        @Html.ValidationMessageFor(m => m.SavingsAccountType.InterestExpenseGLAccountId)
                     </div>
                 </div>
             </div>

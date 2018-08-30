@@ -1,8 +1,16 @@
-﻿@model WebApplication1.Models.Customer
+﻿@using WebApplication1.Models
+@model WebApplication1.Models.Customer
 
 @{
     ViewBag.Title = "Customer Management";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    if (User.IsInRole(RoleName.ADMIN_ROLE))
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_UserLayout.cshtml";
+    }
 }
 
 @Html.Partial("_AddCustomerModal")
@@ -77,7 +85,7 @@
                     {
                         data: "id",
                         render: function(data) {
-                            return "<a class='js-delete' data-branch-id='"+data+"'>Delete</a>"
+                            return "<a class='js-delete' data-branch-id='"+data+"'>Edit</a>"
                         }
                     }
                 ]

@@ -13,7 +13,10 @@
         <div class="row">
             @Html.Partial("_UserSideNav")
             <div class="col-md-10 col-sm-9 bg-light-grey max-height" style="overflow-x: hidden;">
-                @Html.Partial("_Top")
+                @Html.Partial("_UserTop")
+                <div class="loader-container">
+                    <img src="~/Content/Images/page-loader.gif">
+                </div>
                 @RenderBody()
             </div>
         </div>

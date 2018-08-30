@@ -20,17 +20,19 @@
                 <table>
                     <thead>
                     <tr>
-                        <th>GL Credit Account</th>
+                       
                         <th>Gl Debit Account</th>
+                        <th>GL Credit Account</th>
                         <th>Amount</th>
                         <th>Narration</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
+                       
                         <td class="form-group">
-                            <select class="form-control" id="glCreditAccountId" required>
-                                <option value="0">Select GL Credit Account</option>
+                            <select class="form-control" id="glDebitAccountId" required>
+                                <option value="0">Select GL Debit Account</option>
                                 @foreach (var account in Model.GlAccounts)
                                 {
                                     <option value="@account.Id">@account.Name</option>
@@ -38,8 +40,8 @@
                             </select>
                         </td>
                         <td class="form-group">
-                            <select class="form-control" id="glDebitAccountId" required>
-                                <option value="0">Select GL Debit Account</option>
+                            <select class="form-control" id="glCreditAccountId" required>
+                                <option value="0">Select GL Credit Account</option>
                                 @foreach (var account in Model.GlAccounts)
                                 {
                                     <option value="@account.Id">@account.Name</option>

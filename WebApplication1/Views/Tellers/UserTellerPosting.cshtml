@@ -1,17 +1,8 @@
-﻿
-
-@using WebApplication1.Models
-@model WebApplication1.ViewModels.TellerPostingViewModel
+﻿@model WebApplication1.ViewModels.TellerPostingViewModel
 @{
-    ViewBag.Title = "Teller Postings";
-    if (User.IsInRole(RoleName.ADMIN_ROLE))
-    {
-        Layout = "~/Views/Shared/_Layout.cshtml";
-    }
-    else
-    {
-        Layout = "~/Views/Shared/_UserLayout.cshtml";
-    }
+    ViewBag.Title = "UserTellerPosting";
+
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
 }
 
 
@@ -305,5 +296,7 @@
         });
     </script>
 }
+
+
 
 

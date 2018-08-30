@@ -21,7 +21,7 @@ namespace WebApplication1.Controllers.Api
         [Route("api/Accounttypes/SavingsAccountType")]
         public IHttpActionResult GetSavingsAccountType()
         {
-            var savingsAccType = _context.AccountTypes.SingleOrDefault(c=>c.Name.Equals("Savings Account"));
+            var savingsAccType = _context.AccountTypes.Where(c => c.Name.Equals("Savings Account")).Include(c=>c.InterestExpenseGLAccount).ToList();
 
             return Ok(savingsAccType);
         }
@@ -29,14 +29,14 @@ namespace WebApplication1.Controllers.Api
         [Route("api/Accounttypes/LoanAccountType")]
         public IHttpActionResult GetLoanAccountType()
         {
-            var loanAccType = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals("Loan Account"));
+            var loanAccType = _context.AccountTypes.Where(c => c.Name.Equals("Loan Account")).Include(c => c.InterestIncomeGLAccount).ToList();
 
             return Ok(loanAccType);
         }
         [Route("api/Accounttypes/CurrentAccountType")]
         public IHttpActionResult GetCurrentAccountType()
         {
-            var currentAccType = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals("Current Account"));
+            var currentAccType = _context.AccountTypes.Where(c => c.Name.Equals("Current Account")).Include(c => c.InterestExpenseGLAccount).Include(c => c.COTIncomeGLAccount).ToList();
 
             return Ok(currentAccType);
         }

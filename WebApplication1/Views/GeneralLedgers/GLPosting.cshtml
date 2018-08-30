@@ -1,9 +1,10 @@
 ﻿
 
+@using WebApplication1.Models
 @model WebApplication1.ViewModels.GLPostingViewModel
 @{
     ViewBag.Title = "GL Account Postings";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = User.IsInRole(RoleName.ADMIN_ROLE) ? "~/Views/Shared/_Layout.cshtml" : "~/Views/Shared/_UserLayout.cshtml";
 }
 
 
@@ -15,19 +16,29 @@
         </div>
     </div>
 </div>
+<div class="container margin-vertical" id="postWarning">
+    <p class="alert alert-warning" >Business should be opened to carry out GL Postings</p>
+</div>
 
-@Html.Partial("_AddAccount")
+@Html.Partial("_AddPostings")
 <div class="row ">
-    <div class="row padding-horizontal padding-vertical">
-        <div class="container container-fluid">
-            <p class="align-right grey-color animated fadeInRight "><span id="count"></span> GL Postings</p>
-        </div>
-    </div>
+    @* <div class="row padding-horizontal padding-vertical"> *@
+    @*     <div class="container container-fluid"> *@
+    @*         <p class="align-right grey-color animated fadeInRight "><span id="count"></span> GL Postings</p> *@
+    @*     </div> *@
+    @* </div> *@
 
     <div class="container bg-white shadow">
 
-        <div class="row align-left padding-horizontal">
-            <h3 class="alt-color bold-text align-left ">List of GL Postings  </h3>
+       
+        <div class="row  padding-horizontal">
+            <div class="col-md-6 col-sm-6 col-xs-6 align-left ">
+                <h3 class="alt-color bold-text align-left ">List of GL Postings  </h3>
+                
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6 align-right">
+                <p class=" grey-color animated fadeInRight "><span id="count">@Model.count</span> GL Postings</p>
+            </div>
         </div>
 
         <div class="row padding-horizontal">
@@ -41,7 +52,7 @@
                         <th>Debit Amount</th>
                         <th>Credit Amount</th>
                         <th>Narration</th>
-                        <th>Action</th>
+                        
                     </tr>
                 </thead>
 
@@ -87,10 +98,10 @@
                 },
                 columns: [
                     {
-                        data: "transactionDate"
+                        data: "glDebitAccount.name"
                     },
                     {
-                        data: "transactionDate"
+                        data: "glDebitAccount.code"
                     },
                     {
                         data: "transactionDate"
@@ -103,12 +114,6 @@
                     },
                     {
                         data: "creditNarration"
-                    },
-                    {
-                        data: "id",
-                        render: function (data) {
-                            return "<a class='js-delete' data-branch-id='" + data + "'>Edit|Delete</a>"
-                        }
                     }
                 ]
             });
@@ -173,6 +178,8 @@
                     debitAccountId = $("#myAddGLPostingModal #glDebitAccountId").val();
                     amount = $("#myAddGLPostingModal #amount").val();
                     narration = $("#myAddGLPostingModal #narration").val();
+                    creditNarration = narration;
+                    debitNarration = narration;
 
                     //alert("Credit Acc : " + creditAccountId + ", Amount : " + creditAmount + ", Narration : " + creditNarration + ", Debit Acc : " + debitAccountId + ", Amount : " + debitAmount + ", Narration : " + debitNarration );
 
@@ -197,7 +204,7 @@
                         $('#myAddGLPostingModal #errorMessage').html("Please Enter GL Credit Amount");
                         return;
                     }
-                    if (creditNarration == 0) {
+                    if (creditNarration == 0||creditNarration==null) {
                         $('#myAddGLPostingModal #errorMessage').fadeIn();
                         $('#myAddGLPostingModal #errorMessage').html("Please Enter GL Credit Narration");
                         return;
@@ -213,7 +220,7 @@
                         $('#myAddGLPostingModal #errorMessage').html("Please Enter GL Debit Amount");
                         return;
                     }
-                    if (debitNarration == 0) {
+                    if (debitNarration == 0 || debitNarration == null) {
                         $('#myAddGLPostingModal #errorMessage').fadeIn();
                         $('#myAddGLPostingModal #errorMessage').html("Please Enter GL Debit Narration");
                         return;
@@ -231,7 +238,7 @@
                             
                                 $('#myGLPostingConfirmationModal').fadeIn(300, function () {
                                     $('#myGLPostingConfirmationModal #creditAccount b').text(" " + amount + " to " + creditAccountName + " ");
-                                    $('#myGLPostingConfirmationModal #debitAccount b').text(" " + amount + " to " + debitAccountName + " ");
+                                    $('#myGLPostingConfirmationModal #debitAccount b').text(" " + amount + " from " + debitAccountName + " ");
                                 });
                             
 
@@ -292,31 +299,23 @@
 
             });
 
-            // : To CLOSE GL Posting Modal and refresh PAGE
-
-            $('#myAddGLPostingModal .close').on('click',
-                function () {
-
-                    table.ajax.reload();
-
-                    $('#count').html(table.data().count());
-
-                    //$('#myAddTellerPostingModal').fadeOut();
-                });
+         
 
             // : To CLOSE Confirmation modal and refresh PAGE
             $('#myGLPostingConfirmationModal .close').on('click',
                 function () {
 
-                    
-                    table.ajax.reload(function() {
+                    table.ajax.reload(function () {
                         $('#count').html(table.data().count());
-                    });
+                        $('#myGLPostingConfirmationModal').fadeOut();
+                        $('#myGLPostingConfirmationModal #errorMessage, #myGLPostingConfirmationModal #successMessage ').fadeOut();
+                        $('#myGLPostingConfirmationModal button').fadeIn();
+                        $('#myAddGLPostingModal #glPostingForm').reset();
 
+                    });
                         
                     
-                    $('#myGLPostingConfirmationModal').fadeOut();
-                    $('#myGLPostingConfirmationModal button').fadeIn();
+                    
 
                 });
 

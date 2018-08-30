@@ -36,8 +36,7 @@
                 <thead class="padding-vertical">
                     <tr>
                         <th>Branch Name</th>
-                        <th>Address</th>
-                        <th>Date Created</th>
+                        <th>Address</th>                     
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -67,18 +66,51 @@
                     {
                         data: "address"
                     },
-                    {
-                        data: "dateCreated"
-                    },
                     
                     {
                         data: "id",
+
                         render: function(data) {
-                            return "<a class='js-delete' data-branch-id='"+data+"'>Delete</a>"
+                            return "<p class='js-delete btn-link '  style='cursor:pointer;' id=" + data + " onclick='EditBranch(" + data +")'>Edit</p>";
                         }
                     }
                 ]
             });
+
+            var EditBranch = function(id) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/Branches/Edit',
+                    data: JSON.stringify(id),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    success: function (data) {
+
+
+//                        $('#myGLPostingConfirmationModal #successMessage').fadeIn(200,
+//                            function () {
+//                                document.getElementById('confirmationForm').reset();
+//
+//                                $('#myGLPostingConfirmationModal #successMessage').html(data);
+//
+//                                $('#myGLPostingConfirmationModal button').fadeOut();
+//                            });
+//                        return;
+
+
+                    },
+                    error: function (errorMessage) {
+                        // alert('request failed');
+
+//                        var msg = JSON.parse(errorMessage.responseText);
+//
+//                        $('#myGLPostingConfirmationModal #errorMessage').fadeIn(200,
+//                            function () { $('#myGLPostingConfirmationModal #errorMessage').html(msg.message) });
+                    }
+
+                });
+
+            }
             $("#branches ").on("click","js-delete", function () {
                 var button = $(this);
                 //alert("Delete");
