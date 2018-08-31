@@ -1,0 +1,93 @@
+﻿@model WebApplication1.Models.Customer
+<div id="myModal" class="modal ">
+
+    <!-- Modal content -->
+    <div class="modal-content animated ">
+        <span class="close">&times;</span>
+        <div>
+            <div class=" padding-horizontal bordered-bottom align-left">
+                <h3 class="alt-color bold-text">Add Customer</h3>
+            </div>
+
+            <div class="row form-group ">
+                <div class="margin-vertical">
+                    <div class="col-md-3">
+                        <label>Name</label>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="text" name="name" id="name" class="form-control"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row form-group ">
+                <div class="margin-vertical">
+                    <div class="col-md-3">
+                        <label>Email</label>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="email" id="email" name="email"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row form-group ">
+                <div class="margin-vertical">
+                    <div class="col-md-3">
+                       <label>Address</label>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="text" id="address" name="address"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row form-group ">
+                <div class="margin-vertical">
+                    <div class="col-md-3">
+                        <label>Phone Number</label>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="number" id="phoneNumber" name="phoneNumber" class="form-control"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row form-group  ">
+                <div class="margin-vertical">
+                    <div class="col-md-3">
+                       <label>Gender</label>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="col-md-2">
+                           
+                            <label for="gender">Male</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="radio" id="gender" name="gender" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            
+                            <label for="gender">Male</label>
+                        </div>
+                        <div class="col-md-3">
+                            
+                            <input type="radio" id="gender" name="gender" class="form-control">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+
+                    <input type="hidden" id="hidden" />
+
+                </div>
+                <div class="align-right">
+                    <button type="submit">Add Customer<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
+                </div>
+
+
+                
+
+            </div>
+        </div>
+
+    </div>
+
+    </div>

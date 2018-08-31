@@ -59,11 +59,37 @@ namespace WebApplication1.Controllers.Api
 
             _context.CustomerAccounts.Add(customerAccount);
             _context.SaveChanges();
-            List<string> message = new List<string>
+            var message = new List<string>
             {
                 "Account Created Successfully",
                 customerAccount.Id.ToString()
             };
+            return Request.CreateResponse(HttpStatusCode.OK, message);
+        }
+
+        [AcceptVerbs("GET", "POST")]
+        [Route("api/Customers/EditCustomer")]
+        public HttpResponseMessage EditCustomer(CustomerDto customerDto)
+        {
+            
+            var customerInDb = _context.Customers.SingleOrDefault(c => c.Id.Equals(customerDto.Id.ToString()));
+            if (customerInDb != null)
+            {
+                customerInDb.Address = customerDto.Address;
+                customerInDb.Email = customerDto.Email;
+                customerInDb.Gender = customerDto.Gender;
+                customerInDb.Name = customerDto.Name;
+                customerInDb.PhoneNumber = customerDto.PhoneNumber;
+            }
+            else
+            {
+                const string errorMsg = "No such Customer Exists";
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMsg);
+            }
+
+            _context.SaveChanges();
+
+            const string message = "Customer Info Edited Successfully";
             return Request.CreateResponse(HttpStatusCode.OK, message);
         }
 
@@ -77,7 +103,7 @@ namespace WebApplication1.Controllers.Api
             if (customerLinkedAccount.LoanDetailsId != null)
             {
                 var linkedLoanDetail = _context.LoanDetails.SingleOrDefault(c => c.Id == customerLinkedAccount.LoanDetailsId);
-                if (linkedLoanDetail.LoanAmount != 0)
+                if (linkedLoanDetail != null && linkedLoanDetail.LoanAmount != 0)
                 {
                     return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Customer yet to pay off previous loan");
                 }
@@ -108,19 +134,17 @@ namespace WebApplication1.Controllers.Api
                         return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Customer Account has account but it is Closed");
                     }
 
-                    if (customerAccount.AccountTypeId == savingsAccountType.Id && customerAccountDto.AccountTypeId == savingsAccountType.Id)
+                    if (savingsAccountType != null && (customerAccount.AccountTypeId == savingsAccountType.Id && customerAccountDto.AccountTypeId == savingsAccountType.Id))
                     {
                         return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Customer already has a Savings Account");
                     }
-                    if (customerAccount.AccountTypeId == currentAccountType.Id && customerAccountDto.AccountTypeId == currentAccountType.Id)
+                    if (currentAccountType != null && (customerAccount.AccountTypeId == currentAccountType.Id && customerAccountDto.AccountTypeId == currentAccountType.Id))
                     {
                         return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Customer already has a Current Account");
                     }
 
                 }
             }
-
-
 
             return Request.CreateResponse(HttpStatusCode.OK, "Ok");
 

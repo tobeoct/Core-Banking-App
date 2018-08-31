@@ -59,7 +59,7 @@ textarea {
     top: 45%;
     width: 30px;
     margin: auto;
-    left: 40%;
+    left: 35%;
     
 }
 .loader-container {
@@ -638,8 +638,10 @@ td {
     display: none;
     opacity: 0;
     text-align: left;
+    
     transition: display 0.3s ease-in, height 0.3s ease-in, opacity 0.3s ease-in;
 }
+
 
     .dropdown li:hover {
         color: #999;
@@ -654,6 +656,7 @@ td {
     width: 100%;
     padding-top: 10px;
     padding-bottom: 10px;
+    background: #333;
 }
 
 #nav-active {

@@ -45,6 +45,7 @@ namespace WebApplication1.Controllers
             var accounts = _context.GlAccounts.Include(c=>c.GlCategories).ToList();
             var glCategories = _context.GlCategories.ToList();
             var categories = _context.Categories.ToList();
+            var count = _context.Tellers.Count();
             List<GLAccount> tillAccounts = new List<GLAccount>();
             foreach (var category in categories)
             {
@@ -73,7 +74,8 @@ namespace WebApplication1.Controllers
             {
                 Users = users,
                 Teller = new Teller(),
-                TillAccounts = tillAccounts
+                TillAccounts = tillAccounts,
+                count = count
 
 
             };

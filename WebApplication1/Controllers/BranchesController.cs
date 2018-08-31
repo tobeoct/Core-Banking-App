@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
+using WebApplication1.ViewModels;
 
 namespace WebApplication1.Controllers
 {
@@ -38,26 +39,35 @@ namespace WebApplication1.Controllers
         public ActionResult Index()
         {
             ViewBag.Message = RoleName.USER_NAME;
-            if (User.IsInRole(RoleName.USER_ROLE))
+            var count = _context.Branches.Count();
+            var viewModel = new BranchViewModel()
             {
-                return View("ReadOnlyList",new Branch());
-            }
-           
+                Branch = new Branch(),
+                count = count
+            };
 
-            return View(new Branch());
+
+            return User.IsInRole(RoleName.USER_ROLE) ? View("ReadOnlyList",viewModel) : View(viewModel);
         }
 
         [HttpPost]
-        public ActionResult Create(Branch branch)
+        public ActionResult Create(BranchViewModel branchViewModel)
         {
+            branchViewModel.Branch.DateCreated = DateTime.Now;
             if (!ModelState.IsValid)
             {
-                return View("Index",branch);
+                return View("Index", branchViewModel);
             }
             //            var branchInDb = _context.Branches.LastOrDefault();
             //            var id = branchInDb.Id + 1;
             //            branch.Id = id;
             // branch.Id = 0;
+            var branch = new Branch()
+            {
+                Address = branchViewModel.Branch.Address,
+                DateCreated = branchViewModel.Branch.DateCreated,
+                Name = branchViewModel.Branch.Name
+            };
             _context.Branches.Add(branch);
             _context.SaveChanges();
             return RedirectToAction("Index", "Branches");

@@ -24,19 +24,26 @@
     </div>
 </div>
 <div class="row margin-vertical">
-    <div class="row padding-horizontal padding-vertical">
-        <div class="container container-fluid">
-            <p class="align-right grey-color animated fadeInRight ">3 Tellers</p>
-        </div>
-
-    </div>
+    
     <div class="container bg-white shadow">
 
-        <div class="row align-right padding-horizontal">
-            @* <button id="myFirstBtn" class="myBtn">Add new Teller</button> *@
-            <button id="myOpenTellerModalBtn">Add new Teller</button>
-        </div>
+        <div class="row  padding-horizontal">
+            <div class="col-md-6 col-sm-6 col-xs-6 align-left" style="padding-top: 35px;">
+                <p class=" grey-color animated fadeInRight "><span id="count">@Model.count</span> Tellers</p>
 
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6 align-right">
+                @{
+                    if (User.IsInRole(RoleName.ADMIN_ROLE))
+                    {
+                        <button id="myOpenTellerModalBtn">Add new Teller</button>
+                    }
+
+                }
+            </div>
+
+        </div>
+        
 
 
 
@@ -48,7 +55,7 @@
                         <th>User Name</th>
                         <th>Till Account</th>
                         <th>Till Account Balance</th>
-                        <th>Action</th>
+
                     </tr>
                 </thead>
 
@@ -67,11 +74,12 @@
     <script>
 
 
-        $(document).ready(function() {
+        $(document).ready(function () {
 
-            $('#myOpenTellerModalBtn').on('click', function() {
-                $('#myAddTellerModal').fadeIn(0, function() {
+            $('#myOpenTellerModalBtn').on('click', function () {
+                $('#myAddTellerModal').fadeIn(0, function () {
                     $(this).addClass('fadeInDown');
+                    $("select:visible:first").focus();
                 });
             });
             var table = $("#tellers").DataTable({
@@ -88,16 +96,12 @@
                     },
                     {
                         data: "tillAccountBalance"
-                    },
-                    {
-                        data: "id",
-                        render: function(data) {
-                            return "<a class='js-delete' data-branch-id='" + data + "'>Edit|Delete</a>"
-                        }
                     }
                 ]
             });
-
+            table.ajax.reload(function () {
+                $('#count').html(table.data().count());
+            });
             $("#myAddTellerBtn").on("click",
                 function (e) {
 
@@ -111,19 +115,19 @@
                         return;
                     }
                     if (tillAccountId == 0) {
-//                        if ($('#tillAccountId').text().contains( "No Available Till Accounts")) {
-//                            $('#myAddTellerModal #errorMessage').fadeIn();
-//                            $('#myAddTellerModal #errorMessage').html("All Accounts Are Currently Assigned To A User");
-//                            return;
-//                        }
+                        //                        if ($('#tillAccountId').text().contains( "No Available Till Accounts")) {
+                        //                            $('#myAddTellerModal #errorMessage').fadeIn();
+                        //                            $('#myAddTellerModal #errorMessage').html("All Accounts Are Currently Assigned To A User");
+                        //                            return;
+                        //                        }
                         $('#myAddTellerModal #errorMessage').fadeIn();
                         $('#myAddTellerModal #errorMessage').html("Please Select a Till Account");
                         return;
                     }
                     alert("Till Account Id : " +
-                        tillAccountId+
+                        tillAccountId +
                         ", User Id : " +
-                        userId );
+                        userId);
 
                     var tellerDto = {
                         UserTellerId: userId,
@@ -139,19 +143,19 @@
                         dataType: 'json',
                         success: function (data) {
 
-                            
+
                             $('#myAddTellerModal #successMessage').fadeIn(200,
-                                    function () {
-                                        document.getElementById('tellerForm').reset();
-                                        
-                                        $('#myAddTellerModal #successMessage').html(data)
-                                    });
-                                return;
+                                function () {
+                                    document.getElementById('tellerForm').reset();
+
+                                    $('#myAddTellerModal #successMessage').html(data)
+                                });
+                            return;
 
 
                         },
                         error: function (errorMessage) {
-                           // alert('request failed');
+                            // alert('request failed');
                             //                            var msg = JSON.stringify(errorMessage);
                             var msg = JSON.parse(errorMessage.responseText);
 
@@ -166,9 +170,14 @@
 
             $('#myAddTellerModal .close').on('click',
                 function () {
-                    table.ajax.reload();
-                    $('#myAddTellerModal').fadeOut();
+                   
+                    table.ajax.reload(function () {
+                        $('#count').html(table.data().count());
+                        $('#myAddTellerModal').fadeOut();
+                    });
+                   
                 });
+
             $("#tellers ").on("click",
                 "js-delete",
                 function () {

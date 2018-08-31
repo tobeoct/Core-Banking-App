@@ -6,12 +6,9 @@ using WebApplication1.Models;
 
 namespace WebApplication1.ViewModels
 {
-    public class TellerViewModel
+    public class BranchViewModel
     {
-        public IEnumerable<GLAccount> TillAccounts { get; set; }
-
-        public IEnumerable<ApplicationUser> Users { get; set; }
-        public Teller Teller { get; set; }
+        public Branch Branch { get; set; }
         public int count { get; set; }
     }
 }

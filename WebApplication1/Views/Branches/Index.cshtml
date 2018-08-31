@@ -1,11 +1,12 @@
-﻿@model WebApplication1.Models.Branch
-
+﻿
+@model WebApplication1.ViewModels.BranchViewModel
 @{
     ViewBag.Title = "Branch Management";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @Html.Partial("_Modal")
+@Html.Partial("_EditBranchModal")
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -15,28 +16,30 @@
     </div>
 </div>
 <div class="row margin-vertical">
-    <div class="row padding-horizontal padding-vertical">
-        <div class="container container-fluid">
-            <p class="align-right grey-color animated fadeInRight ">3 Branches</p>
-        </div>
-
-    </div>
+    
     <div class="container bg-white shadow">
 
-        <div class="row align-right padding-horizontal">
-            <button id="myBtn">Add new Branch</button>
+
+
+        <div class="row  padding-horizontal">
+            <div class="col-md-6 col-sm-6 col-xs-6 align-left" style="padding-top: 35px;">
+                <p class=" grey-color animated fadeInRight "><span id="count">@Model.count</span> Branches</p>
+
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6 align-right">
+                <button id="myBtn">Add new Branch</button>
+            </div>
+
         </div>
-
-
 
 
         <div class="row padding-horizontal">
-            
-            <table id="branches" class="table table-striped table-responsive small-text animated fadeInUp ">
+
+            <table id="branches" class=" table table-striped table-responsive table-hover animated small-text fadeInUp ">
                 <thead class="padding-vertical">
                     <tr>
                         <th>Branch Name</th>
-                        <th>Address</th>                     
+                        <th>Address</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -52,9 +55,48 @@
 
 @section scripts
 {
+
     <script>
-        $(document).ready(function() {
-            $("#branches").DataTable({
+        function EditBranch(id) {
+            //alert(id);
+            var index = {
+                Id: id
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/Branches/Edit',
+                data: JSON.stringify(index),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (data) {
+
+
+                    $('#myEditBranchModal').fadeIn(200,
+                        function () {
+                            $('#myEditBranchModal #name').val(data['name']);
+                            $('#myEditBranchModal #address').val(data['address']);
+                            $('#myEditBranchModal #hidden').val(id);
+                        });
+
+
+                },
+                error: function (errorMessage) {
+                    // alert('request failed');
+
+                    //                        var msg = JSON.parse(errorMessage.responseText);
+                    //
+                    //                        $('#myGLPostingConfirmationModal #errorMessage').fadeIn(200,
+                    //                            function () { $('#myGLPostingConfirmationModal #errorMessage').html(msg.message) });
+                }
+
+            });
+
+        }
+
+        $(document).ready(function () {
+            var branchDto;
+            var table = $("#branches").DataTable({
                 ajax: {
                     url: "/api/branches",
                     dataSrc: ""
@@ -66,66 +108,95 @@
                     {
                         data: "address"
                     },
-                    
                     {
                         data: "id",
 
-                        render: function(data) {
-                            return "<p class='js-delete btn-link '  style='cursor:pointer;' id=" + data + " onclick='EditBranch(" + data +")'>Edit</p>";
+                        render: function (data) {
+                            return "<p class='js-delete btn btn-primary '  style='margin:auto;cursor:pointer;' id=" +
+                                data +
+                                " onclick='EditBranch(" +
+                                data +
+                                ");'>Edit</p>";
                         }
                     }
                 ]
             });
-
-            var EditBranch = function(id) {
-                $.ajax({
-                    type: 'POST',
-                    url: '/api/Branches/Edit',
-                    data: JSON.stringify(id),
-                    contentType: 'application/json; charset=utf-8',
-                    dataType: 'json',
-                    success: function (data) {
-
-
-//                        $('#myGLPostingConfirmationModal #successMessage').fadeIn(200,
-//                            function () {
-//                                document.getElementById('confirmationForm').reset();
-//
-//                                $('#myGLPostingConfirmationModal #successMessage').html(data);
-//
-//                                $('#myGLPostingConfirmationModal button').fadeOut();
-//                            });
-//                        return;
-
-
-                    },
-                    error: function (errorMessage) {
-                        // alert('request failed');
-
-//                        var msg = JSON.parse(errorMessage.responseText);
-//
-//                        $('#myGLPostingConfirmationModal #errorMessage').fadeIn(200,
-//                            function () { $('#myGLPostingConfirmationModal #errorMessage').html(msg.message) });
-                    }
-
-                });
-
-            }
-            $("#branches ").on("click","js-delete", function () {
-                var button = $(this);
-                //alert("Delete");
-                bootbox.confirm("Are you sure you want to delete this branch", function () {
-                    if (result) {
-                        $.ajax({
-                            url: "api/branches/" + button.attr("data-branch-id"),
-                            method: "DELETE",
-                            success: function () {
-                                table.row(button.parents("tr")).remove().draw();
+            table.ajax.reload(function () {
+                $('#count').html(table.data().count());
+            });
+            $("#branches ").on("click",
+                "js-delete",
+                function () {
+                    var button = $(this);
+                    //alert("Delete");
+                    bootbox.confirm("Are you sure you want to delete this branch",
+                        function () {
+                            if (result) {
+                                $.ajax({
+                                    url: "api/branches/" + button.attr("data-branch-id"),
+                                    method: "DELETE",
+                                    success: function () {
+                                        table.row(button.parents("tr")).remove().draw();
+                                    }
+                                });
                             }
                         });
-                    }
                 });
-            });
+
+
+            $('#myEditBranchModal #myEditBranchBtn').on('click',
+                function (e) {
+                    e.preventDefault();
+                    var id = $('#myEditBranchModal #hidden').val();
+                    var name = $('#myEditBranchModal #name').val();
+                    var address = $('#myEditBranchModal #address').val();
+                    branchDto = {
+                        Id: id,
+                        Name: name,
+                        Address: address
+                    }
+                    $.ajax({
+                        type: 'PUT',
+                        url: '/api/Branches/Update',
+                        data: JSON.stringify(branchDto),
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        success: function (data) {
+
+
+                            $('#myEditBranchModal #successMessage').fadeIn(200,
+                                function () {
+                                    $('#myEditBranchModal .loader').fadeOut();
+                                    $('#myEditBranchModal #successMessage').html("Branch Updated");
+
+
+                                });
+
+
+                        },
+                        error: function (errorMessage) {
+                            // alert('request failed');
+
+                            var msg = JSON.parse(errorMessage.responseText);
+                            $('#myEditBranchModal #errorMessage').fadeIn(200,
+                                function () {
+                                    $('#myEditBranchModal #errorMessage').html(msg.message)
+                                    $('#myEditBranchModal .loader').fadeOut();
+                                });
+                        }
+
+                    });
+                    $('#myEditBranchModal .close').on('click',
+                        function () {
+                            table.ajax.reload(function () {
+                                $('#count').html(table.data().count());
+                                $('#myEditBranchModal #successMessage').fadeOut();
+                                $('#myEditBranchModal #errorMessage').fadeOut();
+                                $('#myEditBranchModal .loader').fadeOut();
+                            });
+                        });
+
+                });
 
         });
     </script>

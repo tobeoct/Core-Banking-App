@@ -1,4 +1,4 @@
-﻿  
+﻿
 //$(document).keypress(function (event) {
 
 //    var keycode = (event.keyCode ? event.keyCode : event.which);
@@ -29,15 +29,33 @@ var bIsLastKeyActive = false;
 var bIsKeyActive = false;
 var isHidden = true;
 
+$("select:visible:first").focus();
+
+
+
 $(document).keydown(function (e) {
 
     if (e.keyCode == keyEnter) {
         if ($("#myModal").is(":hidden")) {
-           // alert("Opening Modal");
+            // alert("Opening Modal");
+            if ($("#myEditBranchModal").css('display') === "block") {
+                $(" #myEditBranchModal #myEditBranchBtn").trigger("click");
+                return;
+            }
+
+
+
             $("#myBtn").trigger("click");
             return;
         }
+        if ($("#myAddTellerModal").is(":hidden")) {
+            $(" #myOpenTellerModalBtn").trigger("click");
+            return;
+        }
+        $(" #myAddTellerPostingModal #myAddTellerPostingBtn").trigger("click");
+
         $("#myModal #enterBtn").trigger("click");
+
 
         return;
     }
@@ -49,11 +67,11 @@ $(document).keydown(function (e) {
         console.log("Key ALT+L was pressed!");
         alert("Logging Out");
         $("#nav-log-out").submit();
-        
+
     }
     else if (e.altKey && e.keyCode == keyA) {
         console.log("Key ALT+A was pressed!");
-        
+
         window.location = $("#nav-account-type").attr("href");
 
     }
@@ -78,18 +96,18 @@ $(document).keyup(function (e) {
     else {
         bIsKeyActive = false;
     }
-    if (e.which == iLastKey && bIsLastKeyActive && bIsControlKeyActived == true) { bIsLastKeyActive = true; console.log("Key up : ALT +"+iKeyActive+"+" + e.which); }
+    if (e.which == iLastKey && bIsLastKeyActive && bIsControlKeyActived == true) { bIsLastKeyActive = true; console.log("Key up : ALT +" + iKeyActive + "+" + e.which); }
     else {
         bIsLastKeyActive = false;
     }
-    
+
 
 }).keydown(function (e) {
 
     if (e.which == iShortCutControlKey) bIsControlKeyActived = true;
-    if (bIsControlKeyActived == true && e.which != iShortCutControlKey && bIsKeyActive ==false) {
+    if (bIsControlKeyActived == true && e.which != iShortCutControlKey && bIsKeyActive == false) {
         iKeyActive = e.which;
-        console.log("Key Down :ALT + " + iKeyActive+" + " + e.which);
+        console.log("Key Down :ALT + " + iKeyActive + " + " + e.which);
         bIsKeyActive = true;
     }
     if (bIsKeyActive == true && bIsControlKeyActived == true && e.which != iShortCutControlKey && e.which != iKeyActive && bIsLastKeyActive == false) {
@@ -101,8 +119,7 @@ $(document).keyup(function (e) {
 
 });
 
-var shortcutLogic = function(iKeyActive,lastKey)
-{
+var shortcutLogic = function (iKeyActive, lastKey) {
     if (iKeyActive == keyC) {
         if (lastKey == keyM) {
             window.location = $("#nav-customer-mgt").attr("href");
@@ -146,19 +163,19 @@ var GetStatus = function () {
         dataType: 'json',
         success: function (data) {
 
-            $('.switch input').prop('checked', false);
+            $(".switch input").prop("checked", false);
             if (data == "Opened") {
-                $('#postWarning').fadeOut();
-                $('.switch #radio-d').prop('checked', true);
-                $('#myAddGLPostingModal').css('display', 'block');
-                $('#myAddTellerPostingModal').css('display', 'block');
+                $("#postWarning").fadeOut();
+                $(".switch #radio-d").prop("checked", true);
+                $("#myAddGLPostingModal").css("display", "block");
+                $("#myAddTellerPostingModal").css("display", "block");
             }
             else {
-                $('#myAddGLPostingModal').css('display', 'none');
-                $('#myAddTellerPostingModal').css('display', 'none');
-                $('#postWarning').fadeIn();
-                $('.switch #radio-c').prop('checked', true);
-                
+                $("#myAddGLPostingModal").css("display", "none");
+                $("#myAddTellerPostingModal").css("display", "none");
+                $("#postWarning").fadeIn();
+                $(".switch #radio-c").prop("checked", true);
+
             }
 
         },
@@ -166,9 +183,9 @@ var GetStatus = function () {
             // alert('request failed');
             //                            var msg = JSON.stringify(errorMessage);
             var msg = JSON.parse(errorMessage.responseText);
-            alert(msg,message);
-        //    $('myBusinessStatusModal #errorMessage').fadeIn(200,
-        //      function () { $('myBusinessStatusModal #errorMessage').html(msg.message) });
+            alert(msg, message);
+            //    $('myBusinessStatusModal #errorMessage').fadeIn(200,
+            //      function () { $('myBusinessStatusModal #errorMessage').html(msg.message) });
         }
 
     });
@@ -188,7 +205,7 @@ $('.switch input').on('click', function (e) {
     label.each(function (index) {
         if ($(this).attr('for') == id) {
             action = $(this).text();
-           
+
         }
     });
 
@@ -203,10 +220,10 @@ $('.switch input').on('click', function (e) {
     $('#myBusinessStatusModal #businessStatus b').text(intendedAction);
     $('#myBusinessStatusModal #warning').fadeIn();
     $('#myBusinessStatusModal').fadeIn();
-     businessStatusDto = {
+    businessStatusDto = {
         IntendedAction: intendedAction
     }
-    
+
 
     //alert(action);
 });
@@ -229,11 +246,11 @@ $('#myBusinessStatusModal #myProceedBtn').on('click', function (e) {
             $('#myBusinessStatusModal #successMessage').fadeIn(200,
                 function () {
 
-                   
+
                     $('#myBusinessStatusModal #successMessage').html(data);
                     $('.switch input').prop('checked', false);
                     if (presentAction == "Open") {
-                        
+
                         $('.switch #radio-d').prop('checked', true);
                     }
                     else {
@@ -247,7 +264,7 @@ $('#myBusinessStatusModal #myProceedBtn').on('click', function (e) {
 
         },
         error: function (errorMessage) {
-             //alert('request failed');
+            //alert('request failed');
             //                            var msg = JSON.stringify(errorMessage);
             var msg = JSON.parse(errorMessage.responseText);
 
@@ -266,14 +283,31 @@ $('#myBusinessStatusModal #myCancelBtn').on('click', function (e) {
 });
 $(document).ready(function () {
     $('.loader-container').fadeOut();
-    $(".nav-list .row").removeClass('active');
-    var navIndex = localStorage.getItem("nav-index");
-    var trueIndex = parseInt(navIndex / 7, 10);
-    console.log("True Index = " + trueIndex);
-    
-    $(".nav-list .row:nth-child("+trueIndex+")").addClass('active');
-//    $(".nav-list .row").removeClass('active');
-//    $(".nav-list div")[trueIndex].addClass('active');
+    var url = document.location.href;
+    //    var str = url.substr(0, url.lastIndexOf('/'));
+    //    var nUrl = str.substr(str.lastIndexOf('/') + 15);
+    // alert(url);
+    // $('.nav-list .row  a:contains(' + nUrl + ')').addClass('active');
+    //    $(".nav-list .row").removeClass('active');
+    //    var navIndex = localStorage.getItem("nav-index");
+    //    var trueIndex = parseInt(navIndex / 7, 10);
+    //    $('.nav-list .row ').on('click', function () {
+    ////        $('.nav-list .row').removeClass('active');
+    ////        $(this).addClass('active');
+    ////        var active = $('.nav-list .active');
+    ////        localStorage.setItem("nav-index", $("div").index(active));
+    ////        $(".nav-list .row").removeClass('active');
+    ////        console.log("initial Index = " + $("div").index(active));
+    //        $('.nav-list .row').removeClass('active');
+    //        $(this).addClass('active');
+    //        var active = $('.nav-list .active');
+    //        alert($(this).index(active));
+    //    });
+    //    console.log("True Index = " + trueIndex);
+
+    //    $(".nav-list .row:nth-child("+trueIndex+")").addClass('active');
+    //    $(".nav-list .row").removeClass('active');
+    //    $(".nav-list div")[trueIndex].addClass('active');
 
 
     /**
@@ -291,9 +325,10 @@ $(document).ready(function () {
         e.preventDefault();
         $(".modal-content").addClass("fadeInDown");
         modal.style.display = "block";
+        // $("#myModal input:visible:first").focus();
 
     }
-
+   
     // When user clicks to close icon, close the modal
     $('.close').on("click", function () {
         $(".modal").fadeOut();
@@ -305,7 +340,7 @@ $(document).ready(function () {
     span.onclick = function () {
 
         modal.style.display = "none";
-        
+
     }
 
     // When the user clicks anywhere outside of the modal, close it
@@ -320,14 +355,7 @@ $(document).ready(function () {
      * END OF MODAL SETTINGS
      */
 
-    $('.nav-list .row ').on('click', function () {
-        $('.nav-list .row').removeClass('active');
-        $(this).addClass('active');
-        var active = $('.nav-list .active');
-        localStorage.setItem("nav-index", $("div").index(active));
-        $(".nav-list .row").removeClass('active');
-        console.log("initial Index = " + $("div").index(active));
-    });
+
 
     $("button").on('click', function () {
 
@@ -342,8 +370,8 @@ $(document).ready(function () {
     });
 
 
-    
-    
-    
+
+
+
     //"<a href='#' aria-controls='branches' data-dt-idx='0' tabindex='0'><i class='fa fa-arrow-left'></i></a>"
 });

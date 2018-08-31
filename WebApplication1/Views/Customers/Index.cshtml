@@ -14,6 +14,7 @@
 }
 
 @Html.Partial("_AddCustomerModal")
+@Html.Partial("_EditCustomerModal")
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -31,7 +32,7 @@
     <div class="container bg-white shadow">
 
         <div class="row align-right padding-horizontal">
-            <button id="myBtn">Add new Customer</button>
+            <button id="myBtn" class="customerBtn">Add new Customer</button>
         </div>
 
 
@@ -81,11 +82,15 @@
                     {
                         data: "gender"
                     },
-                    
                     {
                         data: "id",
-                        render: function(data) {
-                            return "<a class='js-delete' data-branch-id='"+data+"'>Edit</a>"
+
+                        render: function (data) {
+                            return "<p class='js-delete btn btn-primary '  style='margin:auto;cursor:pointer;' id=" +
+                                data +
+                                " onclick='EditCustomer(" +
+                                data +
+                                ");'>Edit</p>";
                         }
                     }
                 ]

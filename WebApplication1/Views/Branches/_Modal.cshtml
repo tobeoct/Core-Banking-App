@@ -1,4 +1,4 @@
-﻿@model WebApplication1.Models.Branch
+﻿@model WebApplication1.ViewModels.BranchViewModel
 <div id="myModal" class="modal ">
 
     <!-- Modal content -->
@@ -13,40 +13,40 @@
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.Name)
+                            @Html.LabelFor(m => m.Branch.Name)
                         </div>
                         <div class="col-md-9">
-                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control", @placeholder = "Enter Branch Name" })
-                            @Html.ValidationMessageFor(m => m.Name)
+                            @Html.TextBoxFor(m => m.Branch.Name, new { @class = "form-control", @placeholder = "Enter Branch Name" })
+                            @Html.ValidationMessageFor(m => m.Branch.Name)
                         </div>
                     </div>
                 </div>
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.Address)
+                            @Html.LabelFor(m => m.Branch.Address)
                         </div>
                         <div class="col-md-9">
-                            @Html.TextBoxFor(m => m.Address, new { @class = "form-control", @placeholder = "Enter Branch Address" })
-                            @Html.ValidationMessageFor(m => m.Address)
+                            @Html.TextBoxFor(m => m.Branch.Address, new { @class = "form-control", @placeholder = "Enter Branch Address" })
+                            @Html.ValidationMessageFor(m => m.Branch.Address)
                         </div>
                     </div>
                 </div>
-                <div class="row form-group ">
-                    <div class="margin-vertical">
-                        <div class="col-md-3">
-                            @Html.LabelFor(m => m.DateCreated)
-                        </div>
-                        <div class="col-md-9">
-                            @Html.TextBoxFor(m => m.DateCreated, new { @class = "form-control", @type = "date" })
-                            @Html.ValidationMessageFor(m => m.DateCreated)
-                        </div>
-                    </div>
-                </div>
+@*                 <div class="row form-group "> *@
+@*                     <div class="margin-vertical"> *@
+@*                         <div class="col-md-3"> *@
+@*                             @Html.LabelFor(m => m.Branch.DateCreated) *@
+@*                         </div> *@
+@*                         <div class="col-md-9"> *@
+@*                             @Html.TextBoxFor(m => m.Branch.DateCreated, new { @class = "form-control", @type = "date" }) *@
+@*                             @Html.ValidationMessageFor(m => m.Branch.DateCreated) *@
+@*                         </div> *@
+@*                     </div> *@
+@*                 </div> *@
 
                 <div class="form-group">
                     
-                    @Html.HiddenFor(m => m.Id)
+                    @Html.HiddenFor(m => m.Branch.Id)
 
                 </div>
                 <div class="align-right">
