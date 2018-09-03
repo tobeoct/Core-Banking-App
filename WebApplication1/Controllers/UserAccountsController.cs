@@ -80,7 +80,7 @@ namespace WebApplication1.Controllers
 
 
         // GET: UserAccounts
-        [Authorize(Roles = RoleName.ADMIN_ROLE)]
+        //[Authorize(Roles = RoleName.ADMIN_ROLE)]
         public ActionResult Index()
         {
             ViewBag.Message = RoleName.USER_NAME;
@@ -89,7 +89,13 @@ namespace WebApplication1.Controllers
 
             var roles = _context.Roles.Select(r => r.Name);
             var count = _context.Users.Count();
-            return View(new RegisterViewModel { Branch = branches, RolesList = new SelectList(roles), count = count });
+            if (User.IsInRole(RoleName.ADMIN_ROLE))
+            {
+                return View(new RegisterViewModel { Branch = branches, RolesList = new SelectList(roles), count = count });
+            }
+
+            return RedirectToAction("Index", "Branches");
+
         }
         [Authorize(Roles = RoleName.ADMIN_ROLE)]
         // GET: UserAccounts/EditProfile/1
@@ -477,7 +483,7 @@ namespace WebApplication1.Controllers
             var url = string.Format("/Account/ActivationAccount/{0}", activationCode);
             var link = Request.Url.AbsoluteUri.Replace(Request.Url.PathAndQuery, url);
 
-            var fromEmail = new MailAddress("tobe.onyema@gmail.com", "Activation Account - AKKA");
+            var fromEmail = new MailAddress("tobe.onyema@gmail.com", "Activation Account - FINTECH");
             var toEmail = new MailAddress(email);
 
             var fromEmailPassword = "0801tobe";

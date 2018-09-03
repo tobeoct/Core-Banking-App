@@ -51,7 +51,14 @@ namespace WebApplication1.Controllers
                 Categories = categories,
                 count = count
             };
-            return View("GLCategory", viewModel);
+            if (User.IsInRole(RoleName.ADMIN_ROLE))
+            {
+                return View("GLCategory", viewModel);
+            }
+
+           
+                return View("CategoryReadOnly", viewModel);
+            
         }
 
         // GET: GeneralLedgers/Account
@@ -68,7 +75,15 @@ namespace WebApplication1.Controllers
                 Branch = branches,
                 count = count
             };
-            return View("GLAccount", viewModel);
+            if (User.IsInRole(RoleName.ADMIN_ROLE))
+            {
+                return View("GLAccount", viewModel);
+            }
+
+            
+                return View("AccountReadOnly", viewModel);
+            
+           
         }
 
         public ActionResult Postings()

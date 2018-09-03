@@ -171,7 +171,7 @@ namespace WebApplication1.Controllers.Api
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
         [Route("api/EOD/Start")]
-//        [Authorize(Roles = RoleName.ADMIN_ROLE)]
+        //        [Authorize(Roles = RoleName.ADMIN_ROLE)]
         public HttpResponseMessage Start(BusinessStatusDto businessStatusDto)
         {
 
@@ -225,8 +225,8 @@ namespace WebApplication1.Controllers.Api
             if (errorMsg.Equals(""))
             {
                 // : Apply COT on Current Account Withdrawals;
-               // COTAccrual();
-               COTApplied();
+                // COTAccrual();
+                COTApplied();
                 if (errorMsg.Equals(""))
                 {
                     //InterestAccrual();
@@ -234,7 +234,7 @@ namespace WebApplication1.Controllers.Api
                     //InterestAccrual();
                     if (errorMsg.Equals(""))
                     {
-                       // InterestExpenseAccrual();
+                        // InterestExpenseAccrual();
                         InterestExpenseApplied();
                         if (errorMsg.Equals(""))
                         {
@@ -251,7 +251,7 @@ namespace WebApplication1.Controllers.Api
                                         RunEOM();
                                         isEOMDone = true;
                                     }
-                                    
+
 
                                 }
                                 else
@@ -300,7 +300,7 @@ namespace WebApplication1.Controllers.Api
             var cot = (currentAccountType.COT) / 100;
             var customerAccounts =
                 _context.CustomerAccounts.Where(c => c.AccountTypeId == currentAccountTypeId).ToList();
-            var COTIncomeGLAccount = _context.GlAccounts.FirstOrDefault(c => c.Id== currentAccountType.COTIncomeGLAccountId);
+            var COTIncomeGLAccount = _context.GlAccounts.FirstOrDefault(c => c.Id == currentAccountType.COTIncomeGLAccountId);
             var capitalAccount = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals("Capital Account"));
             var todayDate = DateTime.Now;
 
@@ -329,7 +329,7 @@ namespace WebApplication1.Controllers.Api
                         {
                             if (cot != null)
                             {
-                                var cotAmount = (float) cot * todayWithdrawal;
+                                var cotAmount = (float)cot * todayWithdrawal;
                                 if (capitalAccount != null && capitalAccount.AccountBalance >= cotAmount)
                                 {
 
@@ -419,8 +419,8 @@ namespace WebApplication1.Controllers.Api
                                     COTIncomeGLAccount.AccountBalance = COTIncomeGLAccount.AccountBalance + cotAmount; // CREDIT
                                     account.AccountBalance = account.AccountBalance - cotAmount; // DEBIT
                                     cotIncomeReceivableAcc.AccountBalance = cotIncomeReceivableAcc.AccountBalance - cotAmount; // CREDIT
-                                                                                                                                               //                                    COTIncomeGLAccount.AccountBalance = COTIncomeGLAccount.AccountBalance - cotAmount; // DEBIT
-                                                                                                                                               //                                    capitalAccount.AccountBalance = capitalAccount.AccountBalance + cotAmount; // CREDIT
+                                                                                                                               //                                    COTIncomeGLAccount.AccountBalance = COTIncomeGLAccount.AccountBalance - cotAmount; // DEBIT
+                                                                                                                               //                                    capitalAccount.AccountBalance = capitalAccount.AccountBalance + cotAmount; // CREDIT
 
                                     //ADD TO REPORT TABLE IN DB (DOUBLE ENTRY)
 
@@ -543,10 +543,10 @@ namespace WebApplication1.Controllers.Api
 
                             if (incomeGlAccount != null && capitalAccount != null && capitalAccount.AccountBalance >= interest)
                             {
-//                                linkedAccount.AccountBalance = linkedAccount.AccountBalance - interest; // DEBIT
-//                                incomeGlAccount.AccountBalance = incomeGlAccount.AccountBalance + interest; // CREDIT
-//                                incomeGlAccount.AccountBalance = incomeGlAccount.AccountBalance - interest; // DEBIT
-//                                capitalAccount.AccountBalance = capitalAccount.AccountBalance + interest; // CREDIT
+                                //                                linkedAccount.AccountBalance = linkedAccount.AccountBalance - interest; // DEBIT
+                                //                                incomeGlAccount.AccountBalance = incomeGlAccount.AccountBalance + interest; // CREDIT
+                                //                                incomeGlAccount.AccountBalance = incomeGlAccount.AccountBalance - interest; // DEBIT
+                                //                                capitalAccount.AccountBalance = capitalAccount.AccountBalance + interest; // CREDIT
                                 interestReceivableAcc.AccountBalance = interestReceivableAcc.AccountBalance + interest;
                                 incomeGlAccount.AccountBalance = incomeGlAccount.AccountBalance + interest; // CREDIT
                                 linkedAccount.AccountBalance = linkedAccount.AccountBalance - interest; // DEBIT
@@ -556,7 +556,7 @@ namespace WebApplication1.Controllers.Api
 
                                 // Financial Report Entry
                                 AddToReport("Interest Accrual", interestReceivableAcc.Name, incomeGlAccount.Name, interest);
-                                AddToReport("Interest Accrual",linkedAccount.Name, interestReceivableAcc.Name, interest);
+                                AddToReport("Interest Accrual", linkedAccount.Name, interestReceivableAcc.Name, interest);
                                 _context.SaveChanges();
                             }
                             else
@@ -786,7 +786,7 @@ namespace WebApplication1.Controllers.Api
             {
 
                 account.AccountBalance = account.AccountBalance + account.Interest; // CREDIT
-                
+
                 GLAccount expenseAccount = null;
                 if (savingsAccountType != null && account.AccountTypeId == savingsAccountType.Id)
                 {
@@ -866,14 +866,68 @@ namespace WebApplication1.Controllers.Api
             {
                 errorMsg = errorMsg + "<br/> : Please create a <b>" + CBA.COT_INCOME_RECEIVABLE_GL_ACC_NAME + "</b>";
             }
-            if ( interestPayable== null)
+            if (interestPayable == null)
             {
-                errorMsg = errorMsg + "<br/> : Please create an <b>" + CBA.INTEREST_PAYABLE_GL_ACCOUNT+ "</b>";
+                errorMsg = errorMsg + "<br/> : Please create an <b>" + CBA.INTEREST_PAYABLE_GL_ACCOUNT + "</b>";
             }
         }
 
+        [NonAction]
+        public void CreateGlAccount(string name)
+        {
+            var branch = _context.Branches.FirstOrDefault();
+            var glCategoriesId = 0;
+            var glCategories = _context.GlCategories.Include(c => c.Categories);
+            if (name.Equals(CBA.INTEREST_INCOME_ACC_NAME) || name.Equals(CBA.COT_INCOME_GL_ACCOUNT))
+            {
+                glCategoriesId = glCategories.FirstOrDefault(c => c.Categories.Name.Equals("Income")).Id;
+            }
+            else if (name.Equals(CBA.COT_INCOME_RECEIVABLE_GL_ACC_NAME) || name.Equals(CBA.INTEREST_RECEIVABLE_ACC_NAME) || name.Equals(CBA.INTEREST_OVERDUE_ACC_NAME) || name.Equals(CBA.PRINCIPAL_OVERDUE_ACC_NAME))
+            {
+                glCategoriesId = glCategories.FirstOrDefault(c => c.Categories.Name.Equals("Asset")).Id;
+            }
+            else if (name.Equals(CBA.INTEREST_PAYABLE_GL_ACCOUNT))
+            {
+                glCategoriesId = glCategories.FirstOrDefault(c => c.Categories.Name.Equals("Liability")).Id;
+            }
+            else if (name.Equals(CBA.INTEREST_IN_SUSPENSE_ACC_NAME) || name.Equals(CBA.INTEREST_EXPENSE_GL_ACCOUNT))
+            {
+                glCategoriesId = glCategories.FirstOrDefault(c => c.Categories.Name.Equals("Expense")).Id;
+            }
+
+            if (branch != null)
+            {
+                var glAccount = new GLAccount()
+                {
+                    AccountBalance = 0,
+                    BranchId = branch.Id,
+                    Code = getCode(glCategoriesId),
+                    Name = name
+
+                };
+                _context.GlAccounts.Add(glAccount);
+                _context.SaveChanges();
+            }
 
 
+        }
+        public string getCode(int id)
+        {
+            var GLRanCode = RandomString(5);
+            var GLId = id;
+            var GLAccountCode = Convert.ToString(GLId) + Convert.ToString(GLRanCode);
+            Console.WriteLine(GLAccountCode);
+            return GLAccountCode;
+
+        }
+
+        public static string RandomString(int length)
+        {
+            Random random = new Random();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
 
         // : EOM Process is carried out at the end of 30 Financal Days - 1 Financial Month
         [NonAction]

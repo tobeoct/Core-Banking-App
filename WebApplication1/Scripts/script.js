@@ -34,7 +34,7 @@ function Load(url) {
     window.location.replace(url);
 }
 $("#profileImg .drop,#profileImg .drop li ").on('click', function () {
-    alert('clicked');
+   // alert('clicked');
     var url = "UserAccounts/ChangePassword";
     Load(url);
 });

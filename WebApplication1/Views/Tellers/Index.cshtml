@@ -114,7 +114,7 @@
                     e.preventDefault();
                     userId = $("#userId").val();
                     tillAccountId = $("#tillAccountId").val();
-                    alert($("#tillAccountId").text());
+                   // alert($("#tillAccountId").text());
                     if (userId == 0) {
                         $('#myAddTellerModal #errorMessage').fadeIn();
                         $('#myAddTellerModal #errorMessage').html("Please Select a User");
@@ -130,10 +130,10 @@
                         $('#myAddTellerModal #errorMessage').html("Please Select a Till Account");
                         return;
                     }
-                    alert("Till Account Id : " +
-                        tillAccountId +
-                        ", User Id : " +
-                        userId);
+//                    alert("Till Account Id : " +
+//                        tillAccountId +
+//                        ", User Id : " +
+//                        userId);
 
                     var tellerDto = {
                         UserTellerId: userId,

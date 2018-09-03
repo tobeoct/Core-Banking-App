@@ -1,0 +1,86 @@
+﻿@using WebApplication1.Models
+@model WebApplication1.ViewModels.GLCategoryViewModel
+@{
+    ViewBag.Title = "CategoryReadOnly";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="underline animated fadeInLeft">GL Category Management</h1>
+        </div>
+    </div>
+</div>
+<div class="row margin-vertical">
+
+    <div class="container bg-white shadow">
+
+        <div class="row  padding-horizontal">
+            <div class="col-md-6 col-sm-6 col-xs-6 align-left " style="padding-top: 35px;">
+                <p class=" grey-color animated fadeInRight "><span id="count">@Model.count</span> GL Categories</p>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6 align-right">
+               
+            </div>
+        </div>
+
+
+        <div class="row padding-horizontal">
+
+            <table id="gl-category" class="table table-striped table-responsive small-text animated fadeInUp ">
+                <thead class="padding-vertical">
+                    <tr>
+                        <th>GL Category Name </th>
+                        <th>Main Account Category</th>
+                        <th>Description</th>
+                        
+                    </tr>
+                </thead>
+
+                <tbody></tbody>
+            </table>
+        </div>
+
+
+    </div>
+
+</div>
+
+@section scripts
+{
+    <script>
+       
+        $(document).ready(function () {
+            var table = $("#gl-category").DataTable({
+                ajax: {
+                    url: "/api/GeneralLedgers/GetCategories",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name"
+                    },
+                    {
+                        data: "categories.name"
+                    },
+                    {
+                        data: "description"
+                    }
+                ]
+            });
+            // : To GET number of Customer Accounts Available
+            table.ajax.reload(function () {
+                $('#count').html(table.data().count());
+            });
+
+
+           
+
+        });
+    </script>
+}

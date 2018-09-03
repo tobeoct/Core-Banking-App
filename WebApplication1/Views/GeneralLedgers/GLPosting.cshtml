@@ -16,11 +16,18 @@
         </div>
     </div>
 </div>
-<div class="container margin-vertical" id="postWarning">
-    <p class="alert alert-warning" >Business should be opened to carry out GL Postings</p>
-</div>
 
-@Html.Partial("_AddPostings")
+@{
+    if (User.IsInRole(RoleName.ADMIN_ROLE))
+    {
+    <div class="container margin-vertical" id="postWarning">
+        <p class="alert alert-warning">Business should be opened to carry out GL Postings</p>
+    </div>
+   
+        @Html.Partial("_AddPostings")
+    }
+}
+
 <div class="row ">
     @* <div class="row padding-horizontal padding-vertical"> *@
     @*     <div class="container container-fluid"> *@
@@ -30,14 +37,20 @@
 
     <div class="container bg-white shadow">
 
-       
+
         <div class="row  padding-horizontal">
             <div class="col-md-6 col-sm-6 col-xs-6 align-left ">
                 <h3 class="alt-color bold-text align-left ">List of GL Postings  </h3>
-                
+
             </div>
             <div class="col-md-6 col-sm-6 col-xs-6 align-right">
-                <p class=" grey-color animated fadeInRight "><span id="count">@Model.count</span> GL Postings</p>
+                @{
+                    if (User.IsInRole(RoleName.ADMIN_ROLE))
+                    {
+                        <p class=" grey-color animated fadeInRight "><span id="count">@Model.count</span> GL Postings</p>
+                    }
+                }
+                
             </div>
         </div>
 
@@ -52,7 +65,7 @@
                         <th>Debit Amount</th>
                         <th>Credit Amount</th>
                         <th>Narration</th>
-                        
+
                     </tr>
                 </thead>
 
@@ -117,7 +130,7 @@
                     }
                 ]
             });
-            table.ajax.reload(function() {
+            table.ajax.reload(function () {
                 $('#count').html(table.data().count());
             });
 
@@ -204,7 +217,7 @@
                         $('#myAddGLPostingModal #errorMessage').html("Please Enter GL Credit Amount");
                         return;
                     }
-                    if (creditNarration == 0||creditNarration==null) {
+                    if (creditNarration == 0 || creditNarration == null) {
                         $('#myAddGLPostingModal #errorMessage').fadeIn();
                         $('#myAddGLPostingModal #errorMessage').html("Please Enter GL Credit Narration");
                         return;
@@ -235,12 +248,12 @@
                         success: function (data) {
 
                             //Confirmation Modal Fades In
-                            
-                                $('#myGLPostingConfirmationModal').fadeIn(300, function () {
-                                    $('#myGLPostingConfirmationModal #creditAccount b').text(" " + amount + " to " + creditAccountName + " ");
-                                    $('#myGLPostingConfirmationModal #debitAccount b').text(" " + amount + " from " + debitAccountName + " ");
-                                });
-                            
+
+                            $('#myGLPostingConfirmationModal').fadeIn(300, function () {
+                                $('#myGLPostingConfirmationModal #creditAccount b').text(" " + amount + " to " + creditAccountName + " ");
+                                $('#myGLPostingConfirmationModal #debitAccount b').text(" " + amount + " from " + debitAccountName + " ");
+                            });
+
 
 
 
@@ -299,7 +312,7 @@
 
             });
 
-         
+
 
             // : To CLOSE Confirmation modal and refresh PAGE
             $('#myGLPostingConfirmationModal .close').on('click',
@@ -313,9 +326,9 @@
                         document.getElementById('glPostingForm').reset();
 
                     });
-                        
-                    
-                    
+
+
+
 
                 });
 

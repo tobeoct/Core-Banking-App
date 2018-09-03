@@ -41,16 +41,16 @@ namespace WebApplication1.Controllers
             ApplicationUser EmpUser = user;
             RoleName.USER_NAME = EmpUser.FullName;
             ViewBag.Message = RoleName.USER_NAME;
-            if (User.IsInRole(RoleName.USER_ROLE))
+            if (User.IsInRole(RoleName.USER_ROLE)|| User.IsInRole(RoleName.TELLER_ROLE))
             {
 //                return View("ReadOnly");
-                RedirectToAction("Index", "Branches");
+               return RedirectToAction("Index", "Branches");
             }
             else if(User.IsInRole(RoleName.ADMIN_ROLE))
             {
 //                return View();
-                RedirectToAction("Index", "UserAccounts");
-            }
+               return RedirectToAction("Index", "UserAccounts");
+           }
 
            return RedirectToAction("Login", "Account");
 

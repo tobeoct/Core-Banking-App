@@ -91,6 +91,8 @@ namespace WebApplication1.Controllers
             {
                 case SignInStatus.Success:
                     RoleName.EMAIL = model.Email;
+                    //string res = returnUrl.Replace("/","");
+                    //return RedirectToAction("Index","Home");
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
