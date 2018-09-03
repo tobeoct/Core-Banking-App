@@ -64,6 +64,7 @@
                         <th>Transaction Date</th>
                         <th>Debit Amount</th>
                         <th>Credit Amount</th>
+                        <th>Teller</th>
                         <th>Narration</th>
 
                     </tr>
@@ -129,8 +130,12 @@
                         data: "amount"
                     },
                     {
+                        data: "teller.userTeller.fullName"
+                    },
+                    {
                         data: "narration"
                     }
+                    
                 ],
                 "order":
                     [[2, "desc"]]

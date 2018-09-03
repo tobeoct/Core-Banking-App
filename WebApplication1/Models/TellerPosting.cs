@@ -28,6 +28,11 @@ namespace WebApplication1.Models
 
         [Required]
         public string Narration { get; set; }
+        
+        [Required]
+        [Display(Name = "Teller")]
+        public int TellerId { get; set; }
+        public Teller Teller { get; set; }
 
         [Required]
         public DateTime TransactionDate { get; set; }

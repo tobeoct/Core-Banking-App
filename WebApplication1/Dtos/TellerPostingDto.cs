@@ -27,6 +27,7 @@ namespace WebApplication1.Dtos
         [Required]
         public string Narration { get; set; }
 
+        public int TellerId { get; set; }
         [Required]
         public DateTime TransactionDate { get; set; }
     }

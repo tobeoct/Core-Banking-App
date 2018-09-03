@@ -17,13 +17,13 @@ using Microsoft.AspNet.Identity.Owin;
 
 namespace WebApplication1.Controllers.Api
 {
-   
+
     public class TellersController : ApiController
     {
         private ApplicationDbContext _context;
         private string userId = "";
         private string errorMessage = "";
-        private static Random random;        
+        private static Random random;
         protected UserManager<ApplicationUser> UserManager { get; set; }
         //protected SignInManager<ApplicationSignInManager> SignInManager { get; set; }
         public TellersController()
@@ -43,20 +43,20 @@ namespace WebApplication1.Controllers.Api
         }
         //GET api/Tellers
         [Route("api/Tellers")]
-//        [Authorize]
+        //        [Authorize]
         public IHttpActionResult GetTellers()
         {
-            var tellersDto = _context.Tellers.Include(c=>c.UserTeller).Include(c=>c.TillAccount).ToList();
+            var tellersDto = _context.Tellers.Include(c => c.UserTeller).Include(c => c.TillAccount).ToList();
 
             return Ok(tellersDto);
         }
 
         //GET api/Tellers
         [Route("api/Tellers/TellerPostings")]
-//        [Authorize]
+        //        [Authorize]
         public IHttpActionResult GetTellerPostings()
         {
-            var tellerPostingsDto = _context.TellerPostings.Include(c => c.CustomerAccount).ToList();
+            var tellerPostingsDto = _context.TellerPostings.Include(c => c.CustomerAccount).Include(c=>c.Teller).Include(c=>c.Teller.UserTeller).ToList();
 
             return Ok(tellerPostingsDto);
         }
@@ -64,13 +64,13 @@ namespace WebApplication1.Controllers.Api
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
         [Route("api/Tellers/AssignTeller")]
-//        [Authorize(Roles = RoleName.ADMIN_ROLE)]
+        //        [Authorize(Roles = RoleName.ADMIN_ROLE)]
         public HttpResponseMessage AssignTeller(TellerDto tellerDto)
         {
             tellerDto.TillAccountBalance = 0;
             var tillAccountId = tellerDto.TillAccountId;
 
-            
+
             if (CheckIfUserHasBeenAssignedTeller(tellerDto.UserTellerId))
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "User Already Assigned A Till Account");
@@ -91,64 +91,77 @@ namespace WebApplication1.Controllers.Api
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
         [Route("api/Tellers/AddTellerPosting")]
-//        [Authorize]
+        //        [Authorize]
         public HttpResponseMessage AddTellerPosting(TellerPostingDto tellerPostingDto)
         {
             var businessStatus = _context.BusinessStatus.SingleOrDefault();
             var customerAccountStatus = _context.CustomerAccounts
                 .SingleOrDefault(c => c.Id == tellerPostingDto.CustomerAccountId).IsClosed;
-           
-            if (businessStatus.Status == false)
+            var userId = _context.Users.SingleOrDefault(c => c.Email.Equals(RoleName.EMAIL)).Id;
+            var teller = _context.Tellers.SingleOrDefault(c => c.UserTellerId.Equals(userId));
+            if (teller != null)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest,CBA.BUSINESS_CLOSED_REFRESH_MSG );
-            }
-            if (customerAccountStatus == true)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Customer Account is <b>CLOSED</b>");
-            }
-            tellerPostingDto.TransactionDate = DateTime.Now;  
-            
-            var tellerPosting = new TellerPosting();
-            tellerPosting = Mapper.Map<TellerPostingDto, TellerPosting>(tellerPostingDto);           
-            
-            _context.TellerPostings.Add(tellerPosting);
-            _context.SaveChanges();
+                var tellerId = teller.Id;
+                tellerPostingDto.TellerId = tellerId;
 
-            EnforceDoubleEntry(tellerPostingDto.Amount, tellerPosting.CustomerAccountId, tellerPostingDto.PostingType);
 
-            var financialReportDto = new FinancialReportDto();
-            financialReportDto.PostingType ="Teller Posting";
-            if (tellerPostingDto.PostingType == "Deposit")
-            {
-                financialReportDto.CreditAccount = GetCustomerAccountName(tellerPostingDto.CustomerAccountId);
-                financialReportDto.CreditAmount = tellerPostingDto.Amount;
-                financialReportDto.DebitAccount = GetTillAccountName();
-                financialReportDto.DebitAmount = tellerPostingDto.Amount;
-            }
-            else
-            {
-                financialReportDto.DebitAccount = GetCustomerAccountName(tellerPostingDto.CustomerAccountId);
-                financialReportDto.DebitAmount = tellerPostingDto.Amount;
-                financialReportDto.CreditAccount = GetTillAccountName();
-                financialReportDto.CreditAmount = tellerPostingDto.Amount;
-            }
-            
-            financialReportDto.ReportDate =  DateTime.Now;
-            if(!errorMessage.Equals(""))
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMessage);
-            }
-            CBA.AddReport(financialReportDto);
+                if (businessStatus.Status == false)
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, CBA.BUSINESS_CLOSED_REFRESH_MSG);
+                }
 
-            return Request.CreateResponse(HttpStatusCode.OK, "Teller Posted Successfully");
-           
+                if (customerAccountStatus == true)
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Customer Account is <b>CLOSED</b>");
+                }
 
+                tellerPostingDto.TransactionDate = DateTime.Now;
+
+                var tellerPosting = new TellerPosting();
+                tellerPosting = Mapper.Map<TellerPostingDto, TellerPosting>(tellerPostingDto);
+
+                _context.TellerPostings.Add(tellerPosting);
+                _context.SaveChanges();
+
+                EnforceDoubleEntry(tellerPostingDto.Amount, tellerPosting.CustomerAccountId,
+                    tellerPostingDto.PostingType);
+
+                var financialReportDto = new FinancialReportDto();
+                financialReportDto.PostingType = "Teller Posting";
+                if (tellerPostingDto.PostingType == "Deposit")
+                {
+                    financialReportDto.CreditAccount = GetCustomerAccountName(tellerPostingDto.CustomerAccountId);
+                    financialReportDto.CreditAmount = tellerPostingDto.Amount;
+                    financialReportDto.DebitAccount = GetTillAccountName();
+                    financialReportDto.DebitAmount = tellerPostingDto.Amount;
+                }
+                else
+                {
+                    financialReportDto.DebitAccount = GetCustomerAccountName(tellerPostingDto.CustomerAccountId);
+                    financialReportDto.DebitAmount = tellerPostingDto.Amount;
+                    financialReportDto.CreditAccount = GetTillAccountName();
+                    financialReportDto.CreditAmount = tellerPostingDto.Amount;
+                }
+
+                financialReportDto.ReportDate = DateTime.Now;
+                if (!errorMessage.Equals(""))
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMessage);
+                }
+
+                CBA.AddReport(financialReportDto);
+
+                return Request.CreateResponse(HttpStatusCode.OK, "Teller Posted Successfully");
+            }
+
+            errorMessage = "You have not been assigned a Till Account";
+            return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMessage);
         }
 
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
         [Route("api/Tellers/ValidationChecks")]
-//        [Authorize]
+        //        [Authorize]
         public HttpResponseMessage ValidationChecks(TellerPostingDto tellerPostingDto)
         {
 
@@ -231,7 +244,7 @@ namespace WebApplication1.Controllers.Api
             var tillAccount = _context.Tellers
                 .OrderByDescending(p => p.Id)
                 .FirstOrDefault(c => c.UserTellerId == id);
-            if(tillAccount!=null)
+            if (tillAccount != null)
             {
                 var tillAccountId = tillAccount.TillAccountId;
                 var GLAccount = _context.GlAccounts.SingleOrDefault(c => c.Id == tillAccountId);
@@ -241,7 +254,7 @@ namespace WebApplication1.Controllers.Api
 
             errorMessage = errorMessage + "You have not been assigned a Till";
             return "";
-            
+
         }
 
         [NonAction]
@@ -258,7 +271,7 @@ namespace WebApplication1.Controllers.Api
             var tillAccount = _context.Tellers
                 .OrderByDescending(p => p.Id)
                 .FirstOrDefault(c => c.UserTellerId == id);
-            if(tillAccount!=null)
+            if (tillAccount != null)
             {
                 var glAccount = _context.GlAccounts.SingleOrDefault(c => c.Id == tillAccount.TillAccountId);
                 var customerAccount = _context.CustomerAccounts.SingleOrDefault(c => c.Id == customerAccountId);
@@ -281,17 +294,17 @@ namespace WebApplication1.Controllers.Api
             {
                 errorMessage = errorMessage + "You have not been assigned a Till";
             }
-            
+
 
         }
 
         [NonAction]
         public bool CheckTillBalance(long amount)
         {
-//            var store = new UserStore<ApplicationUser>(new ApplicationDbContext());
-//            var userManager = new UserManager<ApplicationUser>(store);
-//            ApplicationUser user = userManager.FindByNameAsync(User.Identity.Name).Result;
-            
+            //            var store = new UserStore<ApplicationUser>(new ApplicationDbContext());
+            //            var userManager = new UserManager<ApplicationUser>(store);
+            //            ApplicationUser user = userManager.FindByNameAsync(User.Identity.Name).Result;
+
             //            var claimsIdentity = User.Identity as ClaimsIdentity;
             //            if (claimsIdentity != null)
             //            {
@@ -310,12 +323,12 @@ namespace WebApplication1.Controllers.Api
             var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(_context));
             var user = userManager.FindByEmail(RoleName.EMAIL);
             var id = user.Id;
-            
-//            var id = User.Identity.GetUserId();
+
+            //            var id = User.Identity.GetUserId();
             var tillAccount = _context.Tellers
                 .OrderByDescending(p => p.Id)
                 .FirstOrDefault(c => c.UserTellerId.Equals(id));
-            if(tillAccount!=null)
+            if (tillAccount != null)
             {
                 var tillGlAccount = _context.GlAccounts.SingleOrDefault(c => c.Id == tillAccount.TillAccountId);
                 if (tillGlAccount != null && tillGlAccount.AccountBalance <= 0)
@@ -331,18 +344,19 @@ namespace WebApplication1.Controllers.Api
             {
                 errorMessage = errorMessage + "You have not been assigned a Till";
             }
-            
-            
+
+
             return true;
         }
 
-        [NonAction] public bool CheckCustomerAccountBalance(int customerAccountId, long amount)
+        [NonAction]
+        public bool CheckCustomerAccountBalance(int customerAccountId, long amount)
         {
-            var customerAccount = _context.CustomerAccounts.Include(m=>m.AccountType).SingleOrDefault(c => c.Id == customerAccountId);
+            var customerAccount = _context.CustomerAccounts.Include(m => m.AccountType).SingleOrDefault(c => c.Id == customerAccountId);
             var customerAccountBalance = customerAccount.AccountBalance;
             if (customerAccountBalance < amount)
             {
-                errorMessage = errorMessage+ "Insufficient Balance for Transaction";
+                errorMessage = errorMessage + "Insufficient Balance for Transaction";
                 return false;
 
             }
@@ -354,15 +368,15 @@ namespace WebApplication1.Controllers.Api
 
                     if ((customerAccountBalance - amount) < minimumBalance)
                     {
-                        errorMessage =errorMessage+ "Minimum Balance for "+customerAccount.AccountType.Name+" would be exceeded";
+                        errorMessage = errorMessage + "Minimum Balance for " + customerAccount.AccountType.Name + " would be exceeded";
                         return false;
                     }
                 }
 
             }
-            
-            
- 
+
+
+
             return true;
         }
         [NonAction]

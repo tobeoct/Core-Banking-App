@@ -37,6 +37,11 @@ namespace WebApplication1.Models
 
         public DateTime? TransactionDate { get; set; }
 
+        [Required]
+        [Display(Name = "User")]
+        public string UserAccountId { get; set; }
+        public ApplicationUser UserAccount { get; set; }
+
 
     }
 }

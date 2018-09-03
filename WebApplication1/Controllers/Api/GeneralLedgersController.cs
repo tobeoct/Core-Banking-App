@@ -29,20 +29,20 @@ namespace WebApplication1.Controllers.Api
         [AcceptVerbs("GET", "POST")]
         [HttpGet]
         [Route("api/GeneralLedgers/GetCategories")]
-//        [Authorize]
+        //        [Authorize]
         public IHttpActionResult GetCategories()
         {
 
             var categoriesDto = _context.GlCategories.Include(c => c.Categories).ToList();
 
             return Ok(categoriesDto);
-            
+
         }
         // POST: /api/GeneralLedgers/EditGLCategory
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
         [Route("api/GeneralLedgers/EditGLCategory")]
-//        [Authorize]
+        //        [Authorize]
         public HttpResponseMessage EditGLCategory(Index index)
         {
             var id = index.Id;
@@ -58,14 +58,14 @@ namespace WebApplication1.Controllers.Api
                 Description = glCategory.Description
             };
 
-            return Request.CreateResponse(HttpStatusCode.OK,glCategoriesDto);
+            return Request.CreateResponse(HttpStatusCode.OK, glCategoriesDto);
 
         }
         // PUT: /api/GeneralLedgers/UpdateGLCategory
-        [AcceptVerbs("GET","PUT")]
+        [AcceptVerbs("GET", "PUT")]
         [HttpPut]
         [Route("api/GeneralLedgers/UpdateGLCategory")]
-//        [Authorize]
+        //        [Authorize]
         public HttpResponseMessage UpdateGLCategory(GLCategoryDto glCategoryDto)
         {
             var id = glCategoryDto.Id;
@@ -88,10 +88,10 @@ namespace WebApplication1.Controllers.Api
         [AcceptVerbs("GET", "POST")]
         [HttpGet]
         [Route("api/GeneralLedgers/GetGLAccounts")]
-//        [Authorize]
+        //        [Authorize]
         public IHttpActionResult GetGLAccounts()
         {
-            var accountDto = _context.GlAccounts.Include(c => c.GlCategories).Include(c=>c.GlCategories.Categories).Include(b => b.Branch).ToList();
+            var accountDto = _context.GlAccounts.Include(c => c.GlCategories).Include(c => c.GlCategories.Categories).Include(b => b.Branch).ToList();
 
             return Ok(accountDto);
         }
@@ -99,7 +99,7 @@ namespace WebApplication1.Controllers.Api
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
         [Route("api/GeneralLedgers/EditGLAccount")]
-//        [Authorize]
+        //        [Authorize]
         public HttpResponseMessage EditGLAccount(Index index)
         {
             var id = index.Id;
@@ -122,7 +122,7 @@ namespace WebApplication1.Controllers.Api
         [AcceptVerbs("GET", "PUT")]
         [HttpPut]
         [Route("api/GeneralLedgers/UpdateGLAccount")]
-//        [Authorize]
+        //        [Authorize]
         public HttpResponseMessage UpdateGLAccount(GLAccountDto glAccountDto)
         {
             var id = glAccountDto.Id;
@@ -143,10 +143,10 @@ namespace WebApplication1.Controllers.Api
         [AcceptVerbs("GET", "POST")]
         [HttpGet]
         [Route("api/GeneralLedgers/GetPostings")]
-//        [Authorize]
+        //        [Authorize]
         public IHttpActionResult GetPostings()
         {
-            var glPostingsDto = _context.GlPostings.Include(c => c.GlCreditAccount).Include(b => b.GlDebitAccount).ToList();
+            var glPostingsDto = _context.GlPostings.Include(c => c.GlCreditAccount).Include(b => b.GlDebitAccount).Include(c=>c.UserAccount).ToList();
 
 
             return Ok(glPostingsDto);
@@ -156,29 +156,34 @@ namespace WebApplication1.Controllers.Api
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
         [Route("api/GeneralLedgers/AddGLPosting")]
-        [Authorize(Roles = RoleName.ADMIN_ROLE)]
+//        [Authorize(Roles = RoleName.ADMIN_ROLE)]
         public HttpResponseMessage AddGLPosting(GLPostingDto glPostingDto)
         {
+            
+            var userId = _context.Users.SingleOrDefault(c => c.Email.Equals(RoleName.EMAIL)).Id;
+
+
+            glPostingDto.UserAccountId = userId;
 
             var businessStatus = _context.BusinessStatus.SingleOrDefault();
-            
+
             if (businessStatus.Status == false)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, CBA.BUSINESS_CLOSED_REFRESH_MSG);
             }
-                
+
 
             glPostingDto.TransactionDate = DateTime.Now;
-//            if (!checkAccountBalance(glPostingDto.GlCreditAccountId,glPostingDto.CreditAmount))
-//            {
-//                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "GL Credit Account Balance Insufficient");
-//
-//            }
-//            if (!checkAccountBalance(glPostingDto.GlDebitAccountId, glPostingDto.DebitAmount))
-//            {
-//                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "GL Debit Account Balance Insufficient");
-//
-//            }
+            //            if (!checkAccountBalance(glPostingDto.GlCreditAccountId,glPostingDto.CreditAmount))
+            //            {
+            //                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "GL Credit Account Balance Insufficient");
+            //
+            //            }
+            //            if (!checkAccountBalance(glPostingDto.GlDebitAccountId, glPostingDto.DebitAmount))
+            //            {
+            //                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "GL Debit Account Balance Insufficient");
+            //
+            //            }
 
             var glPosting = new GLPostings()
             {
@@ -188,7 +193,8 @@ namespace WebApplication1.Controllers.Api
                 GlDebitAccountId = glPostingDto.GlDebitAccountId,
                 DebitAmount = glPostingDto.DebitAmount,
                 DebitNarration = glPostingDto.DebitNarration,
-                TransactionDate = glPostingDto.TransactionDate
+                TransactionDate = glPostingDto.TransactionDate,
+                UserAccountId = glPostingDto.UserAccountId
 
             };
             var tillAccount = _context.Tellers.ToList();
@@ -219,21 +225,21 @@ namespace WebApplication1.Controllers.Api
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
         [Route("api/GeneralLedgers/ValidationChecks")]
-//        [Authorize(Roles = RoleName.ADMIN_ROLE)]
+        //        [Authorize(Roles = RoleName.ADMIN_ROLE)]
         public HttpResponseMessage ValidationChecks(GLPostingDto glPostingDto)
         {
-            
-           
-//            if (!checkAccountBalance(glPostingDto.GlCreditAccountId, glPostingDto.CreditAmount))
-//            {
-//                if (errorMessage.Equals(""))
-//                {
-//                    errorMessage = errorMessage + "GL Credit Account Balance Insufficient";
-//                }
-//                errorMessage = errorMessage + ", GL Credit Account Balance Insufficient";
-//                
-//
-//            }
+
+
+            //            if (!checkAccountBalance(glPostingDto.GlCreditAccountId, glPostingDto.CreditAmount))
+            //            {
+            //                if (errorMessage.Equals(""))
+            //                {
+            //                    errorMessage = errorMessage + "GL Credit Account Balance Insufficient";
+            //                }
+            //                errorMessage = errorMessage + ", GL Credit Account Balance Insufficient";
+            //                
+            //
+            //            }
             if (!checkAccountBalance(glPostingDto.GlDebitAccountId, glPostingDto.DebitAmount))
             {
                 if (errorMessage.Equals(""))
@@ -255,14 +261,14 @@ namespace WebApplication1.Controllers.Api
             var account = _context.GlAccounts.SingleOrDefault(c => c.Id == accountId);
             var accountBalance = account.AccountBalance;
             if (accountBalance <= 0)
-            { 
+            {
                 errorMessage = "Account Balance is empty";
                 if (accountBalance < amount)
                 {
                     return false;
                 }
             }
-            
+
             return true;
         }
         public string GetCreditAccountName(int creditAccountId)

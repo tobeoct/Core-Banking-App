@@ -33,5 +33,7 @@ namespace WebApplication1.Dtos
         public string CreditNarration { get; set; }
 
         public DateTime? TransactionDate { get; set; }
+
+        public string UserAccountId { get; set; }
     }
 }
