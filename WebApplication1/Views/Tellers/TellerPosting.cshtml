@@ -22,25 +22,36 @@
         </div>
     </div>
 </div>
-<div class="container margin-vertical" id="postWarning">
-    <p class="alert alert-warning">Business should be opened to carry out GL Postings</p>
-</div>
 
-@Html.Partial("_AddTellerPosting")
-@Html.Partial("_ConfirmationModal")
+@{
+    if (User.IsInRole(RoleName.ADMIN_ROLE) || User.IsInRole(RoleName.TELLER_ROLE))
+    {
+        <div class="container margin-vertical" id="postWarning">
+            <p class="alert alert-warning">Business should be opened to carry out GL Postings</p>
+        </div>
+        @Html.Partial("_AddTellerPosting")
+        @Html.Partial("_ConfirmationModal")
+    }
+
+}
+
+
+
 
 <div class="row margin-vertical">
-    <div class="row padding-horizontal padding-vertical">
-        <div class="container container-fluid">
-            <p class="align-right grey-color animated fadeInRight "><span id="count">@Model.count</span> Tellers Postings</p>
-        </div>
 
-    </div>
     <div class="container bg-white shadow">
+        <div class="row  padding-vertical">
+            <div class="col-md-6 col-sm-6 col-xs-6 align-left" style="padding-top: 35px;">
+                <h3 class="alt-color bold-text align-left ">List of Teller Postings  </h3>
 
-        <div class="row align-left padding-horizontal">
-            <h3 class="alt-color bold-text align-left ">List of Teller Postings  </h3>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6 align-right">
+                <p class="align-right grey-color animated fadeInRight " style="padding-top: 35px"><span id="count">@Model.count</span> Tellers Postings</p>
+            </div>
+
         </div>
+
 
 
         <div class="row padding-horizontal">
@@ -162,7 +173,7 @@
 
             $("#myAddTellerPostingBtn").on("click",
                 function (e) {
-
+                    $('#myAddTellerPostingModal #errorMessage').fadeOut();
                     e.preventDefault();
                     customerAccountName = $("#myAddTellerPostingModal #customerAccountId option:selected").text();
                     customerAccountId = $("#myAddTellerPostingModal #customerAccountId").val();

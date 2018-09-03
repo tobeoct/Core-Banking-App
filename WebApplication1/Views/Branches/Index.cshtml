@@ -1,12 +1,21 @@
 ﻿
+@using WebApplication1.Models
 @model WebApplication1.ViewModels.BranchViewModel
 @{
     ViewBag.Title = "Branch Management";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@{
+    if (User.IsInRole(RoleName.ADMIN_ROLE))
+    {
+        @Html.Partial("_Modal")
+        @Html.Partial("_EditBranchModal")
+    }
 
-@Html.Partial("_Modal")
-@Html.Partial("_EditBranchModal")
+}
+
+
+
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -16,7 +25,7 @@
     </div>
 </div>
 <div class="row margin-vertical">
-    
+
     <div class="container bg-white shadow">
 
 
@@ -27,7 +36,14 @@
 
             </div>
             <div class="col-md-6 col-sm-6 col-xs-6 align-right">
-                <button id="myBtn">Add new Branch</button>
+                @{
+                    if (User.IsInRole(RoleName.ADMIN_ROLE))
+                    {
+                        <button id="myBtn">Add new Branch</button>
+                    }
+
+                }
+
             </div>
 
         </div>

@@ -5,13 +5,53 @@
 }
 
 <div class="row ">
-	
+	<p class="alert alert-info alert-dismissible alert-dismissable">@ViewBag.Message</p>
 	<div class="container shadow bg-white animated fadeIn">
 
 		@Html.Partial("_EditUserModal")
 		@Html.Partial("_UserProfile")
 		@Html.Partial("_UserForm")
-
+		
+		
 	</div>
 </div>
 
+@section scripts{
+	<script>
+		$("#changePassword").on('click', function (e) {
+			
+			$.ajax({
+
+				type: 'GET',
+				url: '/api/GeneralLedgers/AddGLPosting',
+				data: JSON.stringify(glPostingDto),
+				contentType: 'application/json; charset=utf-8',
+				dataType: 'json',
+				success: function (data) {
+
+
+					$('#myGLPostingConfirmationModal #successMessage').fadeIn(200,
+						function () {
+							document.getElementById('confirmationForm').reset();
+
+							$('#myGLPostingConfirmationModal #successMessage').html(data);
+
+							$('#myGLPostingConfirmationModal button').fadeOut();
+						});
+					return;
+
+
+				},
+				error: function (errorMessage) {
+					// alert('request failed');
+
+					var msg = JSON.parse(errorMessage.responseText);
+
+					$('#myGLPostingConfirmationModal #errorMessage').fadeIn(200,
+						function () { $('#myGLPostingConfirmationModal #errorMessage').html(msg.message) });
+				}
+
+			});
+		});
+	</script>
+}

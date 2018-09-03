@@ -9,6 +9,7 @@ namespace WebApplication1.Models
     {
         public const string ADMIN_ROLE = "Admin";
         public const string  USER_ROLE = "User";
+        public const string TELLER_ROLE = "Teller";
         public static string USER_NAME = "";
         public static string EMAIL = "mike@gmail.com";
     }

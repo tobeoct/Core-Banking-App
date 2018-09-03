@@ -11,7 +11,8 @@
 @Html.Partial("_EnterLoanDetailsModal")
 @Html.Partial("_TermsSelectionModal")
 @Html.Partial("_TermsModal")
-
+@Html.Partial("_EditCustomerAccountModal")
+@Html.Partial("_ConfirmationModal")
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -65,10 +66,77 @@
 @section scripts
 {
     <script>
+        function EditCustomerAccount(id) {
+            //            var newId = pad_with_zeroes(id, 9);
+            //alert(newId);
+            var index = {
+                Id: id
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/Customers/EditCustomerAccount',
+                data: JSON.stringify(index),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (data) {
 
 
+                    $('#myEditAccountDetailsModal').fadeIn(200,
+                        function () {
+
+                            $('#myEditAccountDetailsModal #name').val(data['name']);
+                            $("#myEditAccountDetailsModal #branch  option[value='" + data['branchId'] + "']").prop('selected', true);
+
+                            $('#myEditAccountDetailsModal #hidden').val(id);
+                        });
+
+
+                },
+                error: function (errorMessage) {
+                    var msg = JSON.parse(errorMessage.responseText);
+                    alert(msg.message);
+
+                    $('#myEditAccountDetailsModal #errorMessage').fadeIn(200,
+                        function () { $('#myEditAccountDetailsModal #errorMessage').html(msg.message) });
+                }
+
+            });
+
+        }
+        
+        function OpenConfirmationModal(id) {
+            var index = {
+                Id: id
+            }
+            //alert(id);
+            $.ajax({
+                type: 'POST',
+                url: '/api/Customers/GetAccountStatus',
+                data: JSON.stringify(index),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (data) {
+
+                    $("#confirmationModal").fadeIn(200, function () {
+                        $("#confirmationModal #action").html(data[0]);
+                        $("#confirmationModal #hidden").val(id);
+                    });
+
+                },
+                error: function (errorMessage) {
+                    var msg = JSON.parse(errorMessage.responseText);
+                    alert(msg.message);
+
+                    $('#confirmationModal #errorMessage').fadeIn(200,
+                        function () { $('#confirmationModal #errorMessage').html(msg.message) });
+                }
+
+            });
+
+
+        }
         $(document).ready(function () {
-
 
             /**
             * VARIABLES FOR CUSTOMER ACCOUNT CREATION
@@ -100,7 +168,7 @@
             // : To GET data for Customer Accounts TABLE FROM DATABASE through API call using JQUERY.DATATABLES
             var table = $("#customerAccounts").DataTable({
                 ajax: {
-                    url: "/api/customers/customeraccounts",
+                    url: "/api/customers/CustomerAccounts",
                     dataSrc: ""
                 },
                 columns: [
@@ -118,14 +186,24 @@
                     },
                     {
                         data: "id",
+
                         render: function (data) {
-                            return "<a class='js-delete' data-branch-id='" + data + "'>Edit</a>";
+                            return "<p class='js-delete btn btn-primary '  style='margin:auto;cursor:pointer;' id=" +
+                                data +
+                                " onclick='EditCustomerAccount(" +
+                                data +
+                                ");'>Edit</p>";
                         }
                     },
                     {
                         data: "id",
+
                         render: function (data) {
-                            return "<a class='js-delete' data-branch-id='" + data + "'>Close Account</a>";
+                            return "<p class='js-delete btn btn-link '  style='margin:auto;cursor:pointer;' id=" +
+                                data +
+                                " onclick='OpenConfirmationModal(" +
+                                data +
+                                ");'>Close/Open Account</p>";
                         }
                     }
                 ]
@@ -197,6 +275,17 @@
                     $("#myLoanSecondModal").fadeIn();
                     $('#successMessage, #errorMessage').fadeOut();
                 });
+            // : To close Confirmation Modal
+            $("#confirmationModal #myCancelBtn").on('click',
+                function () {
+
+                    table.ajax.reload(function () {
+                        $('#count').html(table.data().count());
+                        $("#confirmationModal,#confirmationModal #successMessage, #confirmationModal #errorMessage ").fadeOut();
+                        $("#confirmationModal #confirmationForm").fadeIn();
+                    });
+
+                });
 
             // :OPENING MODALS
 
@@ -207,6 +296,7 @@
                     $(".modal").fadeOut();
                     $("#myAccountTypeModal").fadeIn();
                     $('#successMessage, #errorMessage').fadeOut();
+                    $("#myAccountTypeModal select:visible:first").focus();
                 });
             // : To OPEN Account Details Modal and GET Account Selection entry/data ;
             $("#myAccountTypeBtn").on("click",
@@ -231,10 +321,12 @@
                             function () {
 
                                 $("#myAccountDetailsModal").fadeIn();
+                                $("#myAccountDetailsModal input:visible:first").focus();
 
                             });
                     }
                 });
+
             // : To Create Customer Account using API call, If its a Loan account then OPEN Loan Details Modal;
             $("#myAccountDetailsBtn").on("click",
                 function (e) {
@@ -280,6 +372,84 @@
                     }
                 });
 
+            // : To EDIT Customer Account Details
+            $("#myEditAccountDetailsBtn").on("click", function (e) {
+                e.preventDefault();
+                var caName = $("#myEditAccountDetailsModal #name").val();
+                var caBId = $("#myEditAccountDetailsModal #branch").val();
+                var caId = $("#myEditAccountDetailsModal #hidden").val();
+                var accountDto = {
+                    Name: caName,
+                    BranchId: caBId,
+                    Id: caId
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/Customers/UpdateCustomerAccount',
+                    data: JSON.stringify(accountDto),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    success: function (data) {
+
+
+                        $('#myEditAccountDetailsModal #successMessage').fadeIn(200,
+                            function () {
+                                $('#myEditAccountDetailsModal #successMessage').html(data);
+                                $('#myEditAccountDetailsBtn .loader').fadeOut();
+                            });
+
+
+
+                    },
+                    error: function (errorMessage) {
+                        var msg = JSON.parse(errorMessage.responseText);
+                        alert(msg.message);
+
+                        $('#myEditAccountDetailsModal #errorMessage').fadeIn(200,
+                            function () { $('#myEditAccountDetailsModal #errorMessage').html(msg.message) });
+                    }
+
+                });
+
+            });
+
+
+            // : To OPEN or CLOSE Customer Account
+            $("#confirmationModal #confirmationBtn").on('click', function (e) {
+                e.preventDefault();
+                var id = $("#confirmationModal #hidden").val();
+                var index = {
+                    Id: id
+                }
+                $("#confirmationModal #confirmationForm").fadeOut();
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/Customers/UpdateCustomerAccountStatus',
+                    data: JSON.stringify(index),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    success: function (data) {
+
+
+                        $('#confirmationModal #successMessage').fadeIn(200,
+                            function () {
+                                $('#confirmationModal #successMessage').html(data);
+                                $('#confirmationModal .loader').fadeOut();
+                            });
+
+
+
+                    },
+                    error: function (errorMessage) {
+                        var msg = JSON.parse(errorMessage.responseText);
+                        alert(msg.message);
+                        $("#confirmationModal #confirmationForm").fadeIn();
+                        $('#confirmationModal #errorMessage').fadeIn(200,
+                            function () { $('#confirmationModal #errorMessage').html(msg.message) });
+                    }
+
+                });
+            });
             // : To GET Loan Details data entry and OPEN Loan Terms entry Modal;
             $("#myLoanFirstBtn").on("click",
                 function (e) {
@@ -293,6 +463,8 @@
                         function () {
                             document.getElementById('loanDetailsForm').reset();
                             $("#myLoanSecondModal").fadeIn();
+                            $("#myLoanSecondModal select:visible:first").focus();
+
                         });
                 });
             // : To GET entry/data FROm Terms Modal and OPEN Terms Confirmation Modal
@@ -315,6 +487,7 @@
                             //document.getElementById('termsSelectionForm').reset();
                             $('#myTermsModal #paymentPlan').text(paymentRate + "% of the " + loanAmount + " Loan " + tenure);
                             $("#myTermsModal").fadeIn();
+                            $("#myTermsModal input:visible:first").focus();
                         });
 
                 });
@@ -385,6 +558,7 @@
                     CustomerLoanAccountName: accountName
 
                 };
+             //   alert(accountName);
                 $.ajax
                     ({
                         type: 'POST',
@@ -428,6 +602,7 @@
                                 $('#myLoanFirstModal #customerAccountDisplay').text(accountName);
                                 $('#myAccountDetailsModal').fadeOut(0, function () {
                                     $('#myLoanFirstModal').fadeIn();
+                                    $("#myLoanFirstModal select:visible:first").focus();
 
                                 });
 
@@ -487,7 +662,8 @@
                         loanDetailsDto = {
                             LoanAmount: loanAmount,
                             LinkedCustomerAccountId: linkedCustomerAccountId,
-                            TermsId: data[1]
+                            TermsId: data[1],
+                            CustomerLoanAccountName: accountName
                         };
                         // Display success message
                         $('#myTermsModal #successMessage').fadeIn(200,
@@ -511,6 +687,7 @@
             }
             // : To Disburse Loan to Customer Account
             var DisburseLoan = function () {
+                
                 $.ajax({
                     type: 'POST',
                     url: '/api/Customers/LoanDisbursement',
@@ -519,12 +696,13 @@
                     dataType: 'json',
                     success: function (data) {
                         // alert('Loan Disbursed Successfully');
+                        $('#myDisburseLoanBtn .loader').fadeOut();
                         $('#myTermsModal #successMessage').fadeIn(200,
                             function () {
                                 document.getElementById('termsForm').reset();
                                 document.getElementById('customerAccountDetailsForm').reset();
                                 document.getElementById('termsSelectionForm').reset();
-                                $('#myTermsModal #successMessage').html(data[0])
+                                $('#myTermsModal #successMessage').html(data[0]);
                             });
                         // alert(data[1]);
                         CreateAccount(data[1]);
@@ -532,6 +710,7 @@
                     },
                     error: function (errorMessage) {
                         // alert('request failed');
+                        $('#myDisburseLoanBtn .loader').fadeOut();
                         var msg = JSON.parse(errorMessage.responseText);
                         $('#errorMessage').fadeIn(200,
                             function () {
@@ -542,15 +721,42 @@
                 });
 
             }
+            $("#confirmationModal #close").on("click",
+                function () {
+                    table.ajax.reload(function () {
+                        $('#count').html(table.data().count());
+                                             
+                        $("#confirmationModal,#confirmationModal #successMessage, #confirmationModal #errorMessage ").fadeOut();
+                        $("#confirmationModal #confirmationForm").fadeIn();
+                        //location.reload();
+                    });
 
+                });
             // : To CLOSE Modals and reload DataTable
             $(".close").on("click",
                 function () {
                     table.ajax.reload(function () {
                         $('#count').html(table.data().count());
-                        $('#successMessage').fadeOut();
+                        $('.modal #successMessage').fadeOut();
+                        $('.modal #errorMessage').fadeOut();
                         $(".modal").fadeOut();
-                        location.reload();
+                        
+                        $("#confirmationModal,#confirmationModal #successMessage, #confirmationModal #errorMessage ").fadeOut();
+                        $("#confirmationModal #confirmationForm").fadeIn();
+                        //location.reload();
+                    });
+
+                });
+           
+            // : To CLOSE Modals and reload DataTable
+            $("#myEditAccountDetailsModal .close").on("click",
+                function () {
+                    table.ajax.reload(function () {
+                        $('#count').html(table.data().count());
+                        $('#successMessage').fadeOut();
+                        $('#errorMessage').fadeOut();
+                        $("#myEditAccountDetailsModal").fadeOut();
+                        //location.reload();
                     });
 
                 });

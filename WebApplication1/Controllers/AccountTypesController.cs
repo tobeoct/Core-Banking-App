@@ -11,6 +11,7 @@ using WebApplication1.ViewModels;
 
 namespace WebApplication1.Controllers
 {
+    [Authorize]
     public class AccountTypesController : Controller
     {
        
@@ -38,7 +39,12 @@ namespace WebApplication1.Controllers
         // GET: AccountTypes
         public ActionResult Index()
         {
-            return View();
+            if (User.IsInRole(RoleName.ADMIN_ROLE) )
+            {
+                return View();
+                
+            }
+            return View("ReadOnly");
         }
 
         public ActionResult SavingsAccConfig(string id)
@@ -76,46 +82,54 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = RoleName.ADMIN_ROLE)]
         public ActionResult EditSavings(SavingsViewModel savingsViewModel)
         {
-            if (!ModelState.IsValid)
-            {
-                var GLAccounts = _context.GlAccounts.ToList();
-                var viewModel = new SavingsViewModel()
-                {
-                    GlAccounts = GLAccounts,
-                    SavingsAccountType = new AccountType()
-                };
-                return View("Index", viewModel);
-            }
+            savingsViewModel.SavingsAccountType.Name = "Savings Account";
+//            if (!ModelState.IsValid)
+//            {
+//                var GLAccounts = _context.GlAccounts.ToList();
+//                var viewModel = new SavingsViewModel()
+//                {
+//                    GlAccounts = GLAccounts,
+//                    SavingsAccountType = new AccountType()
+//                };
+//                return View("Index", viewModel);
+//            }
 
             var savingsAccountType =
                 _context.AccountTypes.SingleOrDefault(c => c.Name.Equals(savingsViewModel.SavingsAccountType.Name));
             //Mapper.Map(generalLedgerCategoryViewModel, generalLedgerCategory);
-            savingsAccountType.Id = savingsViewModel.SavingsAccountType.Id;
-            
-            savingsAccountType.CreditInterestRate = savingsViewModel.SavingsAccountType.CreditInterestRate;
-            savingsAccountType.MinimumBalance = savingsViewModel.SavingsAccountType.MinimumBalance;
-            savingsAccountType.InterestExpenseGLAccountId =
-                savingsViewModel.SavingsAccountType.InterestExpenseGLAccountId;
+            if (savingsAccountType != null)
+            {
+                savingsAccountType.Id = savingsViewModel.SavingsAccountType.Id;
+
+                savingsAccountType.CreditInterestRate = savingsViewModel.SavingsAccountType.CreditInterestRate;
+                savingsAccountType.MinimumBalance = savingsViewModel.SavingsAccountType.MinimumBalance;
+                savingsAccountType.InterestExpenseGLAccountId =
+                    savingsViewModel.SavingsAccountType.InterestExpenseGLAccountId;
+            }
+
             _context.SaveChanges();
             return RedirectToAction("Index", "AccountTypes");
            
         }
 
         [HttpPost]
+        [Authorize(Roles = RoleName.ADMIN_ROLE)]
         public ActionResult EditLoan(LoanAccViewModel loanAccViewModel)
         {
-            if (!ModelState.IsValid)
-            {
-                var GLAccounts = _context.GlAccounts.ToList();
-                var viewModel = new LoanAccViewModel()
-                {
-                    GlAccounts = GLAccounts,
-                    LoanAccountType = new AccountType()
-                };
-                return View("Index", viewModel);
-            }
+            loanAccViewModel.LoanAccountType.Name = "Loan Account";
+//            if (!ModelState.IsValid)
+//            {
+//                var GLAccounts = _context.GlAccounts.ToList();
+//                var viewModel = new LoanAccViewModel()
+//                {
+//                    GlAccounts = GLAccounts,
+//                    LoanAccountType = new AccountType()
+//                };
+//                return View("Index", viewModel);
+//            }
 
             var loanAccountType = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals( loanAccViewModel.LoanAccountType.Name));
             //Mapper.Map(generalLedgerCategoryViewModel, generalLedgerCategory);
@@ -131,28 +145,35 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = RoleName.ADMIN_ROLE)]
         public ActionResult EditCurrent(CurrentAccViewModel currentAccViewModel)
         {
-            if (!ModelState.IsValid)
-            {
-                var GLAccounts = _context.GlAccounts.ToList();
-                var viewModel = new CurrentAccViewModel()
-                {
-                    GlAccounts = GLAccounts,
-                    CurrentAccountType = new AccountType()
-                };
-                return View("Index", viewModel);
-            }
+            currentAccViewModel.CurrentAccountType.Name = "Current Account";
+//            if (!ModelState.IsValid)
+//            {
+//                var GLAccounts = _context.GlAccounts.ToList();
+//                var viewModel = new CurrentAccViewModel()
+//                {
+//                    GlAccounts = GLAccounts,
+//                    CurrentAccountType = new AccountType()
+//                };
+//                return View("Index", viewModel);
+//            }
 
             var currentAccountType = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals( currentAccViewModel.CurrentAccountType.Name));
             //Mapper.Map(generalLedgerCategoryViewModel, generalLedgerCategory);
-            currentAccountType.Id = currentAccViewModel.CurrentAccountType.Id;
-            
-            currentAccountType.CreditInterestRate = currentAccViewModel.CurrentAccountType.CreditInterestRate;
-            currentAccountType.MinimumBalance = currentAccViewModel.CurrentAccountType.MinimumBalance;
-            currentAccountType.COTIncomeGLAccountId = currentAccViewModel.CurrentAccountType.COTIncomeGLAccountId;
-            currentAccountType.InterestExpenseGLAccountId =
-                currentAccViewModel.CurrentAccountType.InterestExpenseGLAccountId;
+            if (currentAccountType != null)
+            {
+                currentAccountType.Id = currentAccViewModel.CurrentAccountType.Id;
+
+                currentAccountType.CreditInterestRate = currentAccViewModel.CurrentAccountType.CreditInterestRate;
+                currentAccountType.MinimumBalance = currentAccViewModel.CurrentAccountType.MinimumBalance;
+                currentAccountType.COTIncomeGLAccountId = currentAccViewModel.CurrentAccountType.COTIncomeGLAccountId;
+                currentAccountType.InterestExpenseGLAccountId =
+                    currentAccViewModel.CurrentAccountType.InterestExpenseGLAccountId;
+                currentAccountType.COT = currentAccViewModel.CurrentAccountType.COT;
+            }
+
             _context.SaveChanges();
 
             return RedirectToAction("Index", "AccountTypes");

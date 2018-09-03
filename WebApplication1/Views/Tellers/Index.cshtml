@@ -14,8 +14,14 @@
         Layout = "~/Views/Shared/_UserLayout.cshtml";
     }
 }
+@{
+    if (User.IsInRole(RoleName.ADMIN_ROLE) || User.IsInRole(RoleName.USER_ROLE))
+    {
+        @Html.Partial("_AddTellerModal")
+    }
 
-@Html.Partial("_AddTellerModal")
+}
+
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -24,7 +30,7 @@
     </div>
 </div>
 <div class="row margin-vertical">
-    
+
     <div class="container bg-white shadow">
 
         <div class="row  padding-horizontal">
@@ -34,7 +40,7 @@
             </div>
             <div class="col-md-6 col-sm-6 col-xs-6 align-right">
                 @{
-                    if (User.IsInRole(RoleName.ADMIN_ROLE))
+                    if (User.IsInRole(RoleName.ADMIN_ROLE) || User.IsInRole(RoleName.USER_ROLE))
                     {
                         <button id="myOpenTellerModalBtn">Add new Teller</button>
                     }
@@ -43,7 +49,7 @@
             </div>
 
         </div>
-        
+
 
 
 
@@ -170,12 +176,12 @@
 
             $('#myAddTellerModal .close').on('click',
                 function () {
-                   
+
                     table.ajax.reload(function () {
                         $('#count').html(table.data().count());
                         $('#myAddTellerModal').fadeOut();
                     });
-                   
+
                 });
 
             $("#tellers ").on("click",

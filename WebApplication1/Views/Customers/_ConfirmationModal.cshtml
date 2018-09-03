@@ -1,0 +1,45 @@
+﻿
+
+<div id="confirmationModal" class="modal ">
+
+    <!-- Modal content -->
+    <div class="modal-content animated ">
+        <span id="close">&times;</span>
+        <div style="padding-top: 40px;">
+            @* <div class=" padding-horizontal bordered-bottom align-left"> *@
+            @*     <h3 class="alt-color bold-text">Make Teller Posting </h3> *@
+            @* </div> *@
+            <div class="alert alert-danger" id="errorMessage"></div>
+            <div class="alert alert-success" id="successMessage"></div>
+            <form id="confirmationForm">
+                <p class="alert alert-warning">NOTE: Closing a Customer Account would stop all transactions on the account</p>
+
+                <div class="form-group align-center">
+                    <p>
+
+                        <span id="action"></span>
+                    </p>
+                </div>
+                <input type="hidden" id="hidden"/>
+                <div class="row form-group ">
+                    <div class="buttonGroup">
+                        <div class="col-md-6 col-sm-6 col-xs-6 align-left">
+                            <button class=" btn btn-danger" id="myCancelBtn">No</button>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-xs-6 align-right">
+                            <button class=" btn btn-success" id="confirmationBtn">Yes</button>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+
+

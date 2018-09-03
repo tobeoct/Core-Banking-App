@@ -102,6 +102,8 @@ namespace WebApplication1.Models
             get;
             set;
         }
+
+        public int count { get; set; }
         //        [Display(Name = "Roles List")]
         //        public List<IdentityRole> RolesList { get; set; }
         //

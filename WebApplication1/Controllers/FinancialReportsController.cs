@@ -10,6 +10,7 @@ using Microsoft.AspNet.Identity.Owin;
 
 namespace WebApplication1.Controllers
 {
+    [Authorize]
     public class FinancialReportsController : Controller
     {
         private string userId = "";

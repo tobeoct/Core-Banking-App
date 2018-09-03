@@ -20,7 +20,7 @@ namespace WebApplication1.Models
         [Required]
         [StringLength(1000)]
         [Display(Name = "GL Category Name")]
-        public string MainAccountCategory { get; set; }
+        public string Name { get; set; }
 
         [Required]
         public string Description { get; set; }

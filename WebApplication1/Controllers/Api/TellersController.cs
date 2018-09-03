@@ -17,6 +17,7 @@ using Microsoft.AspNet.Identity.Owin;
 
 namespace WebApplication1.Controllers.Api
 {
+   
     public class TellersController : ApiController
     {
         private ApplicationDbContext _context;
@@ -42,6 +43,7 @@ namespace WebApplication1.Controllers.Api
         }
         //GET api/Tellers
         [Route("api/Tellers")]
+//        [Authorize]
         public IHttpActionResult GetTellers()
         {
             var tellersDto = _context.Tellers.Include(c=>c.UserTeller).Include(c=>c.TillAccount).ToList();
@@ -51,6 +53,7 @@ namespace WebApplication1.Controllers.Api
 
         //GET api/Tellers
         [Route("api/Tellers/TellerPostings")]
+//        [Authorize]
         public IHttpActionResult GetTellerPostings()
         {
             var tellerPostingsDto = _context.TellerPostings.Include(c => c.CustomerAccount).ToList();
@@ -61,6 +64,7 @@ namespace WebApplication1.Controllers.Api
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
         [Route("api/Tellers/AssignTeller")]
+//        [Authorize(Roles = RoleName.ADMIN_ROLE)]
         public HttpResponseMessage AssignTeller(TellerDto tellerDto)
         {
             tellerDto.TillAccountBalance = 0;
@@ -87,13 +91,20 @@ namespace WebApplication1.Controllers.Api
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
         [Route("api/Tellers/AddTellerPosting")]
+//        [Authorize]
         public HttpResponseMessage AddTellerPosting(TellerPostingDto tellerPostingDto)
         {
             var businessStatus = _context.BusinessStatus.SingleOrDefault();
-            
+            var customerAccountStatus = _context.CustomerAccounts
+                .SingleOrDefault(c => c.Id == tellerPostingDto.CustomerAccountId).IsClosed;
+           
             if (businessStatus.Status == false)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest,CBA.BUSINESS_CLOSED_REFRESH_MSG );
+            }
+            if (customerAccountStatus == true)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Customer Account is <b>CLOSED</b>");
             }
             tellerPostingDto.TransactionDate = DateTime.Now;  
             
@@ -137,6 +148,7 @@ namespace WebApplication1.Controllers.Api
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
         [Route("api/Tellers/ValidationChecks")]
+//        [Authorize]
         public HttpResponseMessage ValidationChecks(TellerPostingDto tellerPostingDto)
         {
 
@@ -305,7 +317,8 @@ namespace WebApplication1.Controllers.Api
                 .FirstOrDefault(c => c.UserTellerId.Equals(id));
             if(tillAccount!=null)
             {
-                if (tillAccount.TillAccountBalance <= 0)
+                var tillGlAccount = _context.GlAccounts.SingleOrDefault(c => c.Id == tillAccount.TillAccountId);
+                if (tillGlAccount != null && tillGlAccount.AccountBalance <= 0)
                 {
                     errorMessage = errorMessage + " Till Account Balance is exhausted";
                     if (tillAccount.TillAccountBalance < amount)

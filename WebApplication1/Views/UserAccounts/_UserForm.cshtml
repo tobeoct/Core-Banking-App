@@ -7,18 +7,18 @@
         @using (Html.BeginForm("Save", "UserAccounts"))
         {
 
-        <div class="row form-group animated fadeInUp">
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <div class="margin-vertical">
-                <div class="col-md-2 ">
-                    @Html.LabelFor(m => m.ApplicationUser.FullName)
-                </div>
-                <div class="col-md-10">
-                    @Html.TextBoxFor(m => m.ApplicationUser.FullName, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.ApplicationUser.FullName)
+            <div class="row form-group animated fadeInUp">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="margin-vertical">
+                    <div class="col-md-2 ">
+                        @Html.LabelFor(m => m.ApplicationUser.FullName)
+                    </div>
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(m => m.ApplicationUser.FullName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.ApplicationUser.FullName)
+                    </div>
                 </div>
             </div>
-        </div>
             <div class="row form-group animated fadeInUp">
                 <div class="margin-vertical">
                     <div class="col-md-2 ">
@@ -64,17 +64,28 @@
                 </div>
             </div>
             <div>
-                @Html.HiddenFor(m=>m.ApplicationUser.Id)
+                @Html.HiddenFor(m => m.ApplicationUser.Id)
             </div>
             <div class="row form-group ">
                 <div class="margin-vertical">
                     <div class="col-md-6 col-sm-6 col-xs-6 align-left animated fadeInLeft">
-                        <a href="~/Account/ResetPassword" class="button">Change Password</a>
+                        
                     </div>
                     <div class="col-md-6  col-sm-6 col-xs-6 align-right animated fadeInRight">
                         <button>Save Changes</button>
                     </div>
                 </div>
+            </div>
+        }
+        @using (Html.BeginForm("ResetPassword", "UserAccounts"))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row">
+                <button type="submit" class="button red-color">Reset Password</button>
+            </div>
+            <div>
+                @Html.HiddenFor(m => m.ApplicationUser.Id)
+                @Html.HiddenFor(m => m.ApplicationUser.Email)
             </div>
         }
     </div>

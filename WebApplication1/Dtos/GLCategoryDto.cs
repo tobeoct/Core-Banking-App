@@ -15,7 +15,7 @@ namespace WebApplication1.Dtos
         public byte CategoriesId { get; set; }
         [Required]
         [StringLength(255)]
-        public string MainAccountCategory { get; set; }
+        public string Name { get; set; }
         public string Description { get; set; }
     }
 }

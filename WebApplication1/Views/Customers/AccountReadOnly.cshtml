@@ -1,0 +1,99 @@
+﻿@using WebApplication1.Models
+@model WebApplication1.ViewModels.CustomerAccountViewModel
+@{
+    /**/
+
+    ViewBag.Title = "Customer Account Management";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="underline animated fadeInLeft">Customer Account Management</h1>
+            <p class="grey-color"><i class="fa fa-arrows"></i>(ALT+C+A)</p>
+        </div>
+    </div>
+</div>
+<div class="row margin-vertical">
+    <div class="row padding-horizontal padding-vertical">
+
+
+    </div>
+    <div class="container bg-white shadow">
+
+        <div class="row  padding-horizontal">
+            <div class="col-md-6 col-sm-6 col-xs-6 align-left " style="padding-top: 35px;">
+                <p class=" grey-color animated fadeInRight "><span id="count">@Model.count</span> Customer Accounts</p>
+            </div>
+            
+        </div>
+
+
+
+
+        <div class="row padding-horizontal">
+
+            <table id="customerAccounts" class="table table-striped table-responsive small-text animated fadeInUp ">
+                <thead class="padding-vertical">
+                    <tr>
+                        <th>Account Name</th>
+                        <th>Account Number </th>
+                        <th>Branch</th>
+                        <th>Account Type</th>
+                        
+                    </tr>
+                </thead>
+
+                <tbody></tbody>
+            </table>
+        </div>
+
+
+    </div>
+
+</div>
+
+@section scripts
+{
+    <script>
+       
+        $(document).ready(function () {
+
+      
+            /**
+                * TABLE FUNCTIONALITY
+                * */
+
+            // : To GET data for Customer Accounts TABLE FROM DATABASE through API call using JQUERY.DATATABLES
+            var table = $("#customerAccounts").DataTable({
+                ajax: {
+                    url: "/api/customers/CustomerAccounts",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name"
+                    },
+                    {
+                        data: "accountNumber"
+                    },
+                    {
+                        data: "branch.name"
+                    },
+                    {
+                        data: "accountType.name"
+                    }
+                ]
+            });
+
+            // : To GET number of Customer Accounts Available
+            table.ajax.reload(function () {
+                $('#count').html(table.data().count());
+            });
+
+
+        });
+    </script>
+}
+

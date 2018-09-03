@@ -15,6 +15,7 @@ using Microsoft.AspNet.Identity.Owin;
 
 namespace WebApplication1.Controllers.Api
 {
+   
     public class UserAccountsController : ApiController
     {
         private ApplicationDbContext _context;
@@ -46,6 +47,7 @@ namespace WebApplication1.Controllers.Api
 
         // POST api/<controller>
         [HttpPost]
+//        [Authorize(Roles = RoleName.ADMIN_ROLE)]
         public IHttpActionResult CreateUserAccount(UserAccountDto userAccountDto)
         {
             if (!ModelState.IsValid)
@@ -60,6 +62,7 @@ namespace WebApplication1.Controllers.Api
             return Created(new Uri(Request.RequestUri + "/" + userAccount.Id), userAccountDto);
         }
 
+       
         
     }
 }

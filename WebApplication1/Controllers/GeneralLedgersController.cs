@@ -13,6 +13,7 @@ using Microsoft.AspNet.Identity.Owin;
 
 namespace WebApplication1.Controllers
 {
+    [Authorize]
     public class GeneralLedgersController : Controller
     {
         private ApplicationDbContext _context;
@@ -57,12 +58,13 @@ namespace WebApplication1.Controllers
         public ActionResult Account()
         {
             ViewBag.Message = RoleName.USER_NAME;
-            var GLCategory = _context.GlCategories.ToList();
+            var glCategory = _context.GlCategories.ToList();
             var branches = _context.Branches.ToList();
             var count = _context.GlAccounts.Count();
             var viewModel = new GLAccountViewModel()
             {
-                GLCategories = GLCategory,
+                GlAccount = new GLAccount(),
+                GLCategories = glCategory,
                 Branch = branches,
                 count = count
             };
@@ -101,12 +103,14 @@ namespace WebApplication1.Controllers
                 return View("GLCategory", viewModel);
             }
 
-            var generalLedgerCategory = new GLCategory();
+            var generalLedgerCategory = new GLCategory
+            {
+                CategoriesId = generalLedgerCategoryViewModel.GlCategory.CategoriesId,
+                Description = generalLedgerCategoryViewModel.GlCategory.Description,
+                Name = generalLedgerCategoryViewModel.GlCategory.Name,
+                Id = generalLedgerCategoryViewModel.GlCategory.Id
+            };
             //Mapper.Map(generalLedgerCategoryViewModel, generalLedgerCategory);
-            generalLedgerCategory.CategoriesId = generalLedgerCategoryViewModel.GlCategory.CategoriesId;
-            generalLedgerCategory.Description = generalLedgerCategoryViewModel.GlCategory.Description;
-            generalLedgerCategory.MainAccountCategory = generalLedgerCategoryViewModel.GlCategory.MainAccountCategory;
-            generalLedgerCategory.Id = generalLedgerCategoryViewModel.GlCategory.Id;
             _context.GlCategories.Add(generalLedgerCategory);
             _context.SaveChanges();
             return RedirectToAction("Index", "GeneralLedgers");
@@ -129,13 +133,15 @@ namespace WebApplication1.Controllers
                 return View("GLAccount", viewModel);
             }
 
-            var generalLedgerAccount = new GLAccount();
+            var generalLedgerAccount = new GLAccount
+            {
+                GlCategoriesId = generalLedgerAccountViewModel.GlAccount.GlCategoriesId,
+                BranchId = generalLedgerAccountViewModel.GlAccount.BranchId,
+                Name = generalLedgerAccountViewModel.GlAccount.Name,
+                Id = generalLedgerAccountViewModel.GlAccount.Id,
+                Code = getCode(generalLedgerAccountViewModel.GlAccount.GlCategoriesId)
+            };
             //Mapper.Map(generalLedgerCategoryViewModel, generalLedgerCategory);
-            generalLedgerAccount.GlCategoriesId = generalLedgerAccountViewModel.GlAccount.GlCategoriesId;
-            generalLedgerAccount.BranchId = generalLedgerAccountViewModel.GlAccount.BranchId;
-            generalLedgerAccount.Name = generalLedgerAccountViewModel.GlAccount.Name;
-            generalLedgerAccount.Id = generalLedgerAccountViewModel.GlAccount.Id;
-            generalLedgerAccount.Code = getCode(generalLedgerAccountViewModel.GlAccount.GlCategoriesId);
             _context.GlAccounts.Add(generalLedgerAccount);
             _context.SaveChanges();
             return RedirectToAction("Account", "GeneralLedgers");
@@ -159,7 +165,7 @@ namespace WebApplication1.Controllers
 
         public string getCode(int id)
         {
-            var GLRanCode = RandomString(15);
+            var GLRanCode = RandomString(5);
             var GLId = id;
             var GLAccountCode = Convert.ToString(GLId) + Convert.ToString(GLRanCode);
             Console.WriteLine(GLAccountCode);

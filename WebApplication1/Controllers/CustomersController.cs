@@ -11,6 +11,7 @@ using WebApplication1.ViewModels;
 
 namespace WebApplication1.Controllers
 {
+    [Authorize]
     public class CustomersController : Controller
     {
         private ApplicationDbContext _context;
@@ -37,7 +38,19 @@ namespace WebApplication1.Controllers
         // GET: Customers
         public ActionResult Index()
         {
-            return View();
+            var count = _context.Customers.Count();
+            var viewModel = new CustomerViewModel()
+            {
+                Customer = new Customer(),
+                count = count
+            };
+            if (User.IsInRole(RoleName.ADMIN_ROLE) || User.IsInRole(RoleName.USER_ROLE))
+            {
+                return View("Index", viewModel);
+            }
+            
+               return View("ReadOnly", viewModel);
+            
         }
         public ActionResult Account()
         {
@@ -59,18 +72,31 @@ namespace WebApplication1.Controllers
                 count = count
 
             };
-            return View("CustomerAccount", viewModel);
+            if (User.IsInRole(RoleName.ADMIN_ROLE) || User.IsInRole(RoleName.USER_ROLE))
+            {
+                return View("CustomerAccount", viewModel);
+            }
+            return View("AccountReadOnly", viewModel);
+
         }
 
-        public ActionResult Create(Customer customer)
+        public ActionResult Create(CustomerViewModel customerViewModel)
         {
-            customer.Id = CBA.RandomString(9);
+            customerViewModel.Customer.Id = CBA.RandomString(9);
             if (!ModelState.IsValid)
             {
                 ViewBag.Message = "Invalid";
                 return View("Index");
             }
-            
+            var customer = new Customer()
+            {
+                Address = customerViewModel.Customer.Address,
+                Email = customerViewModel.Customer.Email,
+                Gender = customerViewModel.Customer.Gender,
+                Id = customerViewModel.Customer.Id,
+                Name = customerViewModel.Customer.Name,
+                PhoneNumber = customerViewModel.Customer.PhoneNumber
+            };
             _context.Customers.Add(customer);
             _context.SaveChanges();
             return RedirectToAction("Index","Customers");

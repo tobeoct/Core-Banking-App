@@ -13,6 +13,7 @@ namespace WebApplication1.Models
         public static string INTEREST_IN_SUSPENSE_ACC_NAME = "Interest-In-Suspense GL Account";
         public static string INTEREST_OVERDUE_ACC_NAME = "Interest Overdue GL Account";
         public static string INTEREST_RECEIVABLE_ACC_NAME = "Interest Receivable GL Account";
+        public static string INTEREST_PAYABLE_GL_ACCOUNT = "Interest Payable GL Account";
         public static string INTEREST_INCOME_ACC_NAME = "Interest Income GL Account";
         public static string PRINCIPAL_OVERDUE_ACC_NAME = "Principal Overdue GL Account";
         public static string COT_INCOME_GL_ACCOUNT = "COT Income GL Account";
@@ -20,6 +21,8 @@ namespace WebApplication1.Models
         public static string CAPITAL_ACCOUNT = "Capital Account";
         public static string CUSTOMER_LOAN_ACCOUNT = "Customer Loan Account";
         public static string CUSTOMER_SAVINGS_CURRENT_ACCOUNT = "Customer Savings/Current Account";
+
+        public static string COT_INCOME_RECEIVABLE_GL_ACC_NAME = "COT Income Receivable GL Account";
         public static string VAULT_ACCOUNT = "Vault Account";
         public static int LOAN_ACCOUNT_TYPE_ID = 3;
         public static int CURRENT_ACCOUNT_TYPE_ID = 2;
@@ -86,7 +89,16 @@ namespace WebApplication1.Models
             var glAccount = _context.GlAccounts.Where(c => c.Name.Equals(accountName)).Include(c => c.GlCategories).Include(c => c.GlCategories.Categories).SingleOrDefault();
             if (glAccount == null)
             {
-                category = "Liability";
+                var customerAccount = _context.CustomerAccounts.SingleOrDefault(c => c.Name.Equals(accountName));
+                if(customerAccount == null || customerAccount.AccountTypeId==LOAN_ACCOUNT_TYPE_ID){
+                    category = "Asset";
+                    
+                }
+                else
+                {
+                    category = "Liability";
+                }
+                
                 return category;
             }
             if (glAccount != null) category = glAccount.GlCategories.Categories.Name.ToString();
@@ -147,8 +159,8 @@ namespace WebApplication1.Models
             var _context = new ApplicationDbContext();
             var glCreditAccount = _context.GlAccounts.Include(c => c.GlCategories).SingleOrDefault(c => c.Id == glPostingDto.GlCreditAccountId);
             var glDebitAccount = _context.GlAccounts.Include(c => c.GlCategories).SingleOrDefault(c => c.Id == glPostingDto.GlDebitAccountId);
-            if (glDebitAccount.GlCategories.MainAccountCategory.Equals("Equity") &&
-                    ( glCreditAccount.GlCategories.MainAccountCategory.Equals("Cash") || glCreditAccount.GlCategories.MainAccountCategory.Equals("Expense")))
+            if (glDebitAccount.GlCategories.Name.Equals("Equity") &&
+                    ( glCreditAccount.GlCategories.Name.Equals("Cash") || glCreditAccount.GlCategories.Name.Equals("Expense")))
             {
                 glDebitAccount.AccountBalance = glDebitAccount.AccountBalance - glPostingDto.DebitAmount;
                 glCreditAccount.AccountBalance = glCreditAccount.AccountBalance + glPostingDto.CreditAmount;

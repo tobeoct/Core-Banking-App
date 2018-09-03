@@ -21,10 +21,15 @@ namespace WebApplication1.Controllers.Api
             _context = new ApplicationDbContext();
         }
 
-        // GET: /api/generalledgers
+        public class Index
+        {
+            public int Id { get; set; }
+        }
+        // GET: /api/GeneralLedgers
         [AcceptVerbs("GET", "POST")]
         [HttpGet]
         [Route("api/GeneralLedgers/GetCategories")]
+//        [Authorize]
         public IHttpActionResult GetCategories()
         {
 
@@ -33,18 +38,112 @@ namespace WebApplication1.Controllers.Api
             return Ok(categoriesDto);
             
         }
+        // POST: /api/GeneralLedgers/EditGLCategory
+        [AcceptVerbs("GET", "POST")]
+        [HttpPost]
+        [Route("api/GeneralLedgers/EditGLCategory")]
+//        [Authorize]
+        public HttpResponseMessage EditGLCategory(Index index)
+        {
+            var id = index.Id;
+
+            var glCategory = _context.GlCategories.SingleOrDefault(c => c.Id == id);
+            if (glCategory == null)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "No such GL Category Exists");
+            }
+            var glCategoriesDto = new GLCategoryDto()
+            {
+                Name = glCategory.Name,
+                Description = glCategory.Description
+            };
+
+            return Request.CreateResponse(HttpStatusCode.OK,glCategoriesDto);
+
+        }
+        // PUT: /api/GeneralLedgers/UpdateGLCategory
+        [AcceptVerbs("GET","PUT")]
+        [HttpPut]
+        [Route("api/GeneralLedgers/UpdateGLCategory")]
+//        [Authorize]
+        public HttpResponseMessage UpdateGLCategory(GLCategoryDto glCategoryDto)
+        {
+            var id = glCategoryDto.Id;
+            var glCategory = _context.GlCategories.SingleOrDefault(c => c.Id == id);
+            if (glCategory == null)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "No such GL Category Exists");
+            }
+
+            glCategory.Name = glCategoryDto.Name;
+            glCategory.Description = glCategoryDto.Description;
+            _context.SaveChanges();
+            return Request.CreateResponse(HttpStatusCode.OK, "GL Category Updated Successfully");
+
+        }
+        /**
+         * GL ACCOUNTS CATEGORY
+         */
+        // GET api/GeneralLedgers/GetGLAccounts
         [AcceptVerbs("GET", "POST")]
         [HttpGet]
         [Route("api/GeneralLedgers/GetGLAccounts")]
+//        [Authorize]
         public IHttpActionResult GetGLAccounts()
         {
             var accountDto = _context.GlAccounts.Include(c => c.GlCategories).Include(c=>c.GlCategories.Categories).Include(b => b.Branch).ToList();
 
             return Ok(accountDto);
         }
+        // POST: /api/GeneralLedgers/EditGLAccount
+        [AcceptVerbs("GET", "POST")]
+        [HttpPost]
+        [Route("api/GeneralLedgers/EditGLAccount")]
+//        [Authorize]
+        public HttpResponseMessage EditGLAccount(Index index)
+        {
+            var id = index.Id;
+
+            var glAccount = _context.GlAccounts.SingleOrDefault(c => c.Id == id);
+            if (glAccount == null)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "No such GL Account Exists");
+            }
+            var glAccountDto = new GLAccountDto()
+            {
+                Name = glAccount.Name,
+                BranchId = glAccount.BranchId
+            };
+
+            return Request.CreateResponse(HttpStatusCode.OK, glAccountDto);
+
+        }
+        // PUT: /api/GeneralLedgers/UpdateGLAccount
+        [AcceptVerbs("GET", "PUT")]
+        [HttpPut]
+        [Route("api/GeneralLedgers/UpdateGLAccount")]
+//        [Authorize]
+        public HttpResponseMessage UpdateGLAccount(GLAccountDto glAccountDto)
+        {
+            var id = glAccountDto.Id;
+            var glAccount = _context.GlAccounts.SingleOrDefault(c => c.Id == id);
+            if (glAccount == null)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "No such GL Account Exists");
+            }
+
+            glAccount.Name = glAccountDto.Name;
+            glAccount.BranchId = glAccountDto.BranchId;
+            _context.SaveChanges();
+            return Request.CreateResponse(HttpStatusCode.OK, "GL Account Updated Successfully");
+
+        }
+
+        // GET api/GeneralLedgers/GetPostings
         [AcceptVerbs("GET", "POST")]
         [HttpGet]
         [Route("api/GeneralLedgers/GetPostings")]
+//        [Authorize]
         public IHttpActionResult GetPostings()
         {
             var glPostingsDto = _context.GlPostings.Include(c => c.GlCreditAccount).Include(b => b.GlDebitAccount).ToList();
@@ -53,9 +152,11 @@ namespace WebApplication1.Controllers.Api
             return Ok(glPostingsDto);
         }
 
+        // GET api/GeneralLedgers/AddGLPosting
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
         [Route("api/GeneralLedgers/AddGLPosting")]
+        [Authorize(Roles = RoleName.ADMIN_ROLE)]
         public HttpResponseMessage AddGLPosting(GLPostingDto glPostingDto)
         {
 
@@ -90,6 +191,7 @@ namespace WebApplication1.Controllers.Api
                 TransactionDate = glPostingDto.TransactionDate
 
             };
+            var tillAccount = _context.Tellers.ToList();
             _context.GlPostings.Add(glPosting);
             _context.SaveChanges();
 
@@ -117,6 +219,7 @@ namespace WebApplication1.Controllers.Api
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
         [Route("api/GeneralLedgers/ValidationChecks")]
+//        [Authorize(Roles = RoleName.ADMIN_ROLE)]
         public HttpResponseMessage ValidationChecks(GLPostingDto glPostingDto)
         {
             

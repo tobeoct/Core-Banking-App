@@ -11,6 +11,7 @@ using WebApplication1.Models;
 using System.Data.Entity;
 namespace WebApplication1.Controllers.Api
 {
+   
     public class FinancialReportsController : ApiController
     {
         private ApplicationDbContext _context;
@@ -40,24 +41,152 @@ namespace WebApplication1.Controllers.Api
             public string PostingType { get; set; }
 
         }
-//        [AcceptVerbs("GET", "POST")]
-//        [HttpGet]
-//        [Route("api/FinancialReports/BalanceSheet")]
-//        public HttpResponseMessage BalanceSheet()
-//        {
-//
-//            var glAccounts = _context.GlAccounts.Include(c => c.GlCategories).ToList();
-//            var customerAccounts = _context.CustomerAccounts.ToList();
-//            _balanceSheetList.Add(GetBalance(glAccounts, "Cash"));
-//            _balanceSheetList.Add(GetBalance(glAccounts, "Income"));
-//            _balanceSheetList.Add(GetBalance(glAccounts, "Expense"));
-//            _balanceSheetList.Add(GetBalance(glAccounts, "Liability"));
-//            _balanceSheetList.Add(GetBalance(glAccounts, "Equity"));
-//
-//            return Request.CreateResponse(HttpStatusCode.OK, _balanceSheetList.ToList());
-//
-//        }
+        //        [AcceptVerbs("GET", "POST")]
+        //        [HttpGet]
+        //        [Route("api/FinancialReports/BalanceSheet")]
+        //        public HttpResponseMessage BalanceSheet()
+        //        {
+        //
+        //            var glAccounts = _context.GlAccounts.Include(c => c.GlCategories).ToList();
+        //            var customerAccounts = _context.CustomerAccounts.ToList();
+        //            _balanceSheetList.Add(GetBalance(glAccounts, "Cash"));
+        //            _balanceSheetList.Add(GetBalance(glAccounts, "Income"));
+        //            _balanceSheetList.Add(GetBalance(glAccounts, "Expense"));
+        //            _balanceSheetList.Add(GetBalance(glAccounts, "Liability"));
+        //            _balanceSheetList.Add(GetBalance(glAccounts, "Equity"));
+        //
+        //            return Request.CreateResponse(HttpStatusCode.OK, _balanceSheetList.ToList());
+        //
+        //        }
+        [NonAction]
+        public List<BalanceSheetReport> GetBalanceSheetReports()
+        {
+            var financialReports = _context.FinancialReports.ToList();
+            var list = new List<BalanceSheetReport>();
+            var customerSCAccount = new BalanceSheetReport()
+            {
+                AccountName = "Customer Savings/Current Account",
+                CreditAmount = 0,
+                DebitAmount = 0,
+                PostingType = "Teller Posting"
+            };
+            var customerLoanAccount = new BalanceSheetReport()
+            {
+                AccountName = "Customer Loan Account",
+                CreditAmount = 0,
+                DebitAmount = 0,
+                PostingType = "Loan Disbursement"
+            };
 
+            var accountPayable = new BalanceSheetReport()
+            {
+                AccountName = "Account Payable",
+                CreditAmount = 0,
+                DebitAmount = 0,
+                PostingType = "Interest Expense"
+            };
+            var accountReceivable = new BalanceSheetReport()
+            {
+                AccountName = "Account Receivable",
+                CreditAmount = 0,
+                DebitAmount = 0,
+                PostingType = "Loan Repayment"
+            };
+            var capitalAccount = new BalanceSheetReport()
+            {
+                AccountName = "Capital Account",
+                CreditAmount = 0,
+                DebitAmount = 0,
+                PostingType = "GL Posting"
+            };
+            var tillAccount = new BalanceSheetReport()
+            {
+                AccountName = "Till Account",
+                CreditAmount = 0,
+                DebitAmount = 0,
+                PostingType = "GL Posting"
+            };
+
+            foreach (var report in financialReports)
+            {
+                var creditAccount = report.CreditAccount;
+                var creditAmount = report.CreditAmount;
+                var creditAccountCategory = report.CreditAccountCategory;
+                var debitAccount = report.DebitAccount;
+                var debitAmount = report.DebitAmount;
+                var debitAccountCategory = report.DebitAccountCategory;
+                if (creditAccountCategory.Equals("Liability"))
+                {
+                    var glAccount =
+                        _context.GlAccounts.SingleOrDefault(c => c.Name.Equals(creditAccount));
+
+                    if (glAccount == null)
+                    {
+                        var customerAcc = _context.CustomerAccounts.SingleOrDefault(c => c.Name.Equals(creditAccount));
+                        if (customerAcc.AccountTypeId == CBA.LOAN_ACCOUNT_TYPE_ID)
+                        {
+                            customerLoanAccount.DebitAmount = customerLoanAccount.DebitAmount + creditAmount;
+                        }
+                        customerSCAccount.CreditAmount = customerSCAccount.CreditAmount + creditAmount;
+
+                    }
+                    else
+                    {
+                        if (glAccount.Name.Equals(CBA.INTEREST_PAYABLE_GL_ACCOUNT))
+                        {
+                            accountPayable.CreditAmount = accountPayable.CreditAmount + creditAmount;
+                        }
+
+
+                    }
+
+                }
+                else if (creditAccountCategory.Equals("Expense"))
+                {
+                    accountPayable.CreditAmount = accountPayable.CreditAmount + creditAmount;
+                }
+                else if (creditAccountCategory.Equals("Capital"))// CAPITAL
+                {
+                    capitalAccount.CreditAmount = capitalAccount.CreditAmount + creditAmount;
+                }
+
+                if (debitAccountCategory.Equals("Asset"))
+                {
+                    var glAccount =
+                        _context.GlAccounts.SingleOrDefault(c => c.Name.Equals(debitAccount));
+                    if (glAccount == null)
+                    {
+                        customerLoanAccount.DebitAmount = customerLoanAccount.DebitAmount + debitAmount;
+
+                    }
+                    else
+                    {
+                        if (glAccount.Name.Equals(CBA.INTEREST_RECEIVABLE_ACC_NAME))
+                        {
+                            accountReceivable.DebitAmount = accountReceivable.DebitAmount + debitAmount;
+                        }
+                        else
+                        {
+                            tillAccount.DebitAmount = tillAccount.DebitAmount + debitAmount;
+                        }
+
+                    }
+                }
+                else if (debitAccountCategory.Equals("Income"))
+                {
+                    accountReceivable.DebitAmount = accountReceivable.DebitAmount + debitAmount;
+                }
+
+            }
+
+            list.Add(tillAccount);
+            list.Add(customerLoanAccount);
+            list.Add(accountReceivable);
+            list.Add(customerSCAccount);
+            list.Add(accountPayable);
+            list.Add(capitalAccount);
+            return list;
+        }
         public List<BalanceSheetReport> GetBalance(List<GLAccount> glAccounts, string type)
         {
             var list = new List<BalanceSheetReport>();
@@ -68,7 +197,7 @@ namespace WebApplication1.Controllers.Api
 
             if (type.Equals("Liability"))
             {
-               
+
                 var accounts = _context.CustomerAccounts.ToList();
                 accountName = "Liability";
                 foreach (var account in accounts)
@@ -80,7 +209,7 @@ namespace WebApplication1.Controllers.Api
             }
             else
             {
-                 var accounts = glAccounts.Where(c => c.GlCategories.MainAccountCategory.Equals(type)).ToList();
+                var accounts = glAccounts.Where(c => c.GlCategories.Name.Equals(type)).ToList();
                 foreach (var account in accounts)
                 {
                     balance = balance + account.AccountBalance;
@@ -124,16 +253,16 @@ namespace WebApplication1.Controllers.Api
         [Route("api/FinancialReports/BalanceSheet")]
         public HttpResponseMessage BalanceSheet()
         {
-        
-        
-            _balanceSheetList.Add(GetAssetList());
-            _balanceSheetList.Add(GetIncomeList());
-            _balanceSheetList.Add(GetExpenseList());
-            _balanceSheetList.Add(GetLiabilityList());
-            _balanceSheetList.Add(GetCapitalList());
-        
-            return Request.CreateResponse(HttpStatusCode.OK, _balanceSheetList.ToList());
-        
+
+
+            //            _balanceSheetList.Add(GetAssetList());
+            //            _balanceSheetList.Add(GetIncomeList());
+            //            _balanceSheetList.Add(GetExpenseList());
+            //            _balanceSheetList.Add(GetLiabilityList());
+            //            _balanceSheetList.Add(GetCapitalList());
+            var list = GetBalanceSheetReports();
+            return Request.CreateResponse(HttpStatusCode.OK, list);
+
         }
 
 
@@ -302,8 +431,139 @@ namespace WebApplication1.Controllers.Api
         [Route("api/FinancialReports/TrialBalance")]
         public HttpResponseMessage TrialBalance(ReportsDto reportsDto)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, "OK");
+            var financialReports = _context.FinancialReports.ToList();
+            var list = new List<BalanceSheetReport>();
+            var customerSCAccount = new BalanceSheetReport()
+            {
+                AccountName = "Customer Savings/Current Account",
+                CreditAmount = 0,
+                DebitAmount = 0,
+                PostingType = "Teller Posting"
+            };
+            var customerLoanAccount = new BalanceSheetReport()
+            {
+                AccountName = "Customer Loan Account",
+                CreditAmount = 0,
+                DebitAmount = 0,
+                PostingType = "Loan Disbursement"
+            };
+
+            var accountPayable = new BalanceSheetReport()
+            {
+                AccountName = "Account Payable",
+                CreditAmount = 0,
+                DebitAmount = 0,
+                PostingType = "Interest Expense"
+            };
+            var accountReceivable = new BalanceSheetReport()
+            {
+                AccountName = "Account Receivable",
+                CreditAmount = 0,
+                DebitAmount = 0,
+                PostingType = "Loan Repayment"
+            };
+            var income = new BalanceSheetReport()
+            {
+                AccountName = "Income",
+                CreditAmount = 0,
+                DebitAmount = 0,
+                PostingType = "Loan Repayment"
+            };
+            var expense = new BalanceSheetReport()
+            {
+                AccountName = "Expense",
+                CreditAmount = 0,
+                DebitAmount = 0,
+                PostingType = "Loan Repayment"
+            };
+            var capitalAccount = new BalanceSheetReport()
+            {
+                AccountName = "Capital Account",
+                CreditAmount = 0,
+                DebitAmount = 0,
+                PostingType = "GL Posting"
+            };
+            var tillAccount = new BalanceSheetReport()
+            {
+                AccountName = "Cash",
+                CreditAmount = 0,
+                DebitAmount = 0,
+                PostingType = "GL Posting"
+            };
+
+            foreach (var report in financialReports)
+            {
+                var creditAccount = report.CreditAccount;
+                var creditAmount = report.CreditAmount;
+                var creditAccountCategory = report.CreditAccountCategory;
+                var debitAccount = report.DebitAccount;
+                var debitAmount = report.DebitAmount;
+                var debitAccountCategory = report.DebitAccountCategory;
+                if (creditAccountCategory.Equals("Liability"))
+                {
+                    var glAccount =
+                        _context.GlAccounts.SingleOrDefault(c => c.Name.Equals(creditAccount));
+                    if (glAccount != null && glAccount.Name.Equals(CBA.INTEREST_PAYABLE_GL_ACCOUNT))
+                    {
+                        accountPayable.CreditAmount = accountPayable.CreditAmount + creditAmount;
+                    }
+                    else
+                    {
+                        customerSCAccount.CreditAmount = customerSCAccount.CreditAmount + creditAmount;
+                    }
+
+                }
+
+                else if (creditAccountCategory.Equals("Capital"))// CAPITAL
+                {
+                    capitalAccount.CreditAmount = capitalAccount.CreditAmount + creditAmount;
+                }
+                else if (creditAccountCategory.Equals("Income"))
+                {
+                    income.CreditAmount = income.CreditAmount + creditAmount;
+                }
+
+                if (debitAccountCategory.Equals("Asset"))
+                {
+                    var glAccount =
+                        _context.GlAccounts.SingleOrDefault(c => c.Name.Equals(debitAccount));
+                    if (glAccount == null)
+                    {
+                        customerLoanAccount.DebitAmount = customerLoanAccount.DebitAmount + debitAmount;
+
+                    }
+                    else if (glAccount.Name.Equals(CBA.INTEREST_RECEIVABLE_ACC_NAME) || glAccount.Name.Equals(CBA.COT_INCOME_RECEIVABLE_GL_ACC_NAME))
+                    {
+                        accountReceivable.DebitAmount = accountReceivable.DebitAmount + debitAmount;
+                    }
+
+                    else
+                    {
+
+                        tillAccount.DebitAmount = tillAccount.DebitAmount + debitAmount;
+
+                    }
+                }
+                else if (debitAccountCategory.Equals("Expense"))
+                {
+                    expense.DebitAmount = expense.DebitAmount + debitAmount;
+                }
+
+
+            }
+
+            list.Add(tillAccount);
+            list.Add(accountReceivable);
+            list.Add(customerLoanAccount);
+            list.Add(customerSCAccount);
+            list.Add(accountPayable);
+            list.Add(capitalAccount);
+            list.Add(income);
+            list.Add(expense);
+
+            return Request.CreateResponse(HttpStatusCode.OK, list);
         }
+
         [NonAction]
         public List<BalanceSheetReport> GetIncomeList()
         {

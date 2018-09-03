@@ -43,11 +43,13 @@ namespace WebApplication1.Controllers
             ViewBag.Message = RoleName.USER_NAME;
             if (User.IsInRole(RoleName.USER_ROLE))
             {
-                return View("ReadOnly");
+//                return View("ReadOnly");
+                RedirectToAction("Index", "Branches");
             }
             else if(User.IsInRole(RoleName.ADMIN_ROLE))
             {
-                return View();
+//                return View();
+                RedirectToAction("Index", "UserAccounts");
             }
 
            return RedirectToAction("Login", "Account");

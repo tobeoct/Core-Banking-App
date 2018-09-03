@@ -6,15 +6,18 @@ using System.Net.Http;
 using System.Web.Http;
 using WebApplication1.Models;
 using System.Data.Entity;
+using System.Web;
 using WebApplication1.Dtos;
 using AutoMapper;
 
 namespace WebApplication1.Controllers.Api
 {
+//    [Authorize]
     public class CustomersController : ApiController
     {
         private ApplicationDbContext _context;
         private string errorMessage = " ";
+
         public CustomersController()
         {
 
@@ -35,18 +38,89 @@ namespace WebApplication1.Controllers.Api
             return Ok(customerAccounts);
         }
 
-        // GET api/Customers/5
-        public string Get(int id)
+
+
+        /**
+         * CUSTOMER FUNCTIONALITY
+         */
+
+
+        public class Index
         {
-            return "value";
+            public int Id { get; set; }
         }
+
+        // POST api/Customers/EditCustomer
+        [AcceptVerbs("GET", "POST")]
+        [HttpPost]
+        [Route("api/Customers/EditCustomer")]
+        public HttpResponseMessage EditCustomer(Index index)
+        {
+            var id = index.Id.ToString().PadLeft(9, '0');
+            var customerInDb = _context.Customers.SingleOrDefault(c => c.Id.Equals(id));
+            var customerDto = new CustomerDto();
+            if (customerInDb != null)
+            {
+                customerDto.Address = customerInDb.Address;
+                customerDto.Email = customerInDb.Email;
+                customerDto.Gender = customerInDb.Gender;
+                customerDto.Name = customerInDb.Name;
+                customerDto.PhoneNumber = customerInDb.PhoneNumber;
+
+            }
+            else
+            {
+                const string errorMsg = "No such Customer Exists";
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMsg);
+            }
+
+            // _context.SaveChanges();
+
+
+            return Request.CreateResponse(HttpStatusCode.OK, customerDto);
+        }
+
+        // POST api/Customers/UpdateCustomer
+        [AcceptVerbs("GET", "POST", "PUT")]
+        [HttpPut]
+        [Route("api/Customers/UpdateCustomer")]
+        public HttpResponseMessage UpdateCustomer(CustomerDto customerDto)
+        {
+            var id = customerDto.Id.ToString().PadLeft(9, '0');
+            var customerInDb = _context.Customers.SingleOrDefault(c => c.Id.Equals(id));
+            if (customerInDb != null)
+            {
+                customerInDb.Address = customerDto.Address;
+                customerInDb.Email = customerDto.Email;
+                customerInDb.Gender = customerDto.Gender;
+                customerInDb.Name = customerDto.Name;
+                customerInDb.PhoneNumber = customerDto.PhoneNumber;
+            }
+            else
+            {
+                string errorMsg = "No such Customer Exists : " + id;
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMsg);
+            }
+
+            _context.SaveChanges();
+
+            const string message = "Customer Info Updated Successfully";
+            return Request.CreateResponse(HttpStatusCode.OK, message);
+        }
+
+
+        /**
+         * CUSTOMER ACCOUNT FUNCTIONALITY
+         */
 
         // POST api/Customers/CreateCustomerAccount
         [AcceptVerbs("GET", "POST")]
+        [HttpPost]
         [Route("api/Customers/CreateCustomerAccount")]
         public HttpResponseMessage CreateCustomerAccount(CustomerAccountDto customerAccountDto)
         {
-            //            customerAccountDto.AccountNumber = customerAccountDto.AccountTypeId.ToString() + customerAccountDto.CustomerId.ToString();
+            // customerAccountDto.AccountNumber = customerAccountDto.AccountTypeId.ToString() + customerAccountDto.CustomerId.ToString();
+           
             customerAccountDto.AccountBalance = 0;
             if (ValidateEntry(customerAccountDto) == true)
             {
@@ -59,40 +133,134 @@ namespace WebApplication1.Controllers.Api
 
             _context.CustomerAccounts.Add(customerAccount);
             _context.SaveChanges();
+
             var message = new List<string>
             {
                 "Account Created Successfully",
                 customerAccount.Id.ToString()
             };
+            var loanAccount = _context.CustomerAccounts.SingleOrDefault(c => c.Id == customerAccount.Id);
+            var loanDetail = _context.LoanDetails.SingleOrDefault(c => c.Id == customerAccount.LoanDetailsId);
+            if (loanAccount != null && loanAccount.AccountTypeId == CBA.LOAN_ACCOUNT_TYPE_ID)
+            {
+                loanAccount.AccountBalance = loanAccount.AccountBalance + loanDetail.LoanAmount; // DEBIT
+            }
+
+            _context.SaveChanges();
             return Request.CreateResponse(HttpStatusCode.OK, message);
         }
 
+        // POST api/Customers/EditCustomerAccount
         [AcceptVerbs("GET", "POST")]
-        [Route("api/Customers/EditCustomer")]
-        public HttpResponseMessage EditCustomer(CustomerDto customerDto)
+        [HttpPost]
+        [Route("api/Customers/EditCustomerAccount")]
+        public HttpResponseMessage EditCustomerAccount(Index index)
         {
-            
-            var customerInDb = _context.Customers.SingleOrDefault(c => c.Id.Equals(customerDto.Id.ToString()));
-            if (customerInDb != null)
+            //  var id = index.Id.ToString().PadLeft(9, '0');
+            var id = index.Id;
+            var customerAccountInDb = _context.CustomerAccounts.SingleOrDefault(c => c.Id.Equals(id));
+            var customerAccountDto = new CustomerAccountDto();
+            if (customerAccountInDb != null)
             {
-                customerInDb.Address = customerDto.Address;
-                customerInDb.Email = customerDto.Email;
-                customerInDb.Gender = customerDto.Gender;
-                customerInDb.Name = customerDto.Name;
-                customerInDb.PhoneNumber = customerDto.PhoneNumber;
+                customerAccountDto.Name = customerAccountInDb.Name;
+                customerAccountDto.BranchId = customerAccountInDb.BranchId;
+
             }
             else
             {
-                const string errorMsg = "No such Customer Exists";
+                const string errorMsg = "No such Customer Account Exists";
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMsg);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.OK, customerAccountDto);
+        }
+
+        // POST api/Customers/UpdateCustomerAccount
+        [AcceptVerbs("GET", "POST","PUT")]
+        [HttpPut]
+        [Route("api/Customers/UpdateCustomerAccount")]
+        public HttpResponseMessage UpdateCustomerAccount(CustomerAccountDto customerAccountDto)
+        {
+            //  var id = index.Id.ToString().PadLeft(9, '0');
+            var id = customerAccountDto.Id;
+            var customerAccountInDb = _context.CustomerAccounts.SingleOrDefault(c => c.Id == id);
+            if (customerAccountInDb != null)
+            {
+                customerAccountInDb.BranchId = customerAccountDto.BranchId;
+                customerAccountInDb.Name = customerAccountDto.Name;
+            }
+            else
+            {
+                string errorMsg = "No such Customer Account Exists : " + id;
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMsg);
             }
 
             _context.SaveChanges();
 
-            const string message = "Customer Info Edited Successfully";
+            const string message = "Customer Account Info Updated Successfully";
             return Request.CreateResponse(HttpStatusCode.OK, message);
         }
 
+        // GET api/Customers/GetAccountStatus
+        [AcceptVerbs("GET", "POST")]
+        [HttpPost]
+        [Route("api/Customers/GetAccountStatus")]
+        public HttpResponseMessage AccountStatus(Index index)
+        {
+            var customerAccount = _context.CustomerAccounts.SingleOrDefault(c => c.Id == index.Id);
+            var stat="";
+            if (customerAccount == null)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "No such Customer Account Exists");
+            }
+            var status = customerAccount.IsClosed;
+            var message = "";
+            if (status == true)
+            {
+                message = "<p><b>Account is CLOSED</b><p> Are you sure you want to <b>OPEN</b> <br/> <i>" + customerAccount.Name +
+                          "</i> Account";
+                stat = "Open Account";
+
+            }
+            else
+            {
+                message = "<p><b>Account is OPEN</b><p>Are you sure you want to <b>CLOSE</b> <br/><i>" + customerAccount.Name +
+                          "</i> Account";
+                stat = "Close Account";
+            }
+
+            var msg = new List<string>();
+            msg.Add(message);
+            msg.Add(stat);
+            return Request.CreateResponse(HttpStatusCode.OK, msg);
+        }
+
+        // GET api/Customers/GetAccountStatus
+        [AcceptVerbs("GET", "POST")]
+        [HttpPost]
+        [Route("api/Customers/UpdateCustomerAccountStatus")]
+        public HttpResponseMessage UpdateCustomerAccountStatus(Index index)
+        {
+            var customerAccount = _context.CustomerAccounts.SingleOrDefault(c => c.Id == index.Id);
+            if (customerAccount == null)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "No such Customer Account Exists");
+            }
+            var status = customerAccount.IsClosed;
+            var message = "";
+            if (status == true)
+            {
+                message = "Account Opened";
+                customerAccount.IsClosed = false;
+                _context.SaveChanges();
+                return Request.CreateResponse(HttpStatusCode.OK, message);
+            }
+            message = "Account Closed";
+            customerAccount.IsClosed = true;
+            _context.SaveChanges();
+            return Request.CreateResponse(HttpStatusCode.OK, message);
+        }
+        
         // POST api/Customers/CheckEligibility
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
@@ -155,7 +323,11 @@ namespace WebApplication1.Controllers.Api
         {
             var loanAccountTypeConfig = _context.AccountTypes.Single(c => c.Name.Equals("Loan Account"));
             var interestRate = loanAccountTypeConfig.DebitInterestRate;
-            loanDetailsDto.CustomerLoan = loanDetailsDto.LoanAmount;
+            var capitalAccount = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals("Capital Account"));
+            capitalAccount.AccountBalance = capitalAccount.AccountBalance - loanDetailsDto.LoanAmount; // DEBIT
+            loanDetailsDto.CustomerLoan = loanDetailsDto.LoanAmount; // CREDIT
+            AddToReport("Loan Disbursement", capitalAccount.Name, loanDetailsDto.CustomerLoanAccountName, loanDetailsDto.LoanAmount);
+
             loanDetailsDto.InterestRate = interestRate;
             var loanDetails = new LoanDetails();
 
@@ -163,33 +335,22 @@ namespace WebApplication1.Controllers.Api
             _context.LoanDetails.Add(loanDetails);
             _context.SaveChanges();
 
-            var customerAccount = _context.CustomerAccounts.SingleOrDefault(c => c.Id == loanDetailsDto.LinkedCustomerAccountId);
-            var glLoanAccount = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals(CBA.CUSTOMER_LOAN_ACCOUNT));
-            if (customerAccount != null)
+            var customerAccount = _context.CustomerAccounts.ToList();
+            var linkedCustomerAccount =
+                customerAccount.SingleOrDefault(c => c.Id == loanDetailsDto.LinkedCustomerAccountId);
+            //var glLoanAccount = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals(CBA.CUSTOMER_LOAN_ACCOUNT));
+            if (linkedCustomerAccount != null)
             {
-                customerAccount.LoanDetailsId = loanDetails.Id;
-                if (glLoanAccount != null)
-                {
-                    glLoanAccount.AccountBalance = glLoanAccount.AccountBalance - loanDetails.LoanAmount; // DEBIT
-                }
-
-                customerAccount.AccountBalance = customerAccount.AccountBalance + loanDetails.LoanAmount; // CREDIT
+                linkedCustomerAccount.LoanDetailsId = loanDetails.Id;
+               
+                
+                linkedCustomerAccount.AccountBalance = linkedCustomerAccount.AccountBalance + loanDetails.LoanAmount; // CREDIT
 
             }
 
-            //var customerLoanAccount = _context.CustomerAccounts.Where(c=>c.AccountTypeId==CBA.LOAN_ACCOUNT_TYPE_ID && c.CustomerId==customerAccount.CustomerId).FirstOrDefault();
-
             // : Financial Report Entry
-            AddToReport("LoanDisbursement",CBA.CUSTOMER_LOAN_ACCOUNT, customerAccount.Name, loanDetails.LoanAmount);
-//            var glPostingDto= new GLPostingDto()
-//            {
-//                CreditAmount = loanDetails.LoanAmount,
-//                CreditNarration = "Loan Disbursement",
-//                DebitAmount = loanDetails.LoanAmount,
-//                DebitNarration = "Loan Disbursement",
-//                GlCreditAccountId = loanDetails.LinkedCustomerAccountId,
-//                GlDebitAccountId = glLoanAccount.Id
-//            };
+            AddToReport("Loan Disbursement", loanDetailsDto.CustomerLoanAccountName, linkedCustomerAccount.Name, loanDetails.LoanAmount);
+
             _context.SaveChanges();
             List<string> message = new List<string>
             {
@@ -205,7 +366,7 @@ namespace WebApplication1.Controllers.Api
             var terms = new Terms();
             terms = Mapper.Map<TermsDto, Terms>(termsDto);
 
-            
+
             _context.Terms.Add(terms);
             _context.SaveChanges();
             List<string> message = new List<string>
@@ -244,15 +405,15 @@ namespace WebApplication1.Controllers.Api
                 error = true;
             }
             return error;
-            //var customers 
+
         }
 
         // Create Financial Report Entry
         [NonAction]
         public void AddToReport(string postingType, string debitAccountName, string creditAccountName, float amount)
         {
-            var creditAmount = amount;
-            var debitAmount = amount;
+            var creditAmount = (float)System.Math.Round(amount, 2);
+            var debitAmount = (float)System.Math.Round(amount, 2);
             var financialReportDto = new FinancialReportDto
             {
                 PostingType = postingType,
@@ -267,14 +428,5 @@ namespace WebApplication1.Controllers.Api
         }
 
 
-        // PUT api/<controller>/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/<controller>/5
-        public void Delete(int id)
-        {
-        }
     }
 }

@@ -8,6 +8,7 @@
 
 
 @Html.Partial("_AddAccountModal")
+@Html.Partial("_EditAccountModal")
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -16,7 +17,7 @@
     </div>
 </div>
 <div class="row margin-vertical">
-   
+
     <div class="container bg-white shadow">
         <div class="row  padding-horizontal">
             <div class="col-md-6 col-sm-6 col-xs-6 align-left " style="padding-top: 35px;">
@@ -26,7 +27,7 @@
                 <button id="myBtn">Add new Account</button>
             </div>
         </div>
-       
+
 
 
 
@@ -56,10 +57,45 @@
 @section scripts
 {
     <script>
+        function EditGLAccount(id) {
+            var index = {
+                Id: id
+            };
+            //alert(id);
+            $.ajax({
+                type: 'POST',
+                url: '/api/GeneralLedgers/EditGLAccount',
+                data: JSON.stringify(index),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (data) {
+                  //  alert("Done");
+                    $("#myEditAccountModal").fadeIn(200,
+                        function () {
+                            $("#myEditAccountModal #name").val(data["name"]);
+                            $("#myEditAccountModal #branch  option[value='" + data['branchId'] + "']").prop('selected', true);
+
+                         //   $("#myEditGLAccountModal #description").val(data["description"]);
+                            $("#myEditAccountModal #hidden").val(id);
+
+                        });
+
+                },
+                error: function (errorMessage) {
+                    var msg = JSON.parse(errorMessage.responseText);
+                    alert(msg.message);
+
+                    $('#myEditAccountModal #errorMessage').fadeIn(200,
+                        function () { $('#myEditAccountModal #errorMessage').html(msg.message) });
+                }
+
+            });
+        }
+
         $(document).ready(function () {
-            $("#gl-account").DataTable({
+            var table = $("#gl-account").DataTable({
                 ajax: {
-                    url: "/api/generalledgers/GetGLAccounts",
+                    url: "/api/GeneralLedgers/GetGLAccounts",
                     dataSrc: ""
                 },
                 columns: [
@@ -70,7 +106,7 @@
                         data: "code"
                     },
                     {
-                        data: "glCategories.mainAccountCategory"
+                        data: "glCategories.name"
                     },
                     {
                         data: "branch.name"
@@ -78,16 +114,72 @@
                     {
                         data: "id",
                         render: function (data) {
-                            return "<a class='js-delete' data-branch-id='" + data + "'>Edit</a>";
+                            return "<p class='js-delete btn btn-primary'  onclick='EditGLAccount(" +
+                                data +
+                                ");'>Edit</p>";
                         }
                     }
                 ]
             });
-            
+
             // : To GET number of Customer Accounts Available
             table.ajax.reload(function () {
                 $('#count').html(table.data().count());
             });
+
+            // : To OPEN or CLOSE Customer Account
+            $("#myEditAccountModal #myEditAccountBtn").on('click', function (e) {
+                e.preventDefault();
+                var id = $("#myEditAccountModal #hidden").val();
+                var name = $("#myEditAccountModal #name").val();
+                var branchId = $("#myEditAccountModal #branch").val();
+                //alert(branchId);
+                var glAccountDto = {
+                    Id: id,
+                    Name: name,
+                    BranchId:branchId
+                }
+               
+                $.ajax({
+                    type: 'PUT',
+                    url: '/api/GeneralLedgers/UpdateGLAccount',
+                    data: JSON.stringify(glAccountDto),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    success: function (data) {
+
+
+                        $('#myEditAccountModal #successMessage').fadeIn(200,
+                            function () {
+                                $('#myEditAccountModal #successMessage').html(data);
+                                $('#myEditAccountBtn .loader').fadeOut();
+                            });
+
+
+
+                    },
+                    error: function (errorMessage) {
+                        var msg = JSON.parse(errorMessage.responseText);
+                        alert(msg.message);
+                        $('#myEditAccountModal .loader').fadeOut();
+                        $('#myEditAccountModal #errorMessage').fadeIn(200,
+                            function () { $('#myEditAccountModal #errorMessage').html(msg.message) });
+                    }
+
+                });
+            });
+
+            $("#myEditAccountModal .close").on("click",
+                function () {
+                    table.ajax.reload(function () {
+                        $('#count').html(table.data().count());
+                                             
+                        $("#myEditAccountModal,#myEditAccountModal #successMessage, #myEditAccountModal #errorMessage ").fadeOut();
+                        //$("#myEditAccountModal #confirmationForm").fadeIn();
+                        //location.reload();
+                    });
+
+                });
             //            $("#branches ").on("click","js-delete", function () {
             //                var button = $(this);
             //                //alert("Delete");

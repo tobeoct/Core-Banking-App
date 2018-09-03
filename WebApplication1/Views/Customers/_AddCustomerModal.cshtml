@@ -1,4 +1,4 @@
-﻿@model WebApplication1.Models.Customer
+﻿@model WebApplication1.ViewModels.CustomerViewModel
 <div id="myModal" class="modal ">
 
     <!-- Modal content -->
@@ -13,51 +13,51 @@
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.Name)
+                            @Html.LabelFor(m => m.Customer.Name)
                         </div>
                         <div class="col-md-9">
-                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.Name)
+                            @Html.TextBoxFor(m => m.Customer.Name, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Customer.Name)
                         </div>
                     </div>
                 </div>
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.Email)
+                            @Html.LabelFor(m => m.Customer.Email)
                         </div>
                         <div class="col-md-9">
-                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control"})
-                            @Html.ValidationMessageFor(m => m.Email)
+                            @Html.TextBoxFor(m => m.Customer.Email, new { @class = "form-control"})
+                            @Html.ValidationMessageFor(m => m.Customer.Email)
                         </div>
                     </div>
                 </div>
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.Address)
+                            @Html.LabelFor(m => m.Customer.Address)
                         </div>
                         <div class="col-md-9">
-                            @Html.TextBoxFor(m => m.Address, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.Address)
+                            @Html.TextBoxFor(m => m.Customer.Address, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Customer.Address)
                         </div>
                     </div>
                 </div>
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.PhoneNumber)
+                            @Html.LabelFor(m => m.Customer.PhoneNumber)
                         </div>
                         <div class="col-md-9">
-                            @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.PhoneNumber)
+                            @Html.TextBoxFor(m => m.Customer.PhoneNumber, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Customer.PhoneNumber)
                         </div>
                     </div>
                 </div>
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.Gender)
+                            @Html.LabelFor(m => m.Customer.Gender)
                         </div>
                         <div class="col-md-9">
                             <div class="col-md-3">
@@ -65,7 +65,7 @@
 
                                     <label>
 
-                                        @Html.RadioButtonFor(m => m.Gender, "Male")
+                                        @Html.RadioButtonFor(m => m.Customer.Gender, "Male")
 
                                         <span>Male</span>
 
@@ -78,7 +78,7 @@
 
                                     <label>
 
-                                        @Html.RadioButtonFor(m => m.Gender, "Male")
+                                        @Html.RadioButtonFor(m => m.Customer.Gender, "Male")
 
                                         <span>Female</span>
 
@@ -87,13 +87,13 @@
                                 </div>
                             </div>
                         </div>
-                            @Html.ValidationMessageFor(m => m.Gender)
+                            @Html.ValidationMessageFor(m => m.Customer.Gender)
                         </div>
                     </div>
                 
                 <div class="form-group">
 
-                    @Html.HiddenFor(m => m.Id)
+                    @Html.HiddenFor(m => m.Customer.Id)
 
                 </div>
                 <div class="align-right">

@@ -7,6 +7,7 @@
 
 
 @Html.Partial("_AddCategoryModal")
+@Html.Partial("_EditCategoryModal")
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -15,7 +16,7 @@
     </div>
 </div>
 <div class="row margin-vertical">
-   
+
     <div class="container bg-white shadow">
 
         <div class="row  padding-horizontal">
@@ -52,15 +53,48 @@
 @section scripts
 {
     <script>
+        function EditGLCategory(id) {
+            var index = {
+                Id: id
+            }
+            //alert(id);
+            $.ajax({
+                type: 'POST',
+                url: '/api/GeneralLedgers/EditGLCategory',
+                data: JSON.stringify(index),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (data) {
+
+                    $("#myEditGLAccountModal").fadeIn(200,
+                        function () {
+                            $("#myEditGLCategoryModal #name").val(data["name"]);
+                            $("#myEditGLCategoryModal #description").val(data["description"]);
+                            $("#myEditGLCategoryModal #hidden").val(id);
+
+                        });
+
+                },
+                error: function (errorMessage) {
+                    var msg = JSON.parse(errorMessage.responseText);
+                    alert(msg.message);
+
+                    $('#myEditGLCategoryModal #errorMessage').fadeIn(200,
+                        function () { $('#myEditGLCategoryModal #errorMessage').html(msg.message) });
+                }
+
+            });
+        }
+
         $(document).ready(function () {
-            $("#gl-category").DataTable({
+            var table = $("#gl-category").DataTable({
                 ajax: {
-                    url: "/api/generalledgers/GetCategories",
+                    url: "/api/GeneralLedgers/GetCategories",
                     dataSrc: ""
                 },
                 columns: [
                     {
-                        data: "mainAccountCategory"
+                        data: "name"
                     },
                     {
                         data: "categories.name"
@@ -71,31 +105,77 @@
                     {
                         data: "id",
                         render: function (data) {
-                            return "<a class='js-delete' data-branch-id='" + data + "'>Edit</a>";
+                            return "<p class='js-delete btn btn-primary'  onclick='EditGLCategory(" +
+                                data +
+                                ");'>Edit</p>";
                         }
                     }
-
                 ]
             });
             // : To GET number of Customer Accounts Available
             table.ajax.reload(function () {
                 $('#count').html(table.data().count());
             });
-            //            $("#branches ").on("click","js-delete", function () {
-            //                var button = $(this);
-            //                //alert("Delete");
-            //                bootbox.confirm("Are you sure you want to delete this branch", function () {
-            //                    if (result) {
-            //                        $.ajax({
-            //                            url: "api/generalledgercategories/" + button.attr("data-branch-id"),
-            //                            method: "DELETE",
-            //                            success: function () {
-            //                                table.row(button.parents("tr")).remove().draw();
-            //                            }
-            //                        });
-            //                    }
-            //                });
-            //            });
+
+
+            // : To OPEN or CLOSE Customer Account
+            $("#myEditGLCategoryModal #myEditGLCategoryBtn").on('click',
+                function (e) {
+                    e.preventDefault();
+                    var name = $("#myEditGLCategoryModal #name").val();
+                    var description = $("#myEditGLCategoryModal #description").val();
+                    var id = $("#myEditGLCategoryModal #hidden").val();
+                  //  alert(name);
+                    var glCategoryDto = {
+                        Id: id,
+                        Name: name,
+                        Description: description
+                    };
+
+                    $.ajax({
+                        type: 'PUT',
+                        url: '/api/GeneralLedgers/UpdateGLCategory',
+                        data: JSON.stringify(glCategoryDto),
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        success: function (data) {
+
+
+                            $('#myEditGLCategoryModal #successMessage').fadeIn(200,
+                                function () {
+                                    $('#myEditGLCategoryModal #successMessage').html(data);
+                                    $('#myEditGLCategoryBtn .loader').fadeOut();
+                                });
+
+
+                        },
+                        error: function (errorMessage) {
+                            var msg = JSON.parse(errorMessage.responseText);
+                            alert(msg.message);
+                            $('#myEditGLCategoryModal .loader').fadeOut();
+
+                          //  $("#myEditGLCategoryModal #confirmationForm").fadeIn();
+                            $('#myEditGLCategoryModal #errorMessage').fadeIn(200,
+                                function () { $('#myEditGLCategoryModal #errorMessage').html(msg.message) });
+                        }
+
+
+                    });
+                });
+            // : To CLOSE Modals and reload DataTable
+            $(".close").on("click",
+                function () {
+                    table.ajax.reload(function () {
+                        $('#count').html(table.data().count());
+                        $('.modal #successMessage').fadeOut();
+                        $('.modal #errorMessage').fadeOut();
+                        $(".modal").fadeOut();
+                        $('form').reset();
+
+                        //location.reload();
+                    });
+
+                });
 
         });
     </script>

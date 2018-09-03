@@ -22,7 +22,7 @@
     display: none;
 }
 
-#balanceSheetReport,#trialBalanceReport {
+#balanceSheetReport, #trialBalanceReport {
     display: none;
 }
 
@@ -60,8 +60,8 @@ textarea {
     width: 30px;
     margin: auto;
     left: 35%;
-    
 }
+
 .loader-container {
     position: fixed;
     top: 0;
@@ -71,15 +71,58 @@ textarea {
     z-index: 99999;
     background: rgba(255, 255, 255, 0.9);
 }
+
+#profileImg {
+    position: relative;
+    cursor: pointer;
+    transition: background 0.3s ease-in;
+}
+
+    #profileImg .drop {
+        background: #999999;
+        border-radius: 3px;
+        color: white;
+        display: none;
+        position: absolute;
+        top: 105%;
+        right: 0.5%;
+        padding: 7px 10px 7px 10px;
+        transition: background 0.3s ease-in;
+    }
+
+    #profileImg:hover .drop {
+        display: block;
+    }
+
+
+    #profileImg .drop li {
+        width: 150px;
+    }
+
+    #profileImg .drop:hover  {
+        background: #666666;
+    }
+
 @-webkit-keyframes spin {
-    0% { -webkit-transform: rotate(0deg); }
-    100% { -webkit-transform: rotate(360deg); }
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
+
 .tab-report .tab {
     transition: background 0.3s ease-in;
     cursor: pointer;
@@ -582,11 +625,12 @@ td {
 }
 
 /* The Close Button */
-.close {
+.close, #close {
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
+    cursor: pointer;
 }
 
     .close:hover,
@@ -638,7 +682,6 @@ td {
     display: none;
     opacity: 0;
     text-align: left;
-    
     transition: display 0.3s ease-in, height 0.3s ease-in, opacity 0.3s ease-in;
 }
 

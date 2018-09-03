@@ -8,23 +8,16 @@
             <div class=" padding-horizontal bordered-bottom align-left">
                 <h3 class="alt-color bold-text">Enter Terms</h3>
             </div>
-            <form  id="termsSelectionForm">
+            <form id="termsSelectionForm">
                 <div class="row form-group ">
-                    <div class="margin-vertical">
-                        <div class="col-md-3">
-                            <label>Interest Rate</label>
-                        </div>
-                        <div class="col-md-9">
-                            @foreach (var accountType in Model.AccountTypes)
-                            {
-                                if (accountType.Name == "Loan Account")
-                                {
-                                    <p><b>@accountType.DebitInterestRate%</b></p>
-                                }
-                            }
+                    @foreach (var accountType in Model.AccountTypes)
+                    {
+                        if (accountType.Name == "Loan Account")
+                        {
+                            <p class="alert alert-warning">Interest Rate(%) : <b>@accountType.DebitInterestRate%</b></p>
+                        }
+                    }
 
-                        </div>
-                    </div>
                 </div>
                 <div class="row form-group ">
                     <div class="margin-vertical">
@@ -68,9 +61,9 @@
                         <button id="myLoanSecondBtn">Next</button>
                     </div>
                 </div>
-                
 
-                
+
+
             </form>
         </div>
     </div>

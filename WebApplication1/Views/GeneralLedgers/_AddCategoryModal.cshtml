@@ -14,11 +14,11 @@
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.GlCategory.MainAccountCategory)
+                            @Html.LabelFor(m => m.GlCategory.Name)
                         </div>
                         <div class="col-md-9">
-                            @Html.TextBoxFor(m => m.GlCategory.MainAccountCategory, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.GlCategory.MainAccountCategory)
+                            @Html.TextBoxFor(m => m.GlCategory.Name, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.GlCategory.Name)
 
 
                         </div>

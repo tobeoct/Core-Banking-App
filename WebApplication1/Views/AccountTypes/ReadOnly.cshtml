@@ -1,0 +1,196 @@
+﻿@using WebApplication1.Models
+@{
+    ViewBag.Title = "Account Types";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="underline animated fadeInLeft">Account Type Configuration</h1>
+        </div>
+    </div>
+</div>
+<div class="row margin-vertical">
+    <div class="container margin-vertical">
+        <h3 class="alt-color">Savings Account</h3>
+    </div>
+
+    <div class="container bg-white shadow">
+
+
+
+        <div class="row padding-horizontal">
+
+            <table id="savings" class="table table-striped table-responsive small-text animated fadeInUp ">
+                <thead class="padding-vertical">
+                    <tr>
+                        <th>Credit Interest Rate</th>
+                        <th>Minimum Balance</th>
+                        <th>Interest Expense GL Account</th>
+                        <th>GL Account Code</th>
+                       
+                    </tr>
+                </thead>
+
+                <tbody></tbody>
+            </table>
+        </div>
+
+
+    </div>
+
+</div>
+<div class="row margin-vertical">
+
+    <div class="container margin-vertical">
+        <h3 class="alt-color">Current Account</h3>
+    </div>
+    <div class="container bg-white shadow">
+
+        <div class="row padding-horizontal">
+
+            <table id="current" class="table table-striped table-responsive small-text animated fadeInUp ">
+                <thead class="padding-vertical">
+                    <tr>
+                        <th>Credit Interest Rate</th>
+                        <th>Minimum Balance</th>
+                        <th>Interest Expense GL Account</th>
+                        <th>GL Account Code</th>
+                        <th>COT</th>
+                        <th>COT Income GL Account</th>
+                        <th>GL Account Code</th>
+                        
+                    </tr>
+                </thead>
+
+                <tbody></tbody>
+            </table>
+        </div>
+
+
+    </div>
+
+</div>
+
+<div class="row margin-vertical">
+    <div class="container margin-vertical">
+        <h3 class="alt-color">Loan Account</h3>
+    </div>
+    <div class="container bg-white shadow">
+
+
+
+        <div class="row padding-horizontal">
+
+            <table id="loan" class="table table-striped table-responsive small-text animated fadeInUp ">
+                <thead class="padding-vertical">
+                    <tr>
+                        <th>Debit Interest Rate</th>
+                        <th>Interest Income GL Account</th>
+                        <th>GL Account Code</th>
+                        
+                    </tr>
+                </thead>
+
+                <tbody></tbody>
+            </table>
+        </div>
+
+
+    </div>
+
+</div>
+
+@section scripts
+{
+    <script>
+       
+        $(document).ready(function () {
+            $("#savings").DataTable({
+                ajax: {
+                    url: "/api/accounttypes/savingsaccounttype",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "creditInterestRate",
+                        render: function (data) {
+                            return data + "%";
+                        }
+                    },
+                    {
+                        data: "minimumBalance"
+
+                    },
+                    {
+                        data: "interestExpenseGLAccount.name"
+                    },
+                    {
+                        data: "interestExpenseGLAccount.code"
+                    }
+                ]
+            });
+
+
+            $("#current").DataTable({
+                ajax: {
+                    url: "/api/accounttypes/currentaccounttype",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "creditInterestRate",
+                        render: function (data) {
+                            return data + "%";
+                        }
+                    },
+                    {
+                        data: "minimumBalance"
+                    },
+                    {
+                        data: "interestExpenseGLAccount.name"
+                    },
+                    {
+                        data: "interestExpenseGLAccount.code"
+                    },
+                    {
+                        data: "cot"
+                    },
+                    {
+                        data: "cotIncomeGLAccount.name"
+                    },
+                    {
+                        data: "cotIncomeGLAccount.code"
+                    }
+                ]
+            });
+            $("#loan").DataTable({
+                ajax: {
+                    url: "/api/accounttypes/loanaccounttype",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "debitInterestRate",
+                        render: function (data) {
+                            return data + "%";
+                        }
+                    },
+                    {
+                        data: "interestIncomeGLAccount.name"
+                    },
+                    {
+                        data: "interestIncomeGLAccount.code"
+                    }
+                ]
+            });
+
+           
+
+        });
+    </script>
+}
+
+

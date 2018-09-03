@@ -114,7 +114,11 @@
 @section scripts
 {
     <script>
-        $(document).ready(function() {
+        function Load(url) {
+            window.location.replace(url) ;
+        }
+
+        $(document).ready(function () {
             $("#savings").DataTable({
                 ajax: {
                     url: "/api/accounttypes/savingsaccounttype",
@@ -124,7 +128,7 @@
                     {
                         data: "creditInterestRate",
                         render: function (data) {
-                            return data + "%"
+                            return data + "%";
                         }
                     },
                     {
@@ -140,98 +144,105 @@
                     {
                         data: "id",
                         render: function (data) {
-                            return "<a href='AccountTypes/SavingsAccConfig/" + data + "'>Edit</a>"
+                            var url = '/AccountTypes/SavingsAccConfig/' + data;
+                            
+                            return "<p class='btn btn-primary' onclick=Load("+String("'"+url+"'")+")>Edit</p>";
                         }
                     }
                 ]
             });
-           
 
-        $("#current").DataTable({
-            ajax: {
-                url: "/api/accounttypes/currentaccounttype",
-                dataSrc: ""
-            },
-            columns: [
-                {
-                    data: "creditInterestRate",
-                    render: function(data) {
-                        return data + "%"
-                    }
-                },
-                {
-                    data: "minimumBalance"
-                },
-                {
-                    data: "interestExpenseGLAccount.name"
-                },
-                {
-                    data: "interestExpenseGLAccount.code"
-                },
-                {
-                    data: "cot"
-                },
-                {
-                    data: "cotIncomeGLAccount.name"
-                },
-                {
-                    data: "cotIncomeGLAccount.code"
-                },
-                {
-                    data: "id",
-                    render: function(data) {
-                        return "<a href='AccountTypes/CurrentAccConfig/" + data + "'>Edit</a>"
-                    }
-                }
-            ]
-        });
-        $("#loan").DataTable({
-            ajax: {
-                url: "/api/accounttypes/loanaccounttype",
-                dataSrc: ""
-            },
-            columns: [
-                {
-                    data: "debitInterestRate",
-                    render: function(data) {
-                        return data + "%"
-                    }
-                },
-                {
-                    data: "interestIncomeGLAccount.name"
-                },
-                {
-                    data: "interestIncomeGLAccount.code"
-                },
 
-                {
-                    data: "id",
-                    render: function(data) {
-                        return "<a href='AccountTypes/LoanAccConfig/" + data + "'>Edit</a>"
-                    }
-                }
-            ]
-        });
-
-        $("#savings ").on("click",
-            "js-delete",
-            function() {
-                var button = $(this);
-                alert("Delete");
-                bootbox.confirm("Are you sure you want to delete this branch",
-                    function() {
-                        if (result) {
-                            $.ajax({
-                                url: "api/branches/" + button.attr("data-branch-id"),
-                                method: "DELETE",
-                                success: function() {
-                                    table.row(button.parents("tr")).remove().draw();
-                                }
-                            });
+            $("#current").DataTable({
+                ajax: {
+                    url: "/api/accounttypes/currentaccounttype",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "creditInterestRate",
+                        render: function (data) {
+                            return data + "%";
                         }
-                    });
+                    },
+                    {
+                        data: "minimumBalance"
+                    },
+                    {
+                        data: "interestExpenseGLAccount.name"
+                    },
+                    {
+                        data: "interestExpenseGLAccount.code"
+                    },
+                    {
+                        data: "cot"
+                    },
+                    {
+                        data: "cotIncomeGLAccount.name"
+                    },
+                    {
+                        data: "cotIncomeGLAccount.code"
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            var url = '/AccountTypes/CurrentAccConfig/' + data;
+                            return "<p class='btn btn-primary' onclick=Load(" + String("'" + url + "'") + ")>Edit</p>";
+
+                        }
+                    }
+                ]
+            });
+            $("#loan").DataTable({
+                ajax: {
+                    url: "/api/accounttypes/loanaccounttype",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "debitInterestRate",
+                        render: function (data) {
+                            return data + "%";
+                        }
+                    },
+                    {
+                        data: "interestIncomeGLAccount.name"
+                    },
+                    {
+                        data: "interestIncomeGLAccount.code"
+                    },
+
+                    {
+                        data: "id",
+                        render: function (data) {
+                            var url = '/AccountTypes/LoanAccConfig/' + data;
+
+                            return "<p class='btn btn-primary' onclick=Load(" + String("'" + url + "'") + ")>Edit</p>";
+
+                        }
+                    }
+                ]
             });
 
-    });
+            $("#savings ").on("click",
+                "js-delete",
+                function () {
+                    var button = $(this);
+                    alert("Delete");
+                    bootbox.confirm("Are you sure you want to delete this branch",
+                        function () {
+                            if (result) {
+                                $.ajax({
+                                    url: "api/branches/" + button.attr("data-branch-id"),
+                                    method: "DELETE",
+                                    success: function () {
+                                        table.row(button.parents("tr")).remove().draw();
+                                    }
+                                });
+                            }
+                        });
+                });
+
+        });
     </script>
 }

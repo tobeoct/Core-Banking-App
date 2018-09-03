@@ -30,8 +30,14 @@ var bIsKeyActive = false;
 var isHidden = true;
 
 $("select:visible:first").focus();
-
-
+function Load(url) {
+    window.location.replace(url);
+}
+$("#profileImg .drop,#profileImg .drop li ").on('click', function () {
+    alert('clicked');
+    var url = "UserAccounts/ChangePassword";
+    Load(url);
+});
 
 $(document).keydown(function (e) {
 
@@ -52,6 +58,58 @@ $(document).keydown(function (e) {
             $(" #myOpenTellerModalBtn").trigger("click");
             return;
         }
+//        if ($("#myAccountTypeModal").is(":hidden") &&
+//            $("#myAccountDetailsModal").is(":hidden") &&
+//            $("#myLoanFirstModal").is(":hidden") &&
+//            $("#myLoanSecondModal").is(":hidden") &&
+//            $("#myTermsModal").is(":hidden")) {
+//            $("#myFirstBtn").trigger("click");
+//            return;
+//        } else {
+//            return;
+//        }
+//        else {
+//            if ($("#myAccountTypeModal").css('display') === "block" &&
+//                $("#myAccountDetailsModal").is(":hidden") &&
+//                $("#myLoanFirstModal").is(":hidden") &&
+//                $("#myLoanSecondModal").is(":hidden") &&
+//                $("#myTermsModal").is(":hidden")) {
+//                $("#myAccountTypeBtn").trigger("click");
+//                return;
+//            }
+//            if ($("#myAccountDetailsModal").css('display') === "block" &&
+//                $("#myAccountTypeModal").is(":hidden") &&
+//                $("#myLoanFirstModal").is(":hidden") &&
+//                $("#myLoanSecondModal").is(":hidden") &&
+//                $("#myTermsModal").is(":hidden")) {
+//                $("#myAccountDetailsBtn").trigger("click");
+//                return;
+//            }
+//            if ($("#myLoanFirstModal").css('display') === "block" &&
+//                $("#myAccountTypeModal").is(":hidden") &&
+//                $("#myAccountDetailsModal").is(":hidden") &&
+//                $("#myLoanSecondModal").is(":hidden") &&
+//                $("#myTermsModal").is(":hidden")) {
+//                $("#myLoanFirstBtn").trigger("click");
+//                return;
+//            }
+//            if ($("#myLoanSecondModal").css('display') === "block" &&
+//                $("#myAccountTypeModal").is(":hidden") &&
+//                $("#myAccountDetailsModal").is(":hidden") &&
+//                $("#myLoanFirstModal").is(":hidden") &&
+//                $("#myTermsModal").is(":hidden")) {
+//                $("#myLoanSecondBtn").trigger("click");
+//                return;
+//            }
+//            if ($("#myTermsModal").css('display') === "block" &&
+//                $("#myAccountTypeModal").is(":hidden") &&
+//                $("#myAccountDetailsModal").is(":hidden") &&
+//                $("#myLoanFirstModal").is(":hidden") &&
+//                $("#myLoanSecondModal").is(":hidden")) {
+//                $("#myDisburseLoanBtn").trigger("click");
+//                return;
+//            }
+//        }
         $(" #myAddTellerPostingModal #myAddTellerPostingBtn").trigger("click");
 
         $("#myModal #enterBtn").trigger("click");
@@ -183,7 +241,7 @@ var GetStatus = function () {
             // alert('request failed');
             //                            var msg = JSON.stringify(errorMessage);
             var msg = JSON.parse(errorMessage.responseText);
-            alert(msg, message);
+            alert(msg, msg.message);
             //    $('myBusinessStatusModal #errorMessage').fadeIn(200,
             //      function () { $('myBusinessStatusModal #errorMessage').html(msg.message) });
         }
@@ -328,7 +386,7 @@ $(document).ready(function () {
         // $("#myModal input:visible:first").focus();
 
     }
-   
+
     // When user clicks to close icon, close the modal
     $('.close').on("click", function () {
         $(".modal").fadeOut();

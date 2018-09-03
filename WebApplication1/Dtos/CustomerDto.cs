@@ -9,7 +9,7 @@ namespace WebApplication1.Dtos
     public class CustomerDto
     {
         [Key]
-        public Guid Id { get; set; }
+        public string Id { get; set; }
 
         [StringLength(1000)]
         [Display(Name = "Customer Name")]

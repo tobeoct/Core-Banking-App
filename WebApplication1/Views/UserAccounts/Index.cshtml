@@ -1,12 +1,19 @@
-﻿@model WebApplication1.Models.RegisterViewModel
+﻿@using WebApplication1.Models
+@model WebApplication1.Models.RegisterViewModel
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 
+@{
+    if (User.IsInRole(RoleName.ADMIN_ROLE))
+    {
+        @Html.Partial("_AddModal")
+    }
 
-@Html.Partial("_AddModal")
+}
+
 
 <div class="container">
     <div class="row">
@@ -17,18 +24,26 @@
 </div>
 <div class="row margin-vertical">
     <p class="alert alert-dismissible">@ViewBag.SuccessMessage</p>
-    
-    <div class="row padding-horizontal padding-vertical">
-        <div class="container container-fluid">
-            <p class="align-right grey-color animated fadeInRight ">2 Users</p>
-        </div>
 
-    </div>
+
     <div class="container bg-white shadow">
+        <div class="row  padding-horizontal">
+            <div class="col-md-6 col-sm-6 col-xs-6 align-left" style="padding-top: 35px;">
+                <p class=" grey-color animated fadeInRight "><span id="count">@Model.count</span> Users</p>
 
-        <div class="row align-right padding-horizontal">
-            <button id="myBtn">Add new Account</button>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6 align-right">
+                @{
+                    if (User.IsInRole(RoleName.ADMIN_ROLE))
+                    {
+                        <button id="myBtn">Add new Account</button>
+                    }
+
+                }
+            </div>
+
         </div>
+
 
 
 
@@ -58,8 +73,13 @@
 @section scripts
 {
     <script>
+        function Load(url) {
+            window.location.replace(url);
+        }
+
+
         $(document).ready(function () {
-            $("#gl-user-account").DataTable({
+            var table = $("#gl-user-account").DataTable({
                 ajax: {
                     url: "/api/useraccounts",
                     dataSrc: ""
@@ -80,28 +100,18 @@
                     },
                     {
                         data: "id",
-                        
+
                         render: function (data) {
-                            return "<a class='btn-link link' href='UserAccounts/EditProfile/" + data + "'>Edit</a>";
+                            var url = "UserAccounts/EditProfile/" + data;
+                            return "<p class='btn btn-primary' onclick=Load(" + String("'" + url + "'") + ")>Edit</p>";
                         }
                     }
                 ]
             });
-            //            $("#branches ").on("click","js-delete", function () {
-            //                var button = $(this);
-            //                //alert("Delete");
-            //                bootbox.confirm("Are you sure you want to delete this branch", function () {
-            //                    if (result) {
-            //                        $.ajax({
-            //                            url: "api/generalledgercategories/" + button.attr("data-branch-id"),
-            //                            method: "DELETE",
-            //                            success: function () {
-            //                                table.row(button.parents("tr")).remove().draw();
-            //                            }
-            //                        });
-            //                    }
-            //                });
-            //            });
+            table.ajax.reload(function () {
+                $('#count').html(table.data().count());
+            });
+
 
         });
     </script>

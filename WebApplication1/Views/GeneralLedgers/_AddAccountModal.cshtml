@@ -32,7 +32,7 @@
                             @Html.LabelFor(m => m.GlAccount.GlCategoriesId)
                         </div>
                         <div class="col-md-9">
-                            @Html.DropDownListFor(m => m.GlAccount.GlCategoriesId, new SelectList(Model.GLCategories, "Id", "MainAccountCategory"), "Select Main Account Category", new { @class = "form-control" })
+                            @Html.DropDownListFor(m => m.GlAccount.GlCategoriesId, new SelectList(Model.GLCategories, "Id", "Name"), "Select Main Account Category", new { @class = "form-control" })
                             @Html.ValidationMessageFor(m => m.GlAccount.GlCategoriesId)
                         </div>
                     </div>

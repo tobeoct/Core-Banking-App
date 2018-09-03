@@ -1,0 +1,63 @@
+﻿@model WebApplication1.ViewModels.CustomerAccountViewModel
+<div id="myEditAccountDetailsModal" class="modal ">
+
+    <!-- Modal content -->
+    <div class="modal-content animated ">
+        <span class="close">&times;</span>
+        <div>
+            <div class=" padding-horizontal bordered-bottom align-left">
+                <h3 class="alt-color bold-text">Edit Customer Account Details</h3>
+            </div>
+
+            <div class="alert alert-danger" id="errorMessage"></div>
+            <div class="alert alert-success" id="successMessage"></div>
+            <form method="post" id="" class="padding-horizontal">
+               
+                <div class="row form-group ">
+                    <div class="margin-vertical" style="margin-top:5px">
+                        <div class="col-md-3">
+                            <label for="name">Account Name</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input type="text" name="accountName" id="name" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+
+                
+
+                <div class="row form-group ">
+                    <div class="margin-vertical">
+                        <div class="col-md-3">
+                            <label for="branch">Branch</label>
+                        </div>
+                        <div class="col-md-9">
+                            <select class="form-control" id="branch" required>
+                                <option value="0">Select Branch</option>
+                                @foreach (var branch in Model.Branches)
+                                {
+                                    <option value="@branch.Id">@branch.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="hidden"/>
+                <div class="row align-right form-group">
+                    <div class="col-md-12">
+                        <button id="myEditAccountDetailsBtn">Update Account<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
+                    </div>
+                                       
+                </div>
+
+            </form>
+          
+
+        </div>
+    </div>
+
+</div>
+
+
+
+

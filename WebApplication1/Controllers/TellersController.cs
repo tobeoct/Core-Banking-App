@@ -12,8 +12,10 @@ using Microsoft.AspNet.Identity.Owin;
 
 namespace WebApplication1.Controllers
 {
+    [Authorize]
     public class TellersController : Controller
     {
+
         private ApplicationDbContext _context;
         private string userId = "";
         protected UserManager<ApplicationUser> UserManager { get; set; }
@@ -53,7 +55,7 @@ namespace WebApplication1.Controllers
                 {
                     foreach (var glCategory in glCategories)
                     {
-                        if (glCategory.MainAccountCategory.Equals("Cash") && glCategory.CategoriesId == category.Id)
+                        if (glCategory.Name.Equals("Cash") && glCategory.CategoriesId == category.Id)
 
                             foreach (var account in accounts)
                             {
@@ -135,7 +137,7 @@ namespace WebApplication1.Controllers
                 {
                     foreach (var glCategory in glCategories)
                     {
-                        if (glCategory.MainAccountCategory.Equals("Cash") && glCategory.CategoriesId == category.Id)
+                        if (glCategory.Name.Equals("Cash") && glCategory.CategoriesId == category.Id)
 
                             foreach (var account in accounts)
                             {

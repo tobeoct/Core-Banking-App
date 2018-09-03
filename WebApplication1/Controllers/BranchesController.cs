@@ -11,6 +11,7 @@ using WebApplication1.ViewModels;
 
 namespace WebApplication1.Controllers
 {
+    [Authorize]
     public class BranchesController : Controller
     {
           
@@ -46,11 +47,19 @@ namespace WebApplication1.Controllers
                 count = count
             };
 
-
-            return User.IsInRole(RoleName.USER_ROLE) ? View("ReadOnlyList",viewModel) : View(viewModel);
+            if (User.IsInRole(RoleName.USER_ROLE) || User.IsInRole(RoleName.TELLER_ROLE))
+            {
+                return View("ReadOnlyList", viewModel);
+            }
+            else
+            {
+                return View(viewModel);
+            }
+//            return User.IsInRole(RoleName.USER_ROLE) ? View("ReadOnlyList", viewModel) : View(viewModel);
         }
 
         [HttpPost]
+        [Authorize(Roles = RoleName.ADMIN_ROLE)]
         public ActionResult Create(BranchViewModel branchViewModel)
         {
             branchViewModel.Branch.DateCreated = DateTime.Now;
