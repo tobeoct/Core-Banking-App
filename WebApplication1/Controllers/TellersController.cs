@@ -44,35 +44,57 @@ namespace WebApplication1.Controllers
         public ActionResult Index()
         {
             var users = _context.Users.ToList();
-            var accounts = _context.GlAccounts.Include(c=>c.GlCategories).ToList();
+            //            var accounts = _context.GlAccounts.Include(c=>c.GlCategories).ToList();
+            var accounts = _context.GlAccounts.Include(c => c.GlCategories).Where(c => c.GlCategories.Name.Equals("Cash")).ToList();
             var glCategories = _context.GlCategories.ToList();
             var categories = _context.Categories.ToList();
             var count = _context.Tellers.Count();
             List<GLAccount> tillAccounts = new List<GLAccount>();
-            foreach (var category in categories)
+            foreach (var account in accounts)
             {
-                if (category.Name.Equals("Asset"))
+                //                                if (account.GlCategoriesId == glCategory.Id && account.IsAssigned==false)
+                if (account.IsAssigned == false)
                 {
-                    foreach (var glCategory in glCategories)
+                    if (!account.Name.Equals(CBA.COT_INCOME_RECEIVABLE_GL_ACC_NAME) ||
+                        !account.Name.Equals(CBA.PRINCIPAL_OVERDUE_ACC_NAME) ||
+                        !account.Name.Equals(CBA.INTEREST_RECEIVABLE_ACC_NAME) ||
+                        !account.Name.Equals(CBA.CUSTOMER_LOAN_ACCOUNT))
                     {
-                        if (glCategory.Name.Equals("Cash") && glCategory.CategoriesId == category.Id)
-
-                            foreach (var account in accounts)
-                            {
-                                //                                if (account.GlCategoriesId == glCategory.Id && account.IsAssigned==false)
-                                if (account.GlCategoriesId == glCategory.Id && account.IsAssigned == false)
-                                {
-                                    tillAccounts.Add(account);
-                                }
-
-                            }
-
+                        tillAccounts.Add(account);
                     }
                 }
-
-            }
             
-            var viewModel = new TellerViewModel()
+            }
+                //            foreach (var category in categories)
+                //            {
+                //                if (category.Name.Equals("Asset"))
+                //                {
+                //                    foreach (var glCategory in glCategories)
+                //                    {
+                //                        if (glCategory.Name.Equals("Cash") && glCategory.CategoriesId == category.Id)
+                //
+                //                            foreach (var account in accounts)
+                //                            {
+                //                                //                                if (account.GlCategoriesId == glCategory.Id && account.IsAssigned==false)
+                //                                if (account.GlCategoriesId == glCategory.Id && account.IsAssigned == false)
+                //                                {
+                //                                    if (!account.Name.Equals(CBA.COT_INCOME_RECEIVABLE_GL_ACC_NAME) ||
+                //                                        !account.Name.Equals(CBA.PRINCIPAL_OVERDUE_ACC_NAME) ||
+                //                                        !account.Name.Equals(CBA.INTEREST_RECEIVABLE_ACC_NAME) ||
+                //                                        !account.Name.Equals(CBA.CUSTOMER_LOAN_ACCOUNT))
+                //                                    {
+                //                                        tillAccounts.Add(account);
+                //                                    }
+                //                                }
+                //
+                //                            }
+                //
+                //                    }
+                //                }
+                //
+                //            }
+
+                var viewModel = new TellerViewModel()
             {
                 Users = users,
                 Teller = new Teller(),
@@ -127,33 +149,29 @@ namespace WebApplication1.Controllers
             var tillAccountId = tellerViewModel.Teller.TillAccountId;
             
             var users = _context.Users.ToList();
-            var accounts = _context.GlAccounts.ToList();
+            //            var accounts = _context.GlAccounts.Include(c=>c.GlCategories).Where(c=>c.GlCategories.Name.Equals("Cash")).ToList();
+            var accounts = _context.GlAccounts.Include(c => c.GlCategories).Where(c => c.GlCategories.Name.Equals("Cash")).ToList();
+            var glTill = _context.GlAccounts.SingleOrDefault(c => c.Id == tillAccountId);
             var glCategories = _context.GlCategories.ToList();
             var categories = _context.Categories.ToList();
             List<GLAccount> tillAccounts = new List<GLAccount>();
-            foreach (var category in categories)
+            foreach (var account in accounts)
             {
-                if (category.Name.Equals("Asset"))
+                //                                if (account.GlCategoriesId == glCategory.Id && account.IsAssigned==false)
+                if (account.IsAssigned == false)
                 {
-                    foreach (var glCategory in glCategories)
+                    if (!account.Name.Equals(CBA.COT_INCOME_RECEIVABLE_GL_ACC_NAME) ||
+                        !account.Name.Equals(CBA.PRINCIPAL_OVERDUE_ACC_NAME) ||
+                        !account.Name.Equals(CBA.INTEREST_RECEIVABLE_ACC_NAME) ||
+                        !account.Name.Equals(CBA.CUSTOMER_LOAN_ACCOUNT))
                     {
-                        if (glCategory.Name.Equals("Cash") && glCategory.CategoriesId == category.Id)
-
-                            foreach (var account in accounts)
-                            {
-                                //                                if (account.GlCategoriesId == glCategory.Id && account.IsAssigned == false)
-                                if (account.GlCategoriesId == glCategory.Id && account.IsAssigned == false)
-                                {
-                                    tillAccounts.Add(account);
-                                }
-
-                            }
-
+                        tillAccounts.Add(account);
                     }
                 }
 
             }
            
+
             if (CheckIfUserHasBeenAssignedTeller(tellerViewModel.Teller.UserTellerId))
             {
                 var viewModel = new TellerViewModel()
@@ -190,7 +208,8 @@ namespace WebApplication1.Controllers
             {
                 IsAssigned = tellerViewModel.Teller.IsAssigned,
                 TillAccountId = tellerViewModel.Teller.TillAccountId,
-                UserTellerId = tellerViewModel.Teller.UserTellerId
+                UserTellerId = tellerViewModel.Teller.UserTellerId,
+                TillAccountBalance = glTill.AccountBalance
             };
             _context.Tellers.Add(teller);
             _context.SaveChanges();

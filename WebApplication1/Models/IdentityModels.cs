@@ -45,10 +45,6 @@ namespace WebApplication1.Models
         public DbSet<GLPostings> GlPostings { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<LoanDetails> LoanDetails { get; set; }
-//        public DbSet<SavingsAccountType> SavingsAccountTypes { get; set; }
-//        public DbSet<CurrentAccountType> CurrentAccountTypes { get; set; }
-//        public DbSet<LoanAccountType> LoanAccountTypes { get; set; }
-//        public DbSet<CustomerAccountType> CustomerAccountTypes { get; set; }
         public DbSet<CustomerAccount> CustomerAccounts { get; set; }
         public DbSet<AccountType> AccountTypes { get; set; }
         public DbSet<Terms> Terms { get; set; }
@@ -57,6 +53,7 @@ namespace WebApplication1.Models
         public DbSet<FinancialReport> FinancialReports { get; set; }
         public DbSet<BusinessStatus> BusinessStatus { get; set; }
         public DbSet<FinancialDates> FinancialDates { get; set; }
+        public DbSet<EODConfig> EODConfig { get; set; }
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {

@@ -1,5 +1,5 @@
 ﻿@model WebApplication1.ViewModels.EditProfileViewModel
-<div class="col-md-8 col-sm-6 col-xs-12 ">
+<div class="col-md-8 col-sm-6 col-xs-12 " style="position: relative">
     <div class=" margin-vertical bordered-bottom align-center" style="padding-top: 1px; padding-bottom: 30px;">
         <h3 class="grey-color animated fadeInDown">Edit Profile</h3>
     </div>
@@ -77,11 +77,11 @@
                 </div>
             </div>
         }
-        @using (Html.BeginForm("ResetPassword", "UserAccounts"))
+        @using (Html.BeginForm("ResetPassword", "UserAccounts", FormMethod.Post, new { id = "resetForm" }))
         {
             @Html.AntiForgeryToken()
             <div class="row">
-                <button type="submit" class="button red-color">Reset Password</button>
+                <a type="submit" class=" blue-color"><i class="fa fa-redo" style="margin-right: 5px;"></i>Reset Password</a>
             </div>
             <div>
                 @Html.HiddenFor(m => m.ApplicationUser.Id)

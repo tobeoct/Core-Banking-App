@@ -4,41 +4,172 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web.Http;
 using WebApplication1.Dtos;
 using System.Data.Entity;
+using System.Net.Mail;
+using System.Text.RegularExpressions;
 using AutoMapper;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Web;
+
+using System.Threading.Tasks;
+
 using Microsoft.AspNet.Identity.Owin;
+using RestSharp;
+using System.Web.Security;
+using System.Web.Http;
+using System.Web.Mvc;
+using WebApplication1.Migrations;
 
 namespace WebApplication1.Controllers.Api
 {
-   
+
     public class UserAccountsController : ApiController
     {
         private ApplicationDbContext _context;
         private static Random random;
         private string userId = "";
-        protected UserManager<ApplicationUser> UserManager { get; set; }
+        //protected UserManager<ApplicationUser> UserManager { get; set; }
+        private ApplicationSignInManager _signInManager;
+        private ApplicationUserManager _userManager;
+
+        private string errorMsg = "";
         //protected SignInManager<ApplicationSignInManager> SignInManager { get; set; }
         public UserAccountsController()
         {
             _context = new ApplicationDbContext();
 
-            userId = System.Web.HttpContext.Current.User.Identity.GetUserId();
-            this.UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(_context));
-            ApplicationUser user = System.Web.HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
+            //            userId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+            //            this.UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(_context));
+            //            ApplicationUser user = System.Web.HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
+            //
+            //            if (user != null)
+            //            {
+            //                RoleName.USER_NAME = user.FullName;
+            //                RoleName.EMAIL = user.Email;
+            //            }
+        }
 
-            if (user != null)
+        public UserAccountsController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
+        {
+            UserManager = userManager;
+            SignInManager = signInManager;
+        }
+
+        public ApplicationSignInManager SignInManager
+        {
+            get
             {
-                RoleName.USER_NAME = user.FullName;
-                RoleName.EMAIL = user.Email;
+                return _signInManager ?? HttpContext.Current.GetOwinContext().Get<ApplicationSignInManager>();
+            }
+            private set
+            {
+                _signInManager = value;
             }
         }
 
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+            private set
+            {
+                _userManager = value;
+            }
+        }
+
+        public class ResendEmail
+        {
+            public string Email { get; set; }
+            public string ActivationCode { get; set; }
+            public string Password { get; set; }
+        }
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route("UserAccounts/ReSendEmail")]
+
+        public IHttpActionResult ReSendEmail([FromUri]ResendEmail parameters)
+        {
+            if (!VerificationEmail(parameters.Email, parameters.ActivationCode, parameters.Password))
+            {
+                return Content(HttpStatusCode.BadRequest, "Mail couldn't be sent but the users account has been created.<br>Click <a href='UserAccounts/ReSendEmail?email=" + parameters.Email + "&activationCode=" + parameters.ActivationCode.ToString() + "&password=" + parameters.Password + "' target='_blank'><b>here</b></a> to resend mail<br/>Be sure to check your Internet Connection");
+
+
+            }
+
+            return Content(HttpStatusCode.OK, "<p class='alert alert-success'>Your email has sent successfully</p>");
+
+        }
+
+        [System.Web.Http.AcceptVerbs("GET", "POST")]
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("api/UserAccounts/Register")]
+        [ValidateAntiForgeryToken]
+        public HttpResponseMessage RegisterUser(RegisterDto model)
+        {
+
+            ValidationChecks(model.PhoneNumber, model.FullName, model.Email);
+            if (errorMsg != "")
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMsg);
+            }
+            bool statusRegistration = false;
+            Guid activationCode = Guid.NewGuid();
+
+            string messageRegistration = string.Empty;
+            var branches = new List<Branch>(_context.Branches.ToList());
+            var roles = _context.Roles.Select(r => r.Name);
+
+            var user = new ApplicationUser
+            {
+                UserName = model.FullName,
+                Email = model.Email,
+                FullName = model.FullName,
+                PhoneNumber = model.PhoneNumber,
+                BranchId = model.BranchId,
+                ActivationCode = activationCode
+
+            };
+           
+            string passWord = getAutoGeneratedPassword();
+            var result = UserManager.Create(user, passWord);
+
+            if (result.Succeeded)
+            {
+                UserManager.AddToRoleAsync(user.Id, model.RoleName);
+
+                //Verification Email  
+                if (VerificationEmail(model.Email, activationCode.ToString(), passWord))
+                {
+                    messageRegistration = "Your account has been created successfully. Check your mail to Activate Your Account";
+                }
+
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest,
+                        "Mail couldn't be sent but the users account has been created.<br>Click <a href='UserAccounts/ReSendEmail?email=" + model.Email + "&activationCode=" + activationCode.ToString() + "&password=" + passWord + "' target='_blank'><b>here</b></a> to resend mail<br/>Be sure to check your Internet Connection");
+                }
+
+                statusRegistration = true;
+
+                return Request.CreateResponse(HttpStatusCode.OK, messageRegistration);
+            }
+
+
+
+
+            // If we got this far, something failed, redisplay form
+
+            return Request.CreateErrorResponse(HttpStatusCode.BadRequest, " Try Again Later...");
+
+
+        }
+
         // GET: /api/branches
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route("api/UserAccounts")]
         public IHttpActionResult GetUserAccounts()
         {
             return Ok(_context.Users.Include(c => c.Branch).ToList());
@@ -46,8 +177,8 @@ namespace WebApplication1.Controllers.Api
 
 
         // POST api/<controller>
-        [HttpPost]
-//        [Authorize(Roles = RoleName.ADMIN_ROLE)]
+        [System.Web.Http.HttpPost]
+        //        [Authorize(Roles = RoleName.ADMIN_ROLE)]
         public IHttpActionResult CreateUserAccount(UserAccountDto userAccountDto)
         {
             if (!ModelState.IsValid)
@@ -62,7 +193,188 @@ namespace WebApplication1.Controllers.Api
             return Created(new Uri(Request.RequestUri + "/" + userAccount.Id), userAccountDto);
         }
 
-       
-        
+        [System.Web.Http.NonAction]
+        private void SendPasswordByEmailToUser(string email, string username, string password)
+        {
+            Console.WriteLine("Starting to send email");
+            string subject = "Fintech Login Credentials";
+            string body = "<div><h1>Login Details</h1><p><b>Username : </b>" + username + "</p><p><b>Password : </b>" + password + "</p></div>";
+            string FromMail = "tobe.onyema@gmail.com";
+            string emailTo = email;
+
+            MailMessage mm = new MailMessage(FromMail, emailTo)
+            {
+                Subject = subject,
+                Body = body,
+                //            if (fuAttachment.HasFile)//file upload select or not
+                //            {
+                //                string FileName = Path.GetFileName(fuAttachment.PostedFile.FileName);
+                //                mm.Attachments.Add(new Attachment(fuAttachment.PostedFile.InputStream, FileName));
+                //            }
+                IsBodyHtml = true
+            };
+            SmtpClient smtp = new SmtpClient
+            {
+                Host = "smtp.gmail.com",
+                EnableSsl = true
+            };
+            NetworkCredential NetworkCred = new NetworkCredential(FromMail, "0801tobe");
+            smtp.UseDefaultCredentials = true;
+            smtp.Credentials = NetworkCred;
+            smtp.Port = 587;
+            smtp.Send(mm);
+            //Response.Write("Send Mail");
+
+
+
+        }
+        [System.Web.Http.NonAction]
+        public string getCode()
+        {
+            var GLRanCode = RandomString(8);
+
+            return GLRanCode;
+
+        }
+
+
+        [System.Web.Http.NonAction]
+        public string getAutoGeneratedPassword()
+        {
+            var GLRanCode = RandomString(8);
+
+            return GLRanCode;
+
+        }
+        [System.Web.Http.NonAction]
+        public static string RandomString(int length)
+        {
+            Random random = new Random();
+            const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$%*()_}{:?,.";
+            const string firstChars = "abcdefghijklmnopqrstuvwxyz";
+            const string secondChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const string thirdChars = "0123456789";
+            const string lastChars = "!@$%*()_}{:?,.";
+            var firstTwo = new string(Enumerable.Repeat(firstChars, 2)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+            var secondTwo = new string(Enumerable.Repeat(secondChars, 2)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+            var thirdTwo = new string(Enumerable.Repeat(thirdChars, 2)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+            var lastTwo = new string(Enumerable.Repeat(lastChars, 2)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+            return firstTwo + secondTwo + thirdTwo + lastTwo;
+        }
+
+        [System.Web.Http.NonAction]
+        public void ValidationChecks(string phoneNumber, string name, string email)
+        {
+            string tel = phoneNumber.Substring(phoneNumber.Length - 9);
+            //            if (!Regex.IsMatch(name, @"^[a-zA-Z]+$"))
+            //            {
+            //                errorMsg = errorMsg + "<br/>Enter only text ";
+            //            }
+            if (!IsValidEmail(email))
+            {
+                errorMsg = errorMsg + "<br/>Invalid Email Address ";
+            }
+            string[] names = SplitWhitespace(name);
+
+            var phone = Regex.Match(phoneNumber, @"(.{9})\s*$");
+            var userNumbers = _context.Users
+                .Where(c => c.PhoneNumber.Substring(c.PhoneNumber.Length - 9).Equals(tel)).ToList();
+            var userEmails = _context.Users
+                .Where(c => c.Email.Equals(email)).ToList();
+            List<ApplicationUser> userNames = _context.Users.Where(c => c.FullName.Contains(name) || c.FullName.Equals(name)).ToList();
+
+            if (names.Length > 1)
+            {
+                if (userNames.Count <= 0)
+                {
+                    var firstName = names[0];
+                    var lastName = names[1];
+                    userNames = _context.Users
+                        .Where(c => c.FullName.Contains(firstName) && c.FullName.Contains(lastName)).ToList();
+                }
+
+
+            }
+
+            if (userNames.Count > 0)
+            {
+                errorMsg = errorMsg + "<br/>Name already exists. ";
+            }
+            if (userNumbers.Count > 0)
+            {
+                errorMsg = errorMsg + "<br/>Phone Number already exists";
+            }
+            if (userEmails.Count > 0)
+            {
+                errorMsg = errorMsg + "<br/>Email Address already exists";
+            }
+        }
+        public static bool IsValidEmail(string email)
+        {
+            return Regex.IsMatch(email, @"\A[a-z0-9]+([-._][a-z0-9]+)*@([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,4}\z")
+                   && Regex.IsMatch(email, @"^(?=.{1,64}@.{4,64}$)(?=.{6,100}$).*");
+        }
+        [System.Web.Http.NonAction]
+        public static string[] SplitWhitespace(string input)
+        {
+            char[] whitespace = new char[] { ' ', '\t' };
+            return input.Split(whitespace);
+        }
+        [System.Web.Http.NonAction]
+        public bool VerificationEmail(string email, string activationCode, string password)
+        {
+            var url = string.Format("/Account/ActivationAccount/{0}", activationCode);
+            var link = Request.RequestUri.AbsoluteUri.Replace(Request.RequestUri.PathAndQuery, url);
+
+            var fromEmail = new MailAddress("tobe.onyema@gmail.com", "Activation Account - FINTECH");
+            var toEmail = new MailAddress(email);
+
+            var fromEmailPassword = "0801tobe";
+            string subject = "Activation Account ";
+            string credentialsBody = "<h1>Login Credentials</h1>" +
+                                     "<p><b>Username : </b>" + email + "</p>" +
+                                     "<p><b>Password : </b>" + password + "</p>";
+            string body = "<br/> Please click on the following link in order to activate your account" + "<a href='" +
+                          link + "' style='font-family:sans-serif;'> Activate your Account </a>" + credentialsBody;
+            try
+            {
+
+                var smtp = new SmtpClient
+                {
+                    Host = "smtp.gmail.com",
+                    Port = 587,
+                    EnableSsl = true,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(fromEmail.Address, fromEmailPassword)
+                };
+
+                using (var message = new MailMessage(fromEmail, toEmail)
+                {
+                    Subject = subject,
+                    Body = body,
+                    IsBodyHtml = true
+
+                })
+
+                    smtp.Send(message);
+            }
+            catch (SmtpException ex)
+            {
+
+
+                errorMsg = "Mail cannot be sent because of the server problem:";
+
+                return false;
+            }
+
+            return true;
+
+        }
+
     }
 }

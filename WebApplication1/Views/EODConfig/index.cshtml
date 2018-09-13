@@ -1,0 +1,308 @@
+﻿
+@model WebApplication1.Models.EODConfig
+@{
+    ViewBag.Title = "EODConfig";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="underline animated fadeInLeft">EOD Config</h1>
+        </div>
+    </div>
+</div>
+<div class="row margin-vertical" id="eodConfigCon">
+    @* <p class="alert alert-dismissible">@ViewBag.SuccessMessage</p> *@
+
+    <form>
+        <div class="alert alert-danger alert-dismissible" id="errorMessage"></div>
+        <div class="alert alert-success alert-dismissible" id="successMessage"></div>
+        <div class="container bg-white shadow" style="padding: 40px;">
+
+
+            <div class="row padding-horizontal">
+                <div class="row margin-vertical">
+                    <label>Start Time</label>
+                </div>
+                <div class="row small-text">
+                    <div class="margin-vertical">
+                        <div class="col-md-1 align-center ">
+                            <p>Hour</p>
+                        </div>
+                        <div class="col-md-1 strip">
+
+                        </div>
+                        <div class="col-md-1  align-center">
+
+                            <p>Mins</p>
+                        </div>
+                        <div class="col-md-9">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row  ">
+                    <div class="">
+                        <div class="col-md-1  align-center">
+                            <input type="number" class="form-control" id="startTimeHour" min="1" max="12" />
+                        </div>
+                        <div class="col-md-1 align-center">
+                            <label>:</label>
+                        </div>
+                        <div class="col-md-1  align-center ">
+
+                            <input type="number" class="form-control" id="startTimeMins" min="0" max="59" />
+                        </div>
+                        <div class="col-md-1 strip">
+
+                            <select id="startTimePeriod" class="form-control">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row padding-horizontal">
+                <div class="row margin-vertical">
+                    <label>End Time</label>
+                </div>
+                <div class="row small-text">
+                    <div class="">
+                        <div class="col-md-1 align-center ">
+                            <p>Hour</p>
+                        </div>
+                        <div class="col-md-1 strip">
+
+                        </div>
+                        <div class="col-md-1  align-center">
+
+                            <p>Mins</p>
+                        </div>
+                        <div class="col-md-9">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row  ">
+                    <div class="">
+                        <div class="col-md-1  align-center">
+                            <input type="number" class="form-control" id="endTimeHour" min="1" max="12" />
+                        </div>
+                        <div class="col-md-1 align-center">
+                            <label>:</label>
+                        </div>
+                        <div class="col-md-1  align-center ">
+
+                            <input type="number" class="form-control" id="endTimeMins" min="0" max="59" />
+                        </div>
+                        <div class="col-md-1 strip">
+
+                            <select id="endTimePeriod" class="form-control">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="row padding-horizontal">
+                <div class="row margin-vertical">
+                    <label>Fixed Time</label>
+                </div>
+                <div class="row small-text">
+                    <div class="">
+                        <div class="col-md-1 align-center ">
+                            <p>Hour</p>
+                        </div>
+                        <div class="col-md-1 strip">
+
+                        </div>
+                        <div class="col-md-1  align-center">
+
+                            <p>Mins</p>
+                        </div>
+                        <div class="col-md-9">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row  ">
+                    <div class="">
+                        <div class="col-md-1  align-center">
+                            <input type="number" class="form-control" id="fixedTimeHour" min="1" max="12" />
+                        </div>
+                        <div class="col-md-1 align-center">
+                            <label>:</label>
+                        </div>
+                        <div class="col-md-1  align-center ">
+
+                            <input type="number" class="form-control" id="fixedTimeMins" min="0" max="59" />
+                        </div>
+                        <div class="col-md-1 strip">
+
+                            <select id="fixedTimePeriod" class="form-control">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="align-right">
+                <button id="eodSaveBtn">Save Changes<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+
+
+@section scripts
+{
+    <script>
+        //        data: JSON.stringify(),
+        //            contentType: 'application/json; charset=utf-8',
+        //            dataType: 'json',
+        var getEODConfig = function () {
+            // To Perform GL Account validation, checking if the Accounts exists
+            $.ajax({
+                type: 'GET',
+                url: '/api/EOD/EODConfig',
+
+                success: function (data) {
+
+                    $("#eodConfigCon #startTimeHour").val(data[0]);
+                    $("#eodConfigCon #startTimeMins").val(data[1]);
+                    $("#eodConfigCon #startTimePeriod").val(data[2]);
+                    $("#eodConfigCon #endTimeHour").val(data[3]);
+                    $("#eodConfigCon #endTimeMins").val(data[4]);
+                    $("#eodConfigCon #endTimePeriod").val(data[5]);
+                    $("#eodConfigCon #fixedTimeHour").val(data[6]);
+                    $("#eodConfigCon #fixedTimeMins").val(data[7]);
+                    $("#eodConfigCon #fixedTimePeriod").val(data[8]);
+
+
+
+                },
+                error: function (errorMessage) {
+                    // alert('request failed');
+                    $("#eodConfigCon .loader").fadeOut();
+                    var msg = JSON.parse(errorMessage.responseText);
+
+                    $('#eodConfigCon #errorMessage').fadeIn(200,
+                        function () { $('#eodConfigCon #errorMessage').html(msg.message) });
+                }
+
+            });
+
+        }
+        getEODConfig();
+        $(document).ready(function () {
+
+            var startTimeHour;
+            var startTimeMins;
+            var startTimePeriod;
+            var endTimeHour;
+            var endTimeMins;
+            var endTimePeriod;
+            var fixedTimeHour;
+            var fixedTimeMins;
+            var fixedTimePeriod;
+            var errorMsg = "";
+            var eodConfigDto;
+
+
+
+
+            //alert(result);
+            $("#eodSaveBtn").on('click',
+                function (e) {
+
+                    e.preventDefault();
+                    errorMsg = "";
+                    $('#eodConfigCon #errorMessage,#eodConfigCon #successMessage').fadeOut();
+                    $("#eodConfigCon .loader").fadeIn();
+
+                    startTimeHour = $("#eodConfigCon #startTimeHour").val();
+                    startTimeMins = $("#eodConfigCon #startTimeMins").val();
+                    startTimePeriod = $("#eodConfigCon #startTimePeriod").val();
+                    endTimeHour = $("#eodConfigCon #endTimeHour").val();
+                    endTimeMins = $("#eodConfigCon #endTimeMins").val();
+                    endTimePeriod = $("#eodConfigCon #endTimePeriod").val();
+                    fixedTimeHour = $("#eodConfigCon #fixedTimeHour").val();
+                    fixedTimeMins = $("#eodConfigCon #fixedTimeMins").val();
+                    fixedTimePeriod = $("#eodConfigCon #fixedTimePeriod").val();
+
+                    if (startTimeHour < 1 || startTimeHour > 12 || endTimeHour < 1 || endTimeHour > 12 || fixedTimeHour < 1 || fixedTimeHour > 12) {
+                        errorMsg = errorMsg + "Please all hours must be between 1 and 12";
+                    }
+                    if (startTimeMins < 0 || startTimeMins > 59 || endTimeMins < 0 || endTimeMins > 59 || fixedTimeMins < 0 || fixedTimeMins > 59) {
+                        errorMsg = errorMsg + "Please all minutes must be between 0 and 59";
+                    }
+                    if (errorMsg != "") {
+                        $('#eodConfigCon #errorMessage').fadeIn(200,
+                            function () { $('#eodConfigCon #errorMessage').html(errorMsg); });
+                        return;
+                    }
+                    eodConfigDto = {
+                        StartTimeHour: startTimeHour,
+                        StartTimeMins: startTimeMins,
+                        StartTimePeriod: startTimePeriod,
+                        EndTimeHour: endTimeHour,
+                        EndTimeMins: endTimeMins,
+                        EndTimePeriod: endTimePeriod,
+                        FixedTimeHour: fixedTimeHour,
+                        FixedTimeMins: fixedTimeMins,
+                        FixedTimePeriod: fixedTimePeriod
+
+                    }
+                    //  textValidation(jQuery.trim(fullName));
+
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/api/EOD/SaveConfig',
+                        data: JSON.stringify(eodConfigDto),
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        success: function (data) {
+
+                            $('#eodConfigCon #successMessage').fadeIn(200,
+                                function () {
+                                    $('#eodConfigCon #successMessage').html(data);
+                                    $('#eodSaveBtn .loader').fadeOut();
+                                });
+
+                        },
+                        error: function (errorMessage) {
+                            $("#eodConfigCon .loader").fadeOut();
+                            var msg = JSON.parse(errorMessage.responseText);
+
+                            $('#eodConfigCon #errorMessage').fadeIn(200,
+                                function () { $('#eodConfigCon #errorMessage').html(msg.message) });
+                        }
+
+                    });
+
+
+                });
+
+
+
+        });
+    </script>
+}
+
+

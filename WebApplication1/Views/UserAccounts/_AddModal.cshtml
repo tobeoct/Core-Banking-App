@@ -88,7 +88,10 @@
 @* *@
 @* *@
 @* *@
-<div id="myModal" class="modal ">
+
+
+
+<div id="myRegisterModal" class="modal ">
 
     <!-- Modal content -->
     <div class="modal-content animated ">
@@ -98,22 +101,19 @@
                 <h3 class="alt-color bold-text">Add Users</h3>
             </div>
             @*<p class="alert alert-dismissible">@ViewBag.Message</p>*@
+             <div class="alert alert-danger alert-dismissible" id="errorMessage"></div>
+            <div class="alert alert-success alert-dismissible" id="successMessage"></div>
 
-            @using (Html.BeginForm("Register", "UserAccounts", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-            {
-                @Html.AntiForgeryToken()
-
-                @Html.ValidationSummary("", new { @class = "text-danger" })
-
+            <form id="regForm">
+                
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.FullName)
+                            <label for="fullName">Full Name</label>
 
                         </div>
                         <div class="col-md-9">
-                            @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.FullName)
+                            <input type="text" id="fullName" class="form-control"/>
 
 
                         </div>
@@ -122,33 +122,30 @@
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.Email)
+                           <label for="email">Email</label>
                         </div>
                         <div class="col-md-9">
-                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.Email)
+                            <input type="email" id="email" class="form-control"/>
                         </div>
                     </div>
                 </div>
+                @* <div class="row form-group "> *@
+                @*     <div class="margin-vertical"> *@
+                @*         <div class="col-md-3"> *@
+                @*             <label for="userName">User Name</label> *@
+                @*         </div> *@
+                @*         <div class="col-md-9"> *@
+                @*             <input type="text" id="userName" class="form-control"/> *@
+                @*         </div> *@
+                @*     </div> *@
+                @* </div> *@
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.Username)
+                            <label for="phoneNumber">Phone Number</label>
                         </div>
                         <div class="col-md-9">
-                            @Html.TextBoxFor(m => m.Username, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.Username)
-                        </div>
-                    </div>
-                </div>
-                <div class="row form-group ">
-                    <div class="margin-vertical">
-                        <div class="col-md-3">
-                            @Html.LabelFor(m => m.PhoneNumber)
-                        </div>
-                        <div class="col-md-9">
-                            @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control", @type = "number" })
-                            @Html.ValidationMessageFor(m => m.PhoneNumber)
+                            <input type="number" id="phoneNumber" class="form-control"/>
                         </div>
                     </div>
                 </div>
@@ -156,14 +153,19 @@
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.BranchId)
+                           <label for="branch">Branch</label>
                         </div>
                         <div class="col-md-9">
-                            @* @Html.DropDownListFor(m => m.BranchId, Model.Branch, "Select Role", new { @class = "form-control" }) *@
-
-                            @Html.DropDownListFor(m => m.BranchId, new SelectList(Model.Branch, "Id", "Name"), "Select Branch", new { @class = "form-control" })
-
-                            @Html.ValidationMessageFor(m => m.BranchId)
+                            <select id="branch" class="form-control">
+                                <option value="0"> - Select a Branch - </option>
+                                @{
+                                    foreach (var branch in Model.Branch)
+                                    {
+                                        <option value="@branch.Id">@branch.Name</option>
+                                    }
+                                }
+                            </select>
+                            
                         </div>
                     </div>
                 </div>
@@ -173,26 +175,30 @@
                             @Html.LabelFor(m => m.RoleName)
                         </div>
                         <div class="col-md-9">
-                            @* @Html.DropDownListFor(m => m.BranchId, Model.Branch, "Select Role", new { @class = "form-control" }) *@
-
-                            @* @Html.DropDownListFor(m => m.RoleName, new SelectList(Model.AccountRoles), "Select Branch", new { @class = "form-control" }) *@
-                            @Html.DropDownListFor(m => m.RoleName, Model.RolesList, "Select Role", new { @class = "form-control" })
-
-                            @Html.ValidationMessageFor(m => m.RoleName)
+                            <select id="roles" class="form-control">
+                                <option value="0"> - Select a Role - </option>
+                                @{
+                                    foreach (var role in Model.RolesList)
+                                    {
+                                        <option value="@role.Value">@role.Text</option>
+                                    }
+                                }
+                            </select>
+                            
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <button type="submit">Register</button>
+                <div class="row form-group">
+                    <div class=" col-md-12 align-right">
+                        <button id="myRegisterBtn">Register<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
                     </div>
                 </div>
-            }
+            </form>
         </div>
-     
+
     </div>
 </div>
 
-     @section Scripts {
-            @Scripts.Render("~/bundles/jqueryval")
-        }
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

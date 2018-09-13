@@ -69,7 +69,7 @@ namespace WebApplication1.Controllers.Api
         {
             tellerDto.TillAccountBalance = 0;
             var tillAccountId = tellerDto.TillAccountId;
-
+            var glTill = _context.GlAccounts.SingleOrDefault(c => c.Id == tillAccountId);
 
             if (CheckIfUserHasBeenAssignedTeller(tellerDto.UserTellerId))
             {
@@ -79,7 +79,7 @@ namespace WebApplication1.Controllers.Api
             var teller = new Teller();
             //teller = Mapper.Map<TellerDto, Teller>(tellerDto);
             teller.IsAssigned = tellerDto.IsAssigned;
-            teller.TillAccountBalance = tellerDto.TillAccountBalance;
+            teller.TillAccountBalance = glTill.AccountBalance;
             teller.TillAccountId = tellerDto.TillAccountId;
             teller.UserTellerId = tellerDto.UserTellerId;
             _context.Tellers.Add(teller);
@@ -88,6 +88,7 @@ namespace WebApplication1.Controllers.Api
             return Request.CreateResponse(HttpStatusCode.OK, "Teller Assigned Successfully");
         }
 
+      
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
         [Route("api/Tellers/AddTellerPosting")]

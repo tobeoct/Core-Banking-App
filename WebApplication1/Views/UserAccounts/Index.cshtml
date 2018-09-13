@@ -23,7 +23,7 @@
     </div>
 </div>
 <div class="row margin-vertical">
-    <p class="alert alert-dismissible">@ViewBag.SuccessMessage</p>
+    @* <p class="alert alert-dismissible">@ViewBag.SuccessMessage</p> *@
 
 
     <div class="container bg-white shadow">
@@ -36,7 +36,7 @@
                 @{
                     if (User.IsInRole(RoleName.ADMIN_ROLE))
                     {
-                        <button id="myBtn">Add new Account</button>
+                        <button id="myOpenRegBtn">Add new Account</button>
                     }
 
                 }
@@ -56,7 +56,7 @@
                         <th>Full Name </th>
                         <th>Branch</th>
                         <th>Email</th>
-                        <th>Username</th>
+                        <th>Phone Number</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -73,12 +73,40 @@
 @section scripts
 {
     <script>
+        var errorMsg = "";
+
         function Load(url) {
             window.location.replace(url);
         }
 
+        function textValidation(val) {
+            //var expr = '/^([\w-\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/';
+            var expr = /[a-zA-z0-9]/g;
+            var regex = new RegExp(expr);
+            if (regex.test(val)) {
+                errorMsg = errorMsg + "Only Texts and Spaces are allowed for your name";
+            }
+
+        }
+
+        function mailValidation(val) {
+            //var expr = '/^([\w-\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/';
+            var expr = 'pattern="^[a-zA-Z0-9._%-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$"';
+            if (!expr.test(val)) {
+                errorMsg = errorMsg + "Invalid Email Address";
+            }
+
+        }
 
         $(document).ready(function () {
+
+            var fullName;
+            var email;
+            var phoneNumber;
+            var branchId;
+            var role;
+            var userName;
+            var registerDto;
             var table = $("#gl-user-account").DataTable({
                 ajax: {
                     url: "/api/useraccounts",
@@ -96,7 +124,7 @@
                         data: "email"
                     },
                     {
-                        data: "userName"
+                        data: "phoneNumber"
                     },
                     {
                         data: "id",
@@ -112,6 +140,104 @@
                 $('#count').html(table.data().count());
             });
 
+            $("#myOpenRegBtn").on('click',
+                function () {
+                    $('#myRegisterModal').fadeIn();
+                });
+            
+            //alert(result);
+            $("#myRegisterBtn").on('click',
+                function (e) {
+
+                    e.preventDefault();
+                    errorMsg = "";
+                    $('#myRegisterModal #errorMessage,#myRegisterModal #successMessage').fadeOut();
+                    $("#myRegisterModal .loader").fadeIn();
+                  
+                    email = $("#myRegisterModal #email").val();
+                    userName = fullName;
+                    phoneNumber = $("#myRegisterModal #phoneNumber").val();
+                    branchId = $("#myRegisterModal #branch").val();
+                    role = $("#myRegisterModal #roles").val();
+                    var regex = /(<([^>]+)>)/ig
+                        , body = $("#myRegisterModal #fullName").val()
+                        , result = body.replace(regex, "");
+                    fullName = result;
+                  //  textValidation(jQuery.trim(fullName));
+                    if (branchId == 0) {
+                        errorMsg = errorMsg + "<br>Please select a branch";
+                    }
+                    if (role == 0) {
+                        errorMsg = errorMsg + "<br>Please select a role";
+                    }
+                    if (fullName === "") {
+                        errorMsg = errorMsg + "<br>Please enter your name";
+                    }
+                    if (email === "") {
+                        errorMsg = errorMsg + "<br>Please enter your email";
+                    }
+                    if (phoneNumber === "") {
+                        errorMsg = errorMsg + "<br>Please enter your phone number";
+                    }
+                    if (errorMsg !== "") {
+                        $("#myRegisterModal #errorMessage").fadeIn(200,
+                            function () {
+                                $("#myRegisterModal #errorMessage").html(errorMsg);
+                                return;
+                            });
+                    } else {
+                        registerDto = {
+                            FullName: fullName,
+                            Email: email,
+                            UserName: userName,
+                            PhoneNumber: phoneNumber,
+                            BranchId: branchId,
+                            RoleName: role
+                        }
+                       
+                        // To Perform GL Account validation, checking if the Accounts exists
+                        $.ajax({
+                            type: 'POST',
+                            url: '/api/UserAccounts/Register',
+                            data: JSON.stringify(registerDto),
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json',
+                            success: function (data) {
+
+                                //Confirmation Modal Fades In
+                                document.getElementById('regForm').reset();
+                                $("#myRegisterBtn .loader").fadeOut();
+                                $('#myRegisterModal #successMessage').fadeIn(300,
+                                    function () {
+                                        $('#myRegisterModal #successMessage ').html(data);
+                                    });
+
+
+                            },
+                            error: function (errorMessage) {
+                                // alert('request failed');
+                                $("#myRegisterBtn .loader").fadeOut();
+                                var msg = JSON.parse(errorMessage.responseText);
+
+                                $('#myRegisterModal #errorMessage').fadeIn(200,
+                                    function () { $('#myRegisterModal #errorMessage').html(msg.message) });
+                            }
+
+                        });
+
+                    }
+                });
+
+            $('#myRegisterModal .close').on('click',
+                function () {
+                    table.ajax.reload(function () {
+                        $('#myRegisterModal #errorMessage,#myRegisterModal #successMessage').fadeOut();
+                        $('#count').html(table.data().count());
+                        document.getElementById('regForm').reset();
+                        $("#myRegisterBtn .loader").fadeOut();
+                        $('#myRegisterModal').fadeOut();
+                    });
+                });
 
         });
     </script>

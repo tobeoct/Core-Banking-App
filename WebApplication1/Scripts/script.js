@@ -213,6 +213,7 @@ var shortcutLogic = function (iKeyActive, lastKey) {
 
 
 var GetStatus = function () {
+    console.log("Getting Status");
     $.ajax({
         type: 'POST',
         url: '/api/EOD/GetStatus',
@@ -268,11 +269,11 @@ $('.switch input').on('click', function (e) {
     });
 
     if (action == "Closed") {
-        intendedAction = "Close"
+        intendedAction = "Close";
         presentAction = "Open";
     }
     else {
-        intendedAction = "Open"
+        intendedAction = "Open";
         presentAction = "Close";
     }
     $('#myBusinessStatusModal #businessStatus b').text(intendedAction);
@@ -286,7 +287,9 @@ $('.switch input').on('click', function (e) {
     //alert(action);
 });
 $('#myBusinessStatusModal .close').on('click', function () {
-    location.reload();
+    $('#myBusinessStatusModal ').fadeOut();
+    GetStatus();
+    //location.reload();
 });
 
 

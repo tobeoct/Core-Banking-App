@@ -43,12 +43,12 @@
                     @{
                         if (User.IsInRole(RoleName.ADMIN_ROLE) || User.IsInRole(RoleName.USER_ROLE))
                         {
-                            <button id="myBtn" class="customerBtn">Add new Customer</button>
+                            <button id="myOpenBtn" class="customerBtn">Add new Customer</button>
                         }
 
                     }
 
-                   
+
                 </div>
 
             </div>
@@ -121,6 +121,8 @@
             });
 
         }
+
+        // : To pad numbers with zeroes from the left (beginning)
         function pad_with_zeroes(number, length) {
 
             var my_string = '' + number;
@@ -131,6 +133,8 @@
             return my_string;
 
         }
+
+        var errorMsg = "";
         $(document).ready(function () {
 
 
@@ -178,6 +182,91 @@
                             }
                         });
                     }
+                });
+            });
+
+            $("#myOpenBtn").on('click', function (e) {
+                e.preventDefault();
+                $("#myAddCustomerModal").fadeIn();
+            });
+
+            // : To Create GL Account Category
+
+            $("#myAddCustomerModal #myAddCustomerBtn").on('click', function (e) {
+                e.preventDefault();
+                $('#myAddCustomerModal #errorMessage,#myAddCustomerModal #successMessage ').fadeOut();
+                errorMsg = "";
+                $('#myAddCustomerModal #errorMessage').html("");
+                var name = $("#myAddCustomerModal #name").val();
+                var phoneNumber = $("#myAddCustomerModal #phoneNumber").val();
+                var email = $("#myAddCustomerModal #email").val();
+                var address = $("#myAddCustomerModal #address").val();
+                var gender = "";
+               
+                var genderId = $("#myAddCustomerModal input:checked").attr("id");
+
+                if (genderId === "gender-male") {
+                    gender = "Male";
+                } else {
+                    gender = "Female";
+                }
+                //alert(gender);
+                //alert(branchId);
+                if (name === "") {
+                    errorMsg = errorMsg + "Please enter a <b>Name</b>";
+                }
+                if (phoneNumber == 0) {
+                    errorMsg = errorMsg + "<br>Please enter a <b>Phone Number</b>";
+                }
+                if (email == "") {
+                    errorMsg = errorMsg + "<br>Please enter an <b>Email Address</b>";
+                }
+                if (address == "") {
+                    errorMsg = errorMsg + "<br>Please enter an <b>Address</b>";
+                }
+                if (gender == "") {
+                    errorMsg = errorMsg + "<br>Please select a <b>Gender</b>";
+                }
+                if (errorMsg != "") {
+                    $('#myAddCustomerModal #errorMessage').fadeIn(200, function () {
+                        $('#myAddCustomerModal #errorMessage').html(errorMsg);
+
+                    });
+                    return;
+                }
+                var customerDto = {
+
+                    Name: name,
+                    Description: description,
+                    CategoriesId: categoryId
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/Customers/AddCustomer',
+                    data: JSON.stringify(customerDto),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    success: function (data) {
+
+                        document.getElementById('glCategoryForm').reset();
+                        $('#myAddCustomerModal #successMessage').fadeIn(200,
+                            function () {
+                                $('#myAddCustomerModal #successMessage').html(data);
+                                $('#myAddCustomerModal .loader').fadeOut();
+                            });
+
+
+
+                    },
+                    error: function (errorMessage) {
+                        var msg = JSON.parse(errorMessage.responseText);
+                        // alert(msg.message);
+                        $('#myAddCustomerModal .loader').fadeOut();
+                        $('#myAddCustomerModal #errorMessage').fadeIn(200,
+                            function () { $('#myAddCustomerModal #errorMessage').html(msg.message) });
+                    }
+
                 });
             });
 
@@ -234,6 +323,21 @@
                 });
 
             });
+            // : To CLOSE Modals and reload DataTable
+            $(".close").on("click",
+                function () {
+                    table.ajax.reload(function () {
+                        $('#count').html(table.data().count());
+                        $('.modal #successMessage').fadeOut();
+                        $('.modal #errorMessage').fadeOut();
+                        $(".modal").fadeOut();
+                        document.getElementById('customerForm').reset();
+                        
+
+                        //location.reload();
+                    });
+
+                });
 
             $("#myEditCustomerModal .close").on('click', function () {
 

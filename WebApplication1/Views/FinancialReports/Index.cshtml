@@ -39,56 +39,7 @@
         </div>
     </div>
    
-        <div class="row bg-light-grey" id="selectDateInterval">
-            @*<div class="col-md-4 col-sm-4 col-xs-4  padding-vertical">
-                <p style="text-decoration:underline;"><b>Profit & Loss Statement</b></p>
-            </div>*@
-            <div class="col-md-12 col-sm-12 col-xs-12 padding-vertical">
-                @* <form class="row"> *@
-                @*     <div class="alert alert-danger" id="errorMessage"></div> *@
-                @*     <div class="col-md-4 form-group strip"> *@
-                @*         <div class="row"> *@
-                @*             <div class="col-md-2 "> *@
-                @*                 <label for="fromDate">From</label> *@
-                @*             </div> *@
-                @*             <div class="col-md-10"> *@
-                @*                 <input type="date" name="fromDate" id="fromDate" class="fromDate form-control"> *@
-                @*             </div> *@
-                @*         </div> *@
-                @* *@
-                @* *@
-                @*     </div> *@
-                @*     <div class="col-md-4 form-group strip"> *@
-                @*         <div class="row"> *@
-                @*             <div class="col-md-2"> *@
-                @*                 <label for="toDate">To</label> *@
-                @*             </div> *@
-                @*             <div class="col-md-10"> *@
-                @*                 <input type="date" name="toDate" id="toDate" class=" toDate form-control"> *@
-                @*             </div> *@
-                @*         </div> *@
-                @* *@
-                @* *@
-                @*     </div> *@
-                @*     <div class="form-group col-md-2 col-sm-2 col-xs-4 strip align-right"> *@
-                @*         <div class="row"> *@
-                @*             <div class="col-md-12"> *@
-                @*                 <p id="reportIntervalBtn" class="btn btn-success">Go</p> *@
-                @*             </div> *@
-                @*         </div> *@
-                @* *@
-                @*     </div> *@
-                @*     <div class="form-group col-md-2 col-sm-2 col-xs-4 strip "> *@
-                @*         <div class="row"> *@
-                @*             <div class="col-md-12 align-right"> *@
-                @*                 <p id="printBtn" class=" alt-color btn btn-default margin-horizontal-min"><i class="fa fa-print" style="padding-right: 5px;"></i>Print</p> *@
-                @*             </div> *@
-                @*         </div> *@
-                @* *@
-                @*     </div> *@
-                @* </form> *@
-            </div>
-        </div>
+        
         <div class="row" id="dateDisplay">
             <div class="col-md-4 col-sm-4 col-xs-6 strip">
                 <p>
@@ -160,8 +111,8 @@
                     </tr>
                     <tr id="total" class="bg-grey">
                         <td><b>TOTAL</b></td>
-                        <td id="totalDebit"><b></b></td>
-                        <td id="totalCredit"><b></b></td>
+                        <td id="totalDebit" class="alt-bg white-color"><b></b></td>
+                        <td id="totalCredit" class="alt-bg white-color"><b></b></td>
                     </tr>
                 </tbody>
             </table>
@@ -259,11 +210,17 @@
                         <td></td>
                         <td></td>
                     </tr>
-                    <tr class="bg-grey" id="totalCredDeb">
-                        <td colspan="2"><b>TOTAL LIABILITIES & EQUITY</b></td>
+                <tr id="totalCredDeb" class="bg-grey">
+                    <td colspan="2" ><b>TOTAL LIABILITIES & EQUITY</b></td>
+                    
 
 
-                    </tr>
+                </tr>
+                <tr  >
+                    <td ><b>TOTAL </b></td>
+                    <td id="totalAsset" class="alt-bg white-color"><b></b></td>
+                    <td id="totalLE" class="alt-bg white-color"><b></b></td>
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -388,6 +345,7 @@
                     $('#totalAsset b').html(totalAsset.toFixed(2));
                     $('#totalLiability b').html(totalLiability.toFixed(2));
                     $('#balanceSheetReport #totalCredDeb').append("<td ><b>" + (Number.parseFloat(totalLiability) + Number.parseFloat(totalEquity)).toFixed(2) + "</b></td>");
+                    $('#balanceSheetReport #totalLE b').html((Number.parseFloat(totalLiability) + Number.parseFloat(totalEquity)).toFixed(2));
 
 
 
@@ -401,52 +359,7 @@
                 }
 
             });
-        //        $.ajax
-        //            ({
-        //                type: 'GET',
-        //                url: '/api/FinancialReports/BalanceSheet',
-        //
-        //                success: function (data) {
-        //
-        //                    //document.getElementById('customerAccountDetailsForm').reset();
-        //                    var assetEntry = "";
-        //                    var incomeEntry = "";
-        //                    var expenseEntry = "";
-        //                    var liabilityEntry = "";
-        //                    var capitalEntry = "";
-        //                    var totalDebit = 0;
-        //                    var totalCredit = 0;
-        //                    var equity = 0;
-        //                    assetEntry = assetEntry + "<tr><td style='padding-left:2.5%;'>" + data[0]['accountName'] + "</td><td><b>" + data[0]['debitAmount'] + "</b></td><td></td></tr>";
-        //                    assetEntry = assetEntry + "<tr><td style='padding-left:2.5%;'>" + data[1]['accountName'] + "</td><td><b>" + data[1]['debitAmount'] + "</b></td><td></td></tr>";
-        //                    assetEntry = assetEntry + "<tr><td style='padding-left:2.5%;'>" + data[2]['accountName'] + "</td><td><b>" + data[2]['debitAmount'] + "</b></td><td></td></tr>"
-        //                    liabilityEntry = liabilityEntry + "<tr><td style='padding-left:2.5%;'>" + data[3]['accountName'] + "</td><td><b>" + data[3]['creditAmount'] + "</b></td><td></td></tr>";
-        //                    liabilityEntry = liabilityEntry + "<tr><td style='padding-left:2.5%;'>" + data[4]['accountName'] + "</td><td><b>" + data[4]['creditAmount'] + "</b></td><td></td></tr>";
-        //                    capitalEntry = capitalEntry + "<tr><td style='padding-left:2.5%;'>" + data[5]['accountName'] + "</td><td><b>" + data[5]['creditAmount'] + "</td><td></td></tr>";
-        //                    var totalAsset = Number.parseFloat(data[0]["debitAmount"]) + Number.parseFloat(data[1]["debitAmount"]) + Number.parseFloat(data[2]["debitAmount"]);
-        //                    var totalLiability = Number.parseFloat(data[3]["creditAmount"]) + Number.parseFloat(data[4]["creditAmount"]);
-        //                    var totalEquity = Number.parseFloat(data[5]["creditAmount"]);
-        //                    $('#balanceSheetReport #asset').after(assetEntry);
-        //
-        //                    $('#balanceSheetReport #liability').after(liabilityEntry);
-        //                    $('#balanceSheetReport #capital').after(capitalEntry);
-        //                    $('#totalLE b').html(totalEquity);
-        //                    $('#totalAsset b').html(totalAsset);
-        //                    $('#totalLiability b').html(totalLiability);
-        //                    $('#balanceSheetReport #totalCredDeb').append("<td ><b>" + (Number.parseFloat(totalLiability) + Number.parseFloat(totalEquity)) + "</b></td>");
-        //
-        //
-        //
-        //                },
-        //                error: function (errorMessage) {
-        //                    // alert('request failed');
-        //
-        //                    var msg = JSON.parse(errorMessage.responseText);
-        //
-        //                    alert(msg);
-        //                }
-        //
-        //            });
+        
 
         $(document).ready(function () {
 

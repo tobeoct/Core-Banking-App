@@ -47,15 +47,15 @@ namespace WebApplication1.Controllers
                 count = count
             };
 
-            if (User.IsInRole(RoleName.USER_ROLE) || User.IsInRole(RoleName.TELLER_ROLE))
-            {
-                return View("ReadOnlyList", viewModel);
-            }
-            else
+            
+            
+             if(User.IsInRole(RoleName.ADMIN_ROLE))
             {
                 return View(viewModel);
             }
-//            return User.IsInRole(RoleName.USER_ROLE) ? View("ReadOnlyList", viewModel) : View(viewModel);
+            
+            return View("ReadOnlyList", viewModel);
+            //            return User.IsInRole(RoleName.USER_ROLE) ? View("ReadOnlyList", viewModel) : View(viewModel);
         }
 
         [HttpPost]

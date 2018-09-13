@@ -24,7 +24,7 @@
                 <p class=" grey-color animated fadeInRight "><span id="count">@Model.count</span> GL Accounts</p>
             </div>
             <div class="col-md-6 col-sm-6 col-xs-6 align-right">
-                <button id="myBtn">Add new Account</button>
+                <button id="myOpenBtn">Add new Account</button>
             </div>
         </div>
 
@@ -91,8 +91,9 @@
 
             });
         }
-
+        var errorMsg = "";
         $(document).ready(function () {
+            
             var table = $("#gl-account").DataTable({
                 ajax: {
                     url: "/api/GeneralLedgers/GetGLAccounts",
@@ -122,12 +123,76 @@
                 ]
             });
 
-            // : To GET number of Customer Accounts Available
+            // : To GET number of GL Accounts Available
             table.ajax.reload(function () {
                 $('#count').html(table.data().count());
             });
 
-            // : To OPEN or CLOSE Customer Account
+            $("#myOpenBtn").on('click', function(e) {
+                e.preventDefault();
+                $("#myAddGLAccountModal").fadeIn();
+            });
+            // : To CREATE GL Account
+            $("#myAddGLAccountModal #myAddGLAccountBtn").on('click', function (e) {
+                e.preventDefault();
+                $('#myAddGLAccountModal #errorMessage,#myAddGLAccountModal #successMessage ').fadeOut();
+                errorMsg = "";
+                $('#myAddGLAccountModal #errorMessage').html("");
+                var name = $("#myAddGLAccountModal #name").val();
+                var branchId = $("#myAddGLAccountModal #branch").val();
+                var categoryId = $("#myAddGLAccountModal #category").val();
+                //alert(branchId);
+                if (name === "") {
+                    errorMsg = errorMsg + "Please enter a <b>Name</b>";
+                }
+                if (categoryId == 0) {
+                    errorMsg = errorMsg + "<br>Please select a <b>Main Account Category</b>";
+                }
+                if (branchId == 0) {
+                    errorMsg = errorMsg + "<br>Please select a <b>Branch</b>";
+                }
+                if (errorMsg != "") {
+                    $('#myAddGLAccountModal #errorMessage').fadeIn(200, function() {
+                        $('#myAddGLAccountModal #errorMessage').html(errorMsg);
+                       
+                    });
+                    return;
+                }
+                var glAccountDto = {
+                    
+                    Name: name,
+                    BranchId: branchId,
+                    CategoriesId:categoryId
+                }
+               
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/GeneralLedgers/CreateGLAccount',
+                    data: JSON.stringify(glAccountDto),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    success: function (data) {
+
+                        document.getElementById('glAccountForm').reset();
+                        $('#myAddGLAccountModal #successMessage').fadeIn(200,
+                            function () {
+                                $('#myAddGLAccountModal #successMessage').html(data);
+                                $('#myAddGLAccountModal .loader').fadeOut();
+                            });
+
+
+
+                    },
+                    error: function (errorMessage) {
+                        var msg = JSON.parse(errorMessage.responseText);
+                       // alert(msg.message);
+                        $('#myAddGLAccountModal .loader').fadeOut();
+                        $('#myAddGLAccountModal #errorMessage').fadeIn(200,
+                            function () { $('#myAddGLAccountModal #errorMessage').html(msg.message) });
+                    }
+
+                });
+            });
             $("#myEditAccountModal #myEditAccountBtn").on('click', function (e) {
                 e.preventDefault();
                 var id = $("#myEditAccountModal #hidden").val();
@@ -160,7 +225,7 @@
                     },
                     error: function (errorMessage) {
                         var msg = JSON.parse(errorMessage.responseText);
-                        alert(msg.message);
+                       // alert(msg.message);
                         $('#myEditAccountModal .loader').fadeOut();
                         $('#myEditAccountModal #errorMessage').fadeIn(200,
                             function () { $('#myEditAccountModal #errorMessage').html(msg.message) });
@@ -169,12 +234,14 @@
                 });
             });
 
-            $("#myEditAccountModal .close").on("click",
+            $("#myEditAccountModal .close,#myAddGLAccountModal .close").on("click",
                 function () {
                     table.ajax.reload(function () {
                         $('#count').html(table.data().count());
                                              
                         $("#myEditAccountModal,#myEditAccountModal #successMessage, #myEditAccountModal #errorMessage ").fadeOut();
+                        
+                        $('#myAddGLAccountModal #errorMessage,#myAddGLAccountModal #successMessage,#myAddGLAccountModal .loader,#myAddGLAccountModal ').fadeOut();
                         //$("#myEditAccountModal #confirmationForm").fadeIn();
                         //location.reload();
                     });

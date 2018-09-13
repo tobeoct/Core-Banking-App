@@ -92,8 +92,12 @@ namespace WebApplication1.Controllers
                 case SignInStatus.Success:
                     RoleName.EMAIL = model.Email;
                     //string res = returnUrl.Replace("/","");
-                    //return RedirectToAction("Index","Home");
-                    return RedirectToLocal(returnUrl);
+                   // return RedirectToAction("Index", "Home");
+                if (returnUrl == null)
+                {
+                    returnUrl = "Home";
+                }
+                return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
@@ -622,6 +626,7 @@ namespace WebApplication1.Controllers
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult ActivationAccount(string id)
         {
             bool statusAccount = false;

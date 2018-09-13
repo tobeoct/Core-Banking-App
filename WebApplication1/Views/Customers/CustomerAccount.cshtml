@@ -86,7 +86,8 @@
                         function () {
 
                             $('#myEditAccountDetailsModal #name').val(data['name']);
-                            $("#myEditAccountDetailsModal #branch  option[value='" + data['branchId'] + "']").prop('selected', true);
+                            $("#myEditAccountDetailsModal #branch  option[value='" + data['branchId'] + "']")
+                                .prop('selected', true);
 
                             $('#myEditAccountDetailsModal #hidden').val(id);
                         });
@@ -104,7 +105,7 @@
             });
 
         }
-        
+
         function OpenConfirmationModal(id) {
             var index = {
                 Id: id
@@ -118,10 +119,11 @@
                 dataType: 'json',
                 success: function (data) {
 
-                    $("#confirmationModal").fadeIn(200, function () {
-                        $("#confirmationModal #action").html(data[0]);
-                        $("#confirmationModal #hidden").val(id);
-                    });
+                    $("#confirmationModal").fadeIn(200,
+                        function () {
+                            $("#confirmationModal #action").html(data[0]);
+                            $("#confirmationModal #hidden").val(id);
+                        });
 
                 },
                 error: function (errorMessage) {
@@ -136,6 +138,7 @@
 
 
         }
+
         $(document).ready(function () {
 
             /**
@@ -151,354 +154,16 @@
             var branchId = 0; // Selected Branch - (Id)
             var accountName; // Created Account - (Name)
             var accountId; // Created Account - (Id)
-            var loanAmount;   // Loan amount to be disbursed
+            var loanAmount; // Loan amount to be disbursed
             var tenure; // Duration of loan
             var paymentPlan; // Payment Frequency
-            var collateral; // Collateral to be tied to loan
+            var collateral="car"; // Collateral to be tied to loan
             var accountNumber; // Customer Account Number
             var paymentRate; // Rate of Loan Repayment
             var loanDetailsDto; // Loan Details Data Transfer Object
             var termsDto; // Terms Data Transfer Object
             var customerAccountDto; // Customer Account Data Transfer Object
             var loanAccountName;
-            /**
-                * TABLE FUNCTIONALITY
-                * */
-
-            // : To GET data for Customer Accounts TABLE FROM DATABASE through API call using JQUERY.DATATABLES
-            var table = $("#customerAccounts").DataTable({
-                ajax: {
-                    url: "/api/customers/CustomerAccounts",
-                    dataSrc: ""
-                },
-                columns: [
-                    {
-                        data: "name"
-                    },
-                    {
-                        data: "accountNumber"
-                    },
-                    {
-                        data: "branch.name"
-                    },
-                    {
-                        data: "accountType.name"
-                    },
-                    {
-                        data: "id",
-
-                        render: function (data) {
-                            return "<p class='js-delete btn btn-primary '  style='margin:auto;cursor:pointer;' id=" +
-                                data +
-                                " onclick='EditCustomerAccount(" +
-                                data +
-                                ");'>Edit</p>";
-                        }
-                    },
-                    {
-                        data: "id",
-
-                        render: function (data) {
-                            return "<p class='js-delete btn btn-link '  style='margin:auto;cursor:pointer;' id=" +
-                                data +
-                                " onclick='OpenConfirmationModal(" +
-                                data +
-                                ");'>Close/Open Account</p>";
-                        }
-                    }
-                ]
-            });
-
-            // : To GET number of Customer Accounts Available
-            table.ajax.reload(function () {
-                $('#count').html(table.data().count());
-            });
-
-            // : To Edit OR DELETE FROM TABLE and DB
-            $("#customerAccounts").on("click",
-                "js-delete",
-                function () {
-                   // alert('clicked');
-                    var button = $(this);
-                    //alert("Delete");
-                    bootbox.confirm("Are you sure you want to delete this branch",
-                        function () {
-                            if (result) {
-                                $.ajax({
-                                    url: "api/branches/" + button.attr("data-branch-id"),
-                                    method: "DELETE",
-                                    success: function () {
-                                        table.row(button.parents("tr")).remove().draw();
-                                    }
-                                });
-                            }
-                        });
-                });
-
-
-            /**
-                * MODAL FUNCTIONALITY
-                */
-
-
-            // :GOING BACK(PREVIOUS TO) MODALS
-
-            // : To Account Type selection FROM Account Details Modal;
-            $("#myPrevBtn").on("click",
-                function (e) {
-                    e.preventDefault();
-                    $(".modal").fadeOut();
-                    $("#myAccountTypeModal").fadeIn();
-                    $('#successMessage, #errorMessage').fadeOut();
-                });
-            // : To Account Details Modal FROM Loan Details Modal;
-            $("#myPrevToAccSelectBtn").on("click",
-                function (e) {
-                    e.preventDefault();
-                    $(".modal").fadeOut();
-                    $("#myAccountDetailsModal").fadeIn();
-                    $('#successMessage, #errorMessage').fadeOut();
-                });
-            // : To Loan Details Modal FROM Terms Selection/Entry Modal;
-            $("#myPrevToLoanDBtn").on("click",
-                function (e) {
-                    e.preventDefault();
-                    $(".modal").fadeOut();
-                    $("#myLoanFirstModal").fadeIn();
-                    $('#successMessage, #errorMessage').fadeOut();
-                });
-            // : To Terms Selection/Entry FROM Terms Confirmation Modal;
-            $("#myTermsPrevBtn").on("click",
-                function (e) {
-                    e.preventDefault();
-                    $(".modal").fadeOut();
-                    $("#myLoanSecondModal").fadeIn();
-                    $('#successMessage, #errorMessage').fadeOut();
-                });
-            // : To close Confirmation Modal
-            $("#confirmationModal #myCancelBtn").on('click',
-                function () {
-
-                    table.ajax.reload(function () {
-                        $('#count').html(table.data().count());
-                        $("#confirmationModal,#confirmationModal #successMessage, #confirmationModal #errorMessage ").fadeOut();
-                        $("#confirmationModal #confirmationForm").fadeIn();
-                    });
-
-                });
-
-            // :OPENING MODALS
-
-            // : To OPEN modal to select Account Type to be created;
-            $("#myFirstBtn").on("click",
-                function (e) {
-                    e.preventDefault();
-                    $(".modal").fadeOut();
-                    $("#myAccountTypeModal").fadeIn();
-                    $('#successMessage, #errorMessage').fadeOut();
-                    $("#myAccountTypeModal select:visible:first").focus();
-                });
-            // : To OPEN Account Details Modal and GET Account Selection entry/data ;
-            $("#myAccountTypeBtn").on("click",
-                function (e) {
-
-                    e.preventDefault();
-                    accountTypeId = $("#accountTypeId").val();
-                    accountTypeName = $("#accountTypeId option:selected").text();
-                    $('#myAccountDetailsModal #accountTypeDisplay').text(accountTypeName);
-                    if (accountTypeId == 0) {
-                        $("#myAccountTypeModal #errorMessage").fadeIn(0, function () {
-                            $("#myAccountTypeModal #errorMessage").html("Please select an Account Type");
-                        });
-
-                    }
-                    else {
-                        if (accountTypeName == "Loan Account") {
-                            $('#myAccountDetailsModal #myAccountDetailsBtn').text('Next');
-                        }
-                        //alert(accountTypeId);
-                        $("#myAccountTypeModal").fadeOut(400,
-                            function () {
-
-                                $("#myAccountDetailsModal").fadeIn();
-                                $("#myAccountDetailsModal input:visible:first").focus();
-
-                            });
-                    }
-                });
-
-            // : To Create Customer Account using API call, If its a Loan account then OPEN Loan Details Modal;
-            $("#myAccountDetailsBtn").on("click",
-                function (e) {
-
-                    e.preventDefault();
-                    var errorDisplay = $("#myAccountDetailsModal #errorMessage");
-                    errorDisplay.fadeOut();
-                    var errorMessage = "";
-                    customerId = $("#customerId").val();
-                    branchId = $("#branchId").val();
-                    accountName = $("#myAccountDetailsModal #accountName").val();
-                    accountNumber = String(accountTypeId) + String(customerId);
-
-                    if (customerId == 0) {
-                        errorMessage = errorMessage + " : Please select a <b>Customer</b>";
-                    }
-                    if (branchId == 0) {
-                        errorMessage = errorMessage + " : Please select a <b>Branch</b>";
-                    }
-                    if (accountName == "" || accountName == null) {
-                        errorMessage = errorMessage + " : Please enter <b>Account Name</>";
-                    }
-                    if (errorMessage != "") {
-
-                        errorDisplay.fadeIn(100, function () {
-                            errorDisplay.html(errorMessage);
-                            $("#myAccountDetailsModal #myAccountDetailsBtn img").addClass("display-none");
-                            $("#myAccountDetailsModal #myAccountDetailsBtn .loader,#myAccountDetailsModal #myAccountDetailsBtn img").css("display", "none");
-
-                        });
-                    }
-                    else {
-                        //alert("Account Type Id : " +accountTypeId +", Customer Id : " +customerId +", Branch Id : " +branchId +", Account Name : " + accountName +", Account Number : " + accountNumber);
-                        customerAccountDto = {
-                            Name: accountName,
-                            CustomerId: customerId,
-                            BranchId: branchId,
-                            AccountNumber: accountNumber,
-                            AccountTypeId: accountTypeId
-                        };
-                        CheckIfCustomerHasAccount(customerAccountDto);
-
-                    }
-                });
-
-            // : To EDIT Customer Account Details
-            $("#myEditAccountDetailsBtn").on("click", function (e) {
-                e.preventDefault();
-                var caName = $("#myEditAccountDetailsModal #name").val();
-                var caBId = $("#myEditAccountDetailsModal #branch").val();
-                var caId = $("#myEditAccountDetailsModal #hidden").val();
-                var accountDto = {
-                    Name: caName,
-                    BranchId: caBId,
-                    Id: caId
-                }
-                $.ajax({
-                    type: 'POST',
-                    url: '/api/Customers/UpdateCustomerAccount',
-                    data: JSON.stringify(accountDto),
-                    contentType: 'application/json; charset=utf-8',
-                    dataType: 'json',
-                    success: function (data) {
-
-
-                        $('#myEditAccountDetailsModal #successMessage').fadeIn(200,
-                            function () {
-                                $('#myEditAccountDetailsModal #successMessage').html(data);
-                                $('#myEditAccountDetailsBtn .loader').fadeOut();
-                            });
-
-
-
-                    },
-                    error: function (errorMessage) {
-                        var msg = JSON.parse(errorMessage.responseText);
-                        alert(msg.message);
-
-                        $('#myEditAccountDetailsModal #errorMessage').fadeIn(200,
-                            function () { $('#myEditAccountDetailsModal #errorMessage').html(msg.message) });
-                    }
-
-                });
-
-            });
-
-
-            // : To OPEN or CLOSE Customer Account
-            $("#confirmationModal #confirmationBtn").on('click', function (e) {
-                e.preventDefault();
-                var id = $("#confirmationModal #hidden").val();
-                var index = {
-                    Id: id
-                }
-                $("#confirmationModal #confirmationForm").fadeOut();
-                $.ajax({
-                    type: 'POST',
-                    url: '/api/Customers/UpdateCustomerAccountStatus',
-                    data: JSON.stringify(index),
-                    contentType: 'application/json; charset=utf-8',
-                    dataType: 'json',
-                    success: function (data) {
-
-
-                        $('#confirmationModal #successMessage').fadeIn(200,
-                            function () {
-                                $('#confirmationModal #successMessage').html(data);
-                                $('#confirmationModal .loader').fadeOut();
-                            });
-
-
-
-                    },
-                    error: function (errorMessage) {
-                        var msg = JSON.parse(errorMessage.responseText);
-                        alert(msg.message);
-                        $("#confirmationModal #confirmationForm").fadeIn();
-                        $('#confirmationModal #errorMessage').fadeIn(200,
-                            function () { $('#confirmationModal #errorMessage').html(msg.message) });
-                    }
-
-                });
-            });
-            // : To GET Loan Details data entry and OPEN Loan Terms entry Modal;
-            $("#myLoanFirstBtn").on("click",
-                function (e) {
-
-                    e.preventDefault();
-                    loanAmount = $("#loanAmount").val();
-                    linkedCustomerAccountName = $('#linkedCustomerAccountId option:selected').text();
-                    linkedCustomerAccountId = $('#linkedCustomerAccountId').val();
-                    //  alert("Linked Bank : " + linkedCustomerAccountName +", Loan Amount : " +loanAmount);
-                    $("#myLoanFirstModal").fadeOut(400,
-                        function () {
-                            document.getElementById('loanDetailsForm').reset();
-                            $("#myLoanSecondModal").fadeIn();
-                            $("#myLoanSecondModal select:visible:first").focus();
-
-                        });
-                });
-            // : To GET entry/data FROm Terms Modal and OPEN Terms Confirmation Modal
-            $("#myLoanSecondBtn").on("click",
-                function (e) {
-
-                    e.preventDefault();
-                    tenure = $("#tenure").val();
-                    collateral = $("#collateral").val();
-                    paymentRate = $("#paymentRate").val();
-
-                    termsDto = {
-                        Tenure: tenure,
-                        Collateral: collateral,
-                        PaymentRate: paymentRate
-                    };
-                    //alert("Tenure : " + tenure + ", Collateral : " + collateral + ", Payment Rate : " + paymentRate);
-                    $("#myLoanSecondModal").fadeOut(400,
-                        function () {
-                            //document.getElementById('termsSelectionForm').reset();
-                            $('#myTermsModal #paymentPlan').text(paymentRate + "% of the " + loanAmount + " Loan " + tenure);
-                            $("#myTermsModal").fadeIn();
-                            $("#myTermsModal input:visible:first").focus();
-                        });
-
-                });
-            // : To POST TO API's handling Creation of Loan Account
-            $('#myDisburseLoanBtn').on("click",
-                function (e) {
-                    e.preventDefault();
-                    //alert('clicked');
-                    // : check eligibility of customer to take Loan
-                    CheckEligibility();
-                });
 
 
             /**
@@ -536,8 +201,6 @@
                         return;
 
 
-
-
                     },
                     error: function (errorMessage) {
                         // alert('request failed');
@@ -558,7 +221,7 @@
                     CustomerLoanAccountName: accountName
 
                 };
-             //   alert(accountName);
+                //   alert(accountName);
                 $.ajax
                     ({
                         type: 'POST',
@@ -600,14 +263,14 @@
                             //document.getElementById('customerAccountDetailsForm').reset();
                             if (accountTypeName == "Loan Account") {
                                 $('#myLoanFirstModal #customerAccountDisplay').text(accountName);
-                                $('#myAccountDetailsModal').fadeOut(0, function () {
-                                    $('#myLoanFirstModal').fadeIn();
-                                    $("#myLoanFirstModal select:visible:first").focus();
+                                $('#myAccountDetailsModal').fadeOut(0,
+                                    function () {
+                                        $('#myLoanFirstModal').fadeIn();
+                                        $("#myLoanFirstModal select:visible:first").focus();
 
-                                });
+                                    });
 
-                            }
-                            else {
+                            } else {
                                 // AJAX API call to Create Customer Account;
                                 $.ajax({
                                     type: 'POST',
@@ -687,7 +350,7 @@
             }
             // : To Disburse Loan to Customer Account
             var DisburseLoan = function () {
-                
+
                 $.ajax({
                     type: 'POST',
                     url: '/api/Customers/LoanDisbursement',
@@ -721,12 +384,380 @@
                 });
 
             }
+            function checkregex(value) {
+                if (!value.match(/^[a-zA-Z0-9 ]+$/)) {
+
+                    return false;
+                }
+                return true;
+            }
+
+
+            /**
+                * TABLE FUNCTIONALITY
+                * */
+
+            // : To GET data for Customer Accounts TABLE FROM DATABASE through API call using JQUERY.DATATABLES
+            var table = $("#customerAccounts").DataTable({
+                ajax: {
+                    url: "/api/customers/CustomerAccounts",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name"
+                    },
+                    {
+                        data: "accountNumber"
+                    },
+                    {
+                        data: "branch.name"
+                    },
+                    {
+                        data: "accountType.name"
+                    },
+                    {
+                        data: "id",
+
+                        render: function (data) {
+                            return "<p class='js-delete btn btn-primary '  style='margin:auto;cursor:pointer;' id=" +
+                                data +
+                                " onclick='EditCustomerAccount(" +
+                                data +
+                                ");'>Edit</p>";
+                        }
+                    },
+                    {
+                        data: "id",
+
+                        render: function (data) {
+                            return "<p class='js-delete btn btn-link '  style='margin:auto;cursor:pointer;' id=" +
+                                data +
+                                " onclick='OpenConfirmationModal(" +
+                                data +
+                                ");'>Close/Open Account</p>";
+                        }
+                    }
+                ]
+            });
+
+            // : To GET number of Customer Accounts Available
+            table.ajax.reload(function () {
+                $('#count').html(table.data().count());
+            });
+
+            // : To Edit OR DELETE FROM TABLE and DB
+            $("#customerAccounts").on("click",
+                "js-delete",
+                function () {
+                    // alert('clicked');
+                    var button = $(this);
+                    //alert("Delete");
+                    bootbox.confirm("Are you sure you want to delete this branch",
+                        function () {
+                            if (result) {
+                                $.ajax({
+                                    url: "api/branches/" + button.attr("data-branch-id"),
+                                    method: "DELETE",
+                                    success: function () {
+                                        table.row(button.parents("tr")).remove().draw();
+                                    }
+                                });
+                            }
+                        });
+                });
+
+
+            /**
+                * MODAL FUNCTIONALITY
+                */
+
+
+            // :GOING BACK(PREVIOUS TO) MODALS
+
+            // : To Account Type selection FROM Account Details Modal;
+            $("#myPrevBtn").on("click",
+                function (e) {
+                    e.preventDefault();
+                    $(".modal").fadeOut();
+                    $("#myAccountTypeModal").fadeIn();
+                    $('#successMessage, #errorMessage').fadeOut();
+                });
+            // : To Account Details Modal FROM Loan Details Modal;
+            $("#myPrevToAccSelectBtn").on("click",
+                function (e) {
+                    e.preventDefault();
+                    $(".modal").fadeOut();
+                    $("#myAccountDetailsModal").fadeIn();
+                    $('#successMessage, #errorMessage').fadeOut();
+                });
+            // : To Loan Details Modal FROM Terms Selection/Entry Modal;
+            $("#myPrevToLoanDBtn").on("click",
+                function (e) {
+                    e.preventDefault();
+                    $(".modal").fadeOut();
+                    $("#myLoanFirstModal").fadeIn();
+                    $('#successMessage, #errorMessage').fadeOut();
+                });
+            // : To Terms Selection/Entry FROM Terms Confirmation Modal;
+            $("#myTermsPrevBtn").on("click",
+                function (e) {
+                    e.preventDefault();
+                    $(".modal").fadeOut();
+                    $("#myLoanSecondModal").fadeIn();
+                    $('#successMessage, #errorMessage').fadeOut();
+                });
+            // : To close Confirmation Modal
+            $("#confirmationModal #myCancelBtn").on('click',
+                function () {
+
+                    table.ajax.reload(function () {
+                        $('#count').html(table.data().count());
+                        $("#confirmationModal,#confirmationModal #successMessage, #confirmationModal #errorMessage ")
+                            .fadeOut();
+                        $("#confirmationModal #confirmationForm").fadeIn();
+                    });
+
+                });
+
+
+            // :OPENING MODALS
+
+            // : To OPEN modal to select Account Type to be created;
+            $("#myFirstBtn").on("click",
+                function (e) {
+                    e.preventDefault();
+                    $(".modal").fadeOut();
+                    $("#myAccountTypeModal").fadeIn();
+                    $('#successMessage, #errorMessage').fadeOut();
+                    $("#myAccountTypeModal select:visible:first").focus();
+                });
+            // : To OPEN Account Details Modal and GET Account Selection entry/data ;
+            $("#myAccountTypeBtn").on("click",
+                function (e) {
+
+                    e.preventDefault();
+                    accountTypeId = $("#accountTypeId").val();
+                    accountTypeName = $("#accountTypeId option:selected").text();
+                    $('#myAccountDetailsModal #accountTypeDisplay').text(accountTypeName);
+                    if (accountTypeId == 0) {
+                        $("#myAccountTypeModal #errorMessage").fadeIn(0,
+                            function () {
+                                $("#myAccountTypeModal #errorMessage").html("Please select an Account Type");
+                            });
+
+                    } else {
+                        if (accountTypeName == "Loan Account") {
+                            $('#myAccountDetailsModal #myAccountDetailsBtn').text('Next');
+                        }
+                        //alert(accountTypeId);
+                        $("#myAccountTypeModal").fadeOut(400,
+                            function () {
+
+                                $("#myAccountDetailsModal").fadeIn();
+                                $("#myAccountDetailsModal input:visible:first").focus();
+
+                            });
+                    }
+                });
+
+            // : To Create Customer Account using API call, If its a Loan account then OPEN Loan Details Modal;
+            $("#myAccountDetailsBtn").on("click",
+                function (e) {
+
+                    e.preventDefault();
+                    var errorDisplay = $("#myAccountDetailsModal #errorMessage");
+                    errorDisplay.fadeOut();
+                    var errorMessage = "";
+                    customerId = $("#customerId").val();
+                    branchId = $("#branchId").val();
+                    accountName = $("#myAccountDetailsModal #accountName").val();
+                    accountNumber = String(accountTypeId) + String(customerId);
+
+                    if (customerId == 0) {
+                        errorMessage = errorMessage + " : Please select a <b>Customer</b>";
+                    }
+                    if (branchId == 0) {
+                        errorMessage = errorMessage + " : Please select a <b>Branch</b>";
+                    }
+                    if (accountName == "" || accountName == null || checkregex(accountName)===false) {
+
+                        errorMessage = errorMessage + " : Please enter <b>Account Name</>";
+                    }
+                    if (errorMessage != "") {
+
+                        errorDisplay.fadeIn(100,
+                            function () {
+                                errorDisplay.html(errorMessage);
+                                $("#myAccountDetailsModal #myAccountDetailsBtn img").addClass("display-none");
+                                $(
+                                    "#myAccountDetailsModal #myAccountDetailsBtn .loader,#myAccountDetailsModal #myAccountDetailsBtn img")
+                                    .css("display", "none");
+
+                            });
+                    } else {
+                        //alert("Account Type Id : " +accountTypeId +", Customer Id : " +customerId +", Branch Id : " +branchId +", Account Name : " + accountName +", Account Number : " + accountNumber);
+                        customerAccountDto = {
+                            Name: accountName,
+                            CustomerId: customerId,
+                            BranchId: branchId,
+                            AccountNumber: accountNumber,
+                            AccountTypeId: accountTypeId
+                        };
+                        CheckIfCustomerHasAccount(customerAccountDto);
+
+                    }
+                });
+
+            // : To EDIT Customer Account Details
+            $("#myEditAccountDetailsBtn").on("click",
+                function (e) {
+                    e.preventDefault();
+                    var caName = $("#myEditAccountDetailsModal #name").val();
+                    var caBId = $("#myEditAccountDetailsModal #branch").val();
+                    var caId = $("#myEditAccountDetailsModal #hidden").val();
+                    var accountDto = {
+                        Name: caName,
+                        BranchId: caBId,
+                        Id: caId
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: '/api/Customers/UpdateCustomerAccount',
+                        data: JSON.stringify(accountDto),
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        success: function (data) {
+
+
+                            $('#myEditAccountDetailsModal #successMessage').fadeIn(200,
+                                function () {
+                                    $('#myEditAccountDetailsModal #successMessage').html(data);
+                                    $('#myEditAccountDetailsBtn .loader').fadeOut();
+                                });
+
+
+                        },
+                        error: function (errorMessage) {
+                            var msg = JSON.parse(errorMessage.responseText);
+                            alert(msg.message);
+
+                            $('#myEditAccountDetailsModal #errorMessage').fadeIn(200,
+                                function () { $('#myEditAccountDetailsModal #errorMessage').html(msg.message) });
+                        }
+
+                    });
+
+                });
+
+
+            // : To OPEN or CLOSE Customer Account
+            $("#confirmationModal #confirmationBtn").on('click',
+                function (e) {
+                    e.preventDefault();
+                    var id = $("#confirmationModal #hidden").val();
+                    var index = {
+                        Id: id
+                    }
+                    $("#confirmationModal #confirmationForm").fadeOut();
+                    $.ajax({
+                        type: 'POST',
+                        url: '/api/Customers/UpdateCustomerAccountStatus',
+                        data: JSON.stringify(index),
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        success: function (data) {
+
+
+                            $('#confirmationModal #successMessage').fadeIn(200,
+                                function () {
+                                    $('#confirmationModal #successMessage').html(data);
+                                    $('#confirmationModal .loader').fadeOut();
+                                });
+
+
+                        },
+                        error: function (errorMessage) {
+                            var msg = JSON.parse(errorMessage.responseText);
+                            alert(msg.message);
+                            $("#confirmationModal #confirmationForm").fadeIn();
+                            $('#confirmationModal #errorMessage').fadeIn(200,
+                                function () { $('#confirmationModal #errorMessage').html(msg.message) });
+                        }
+
+                    });
+                });
+            // : To GET Loan Details data entry and OPEN Loan Terms entry Modal;
+            $("#myLoanFirstBtn").on("click",
+                function (e) {
+
+                    e.preventDefault();
+                    loanAmount = $("#loanAmount").val();
+                    if (loanAmount <= 0) {
+                        $("#myLoanFirstModal #errorMessage").fadeIn();
+                        $("#myLoanFirstModal #errorMessage").html("Loan Amount must be greater than 0");
+                        return;
+                    }
+                    linkedCustomerAccountName = $('#linkedCustomerAccountId option:selected').text();
+                    linkedCustomerAccountId = $('#linkedCustomerAccountId').val();
+                    //  alert("Linked Bank : " + linkedCustomerAccountName +", Loan Amount : " +loanAmount);
+                    $("#myLoanFirstModal").fadeOut(400,
+                        function () {
+                            document.getElementById('loanDetailsForm').reset();
+                            $("#myLoanSecondModal").fadeIn();
+                            $("#myLoanSecondModal select:visible:first").focus();
+
+                        });
+                });
+            // : To GET entry/data FROm Terms Modal and OPEN Terms Confirmation Modal
+            $("#myLoanSecondBtn").on("click",
+                function (e) {
+
+                    e.preventDefault();
+                    tenure = $("#tenure").val();
+//                    collateral = $("#collateral").val();
+                    paymentRate = Number.parseFloat(8.3);
+
+                    termsDto = {
+                        Tenure: tenure,
+                        Collateral: collateral,
+                        PaymentRate: paymentRate
+                    };
+                    //alert("Tenure : " + tenure + ", Collateral : " + collateral + ", Payment Rate : " + paymentRate);
+                    $("#myLoanSecondModal").fadeOut(400,
+                        function () {
+                            //document.getElementById('termsSelectionForm').reset();
+                            $('#myTermsModal #paymentPlan')
+                                .text(paymentRate + "% of the " + loanAmount + " Naira Loan " + tenure);
+                            $("#myTermsModal").fadeIn();
+                            $("#myTermsModal input:visible:first").focus();
+                        });
+
+                });
+            // : To POST TO API's handling Creation of Loan Account
+            $('#myDisburseLoanBtn').on("click",
+                function (e) {
+                    e.preventDefault();
+                    //alert('clicked');
+                    // : check eligibility of customer to take Loan
+                    var agreement = $("#myTermsModal input:checked").attr("id");
+                    agreement = "agree";
+                    if (agreement === "decline") {
+                        $("#myTermsModal #errorMessage").html("You did not agree to the Terms of the Loan");
+                    } else {
+
+                        CheckEligibility();
+                    }
+                });
+
+
             $("#confirmationModal #close").on("click",
                 function () {
                     table.ajax.reload(function () {
                         $('#count').html(table.data().count());
-                                             
-                        $("#confirmationModal,#confirmationModal #successMessage, #confirmationModal #errorMessage ").fadeOut();
+
+                        $("#confirmationModal,#confirmationModal #successMessage, #confirmationModal #errorMessage ")
+                            .fadeOut();
                         $("#confirmationModal #confirmationForm").fadeIn();
                         //location.reload();
                     });
@@ -740,14 +771,15 @@
                         $('.modal #successMessage').fadeOut();
                         $('.modal #errorMessage').fadeOut();
                         $(".modal").fadeOut();
-                        
-                        $("#confirmationModal,#confirmationModal #successMessage, #confirmationModal #errorMessage ").fadeOut();
+
+                        $("#confirmationModal,#confirmationModal #successMessage, #confirmationModal #errorMessage ")
+                            .fadeOut();
                         $("#confirmationModal #confirmationForm").fadeIn();
                         //location.reload();
                     });
 
                 });
-           
+
             // : To CLOSE Modals and reload DataTable
             $("#myEditAccountDetailsModal .close").on("click",
                 function () {
@@ -773,9 +805,10 @@
                     });
 
                 });
-            $('#myTermsModal button, #myAccountDetailsModal button').on('click', function () {
-                $(this).children('.loader').fadeIn();
-            });
+            $('#myTermsModal button, #myAccountDetailsModal button').on('click',
+                function () {
+                    $(this).children('.loader').fadeIn();
+                });
 
         });
     </script>

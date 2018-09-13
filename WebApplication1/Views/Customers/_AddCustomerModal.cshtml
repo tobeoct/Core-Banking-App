@@ -1,5 +1,5 @@
 ﻿@model WebApplication1.ViewModels.CustomerViewModel
-<div id="myModal" class="modal ">
+<div id="myAddCustomerModal" class="modal ">
 
     <!-- Modal content -->
     <div class="modal-content animated ">
@@ -8,101 +8,80 @@
             <div class=" padding-horizontal bordered-bottom align-left">
                 <h3 class="alt-color bold-text">Add Customer</h3>
             </div>
-            @using (Html.BeginForm("Create", "Customers"))
-            {
+            <div class="alert alert-danger alert-dismissible" id="errorMessage"></div>
+            <div class="alert alert-success alert-dismissible" id="successMessage"></div>
+
+            <form id="customerForm">
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.Customer.Name)
+                            <label for="name">Name</label>
                         </div>
                         <div class="col-md-9">
-                            @Html.TextBoxFor(m => m.Customer.Name, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.Customer.Name)
+                            <input type="text" id="name" class="form-control" />
                         </div>
                     </div>
                 </div>
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.Customer.Email)
+                            <label for="email">Email</label>
                         </div>
                         <div class="col-md-9">
-                            @Html.TextBoxFor(m => m.Customer.Email, new { @class = "form-control"})
-                            @Html.ValidationMessageFor(m => m.Customer.Email)
+                            <input type="email" id="email" class="form-control" />
                         </div>
                     </div>
                 </div>
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.Customer.Address)
+                            <label for="address">Address</label>
                         </div>
                         <div class="col-md-9">
-                            @Html.TextBoxFor(m => m.Customer.Address, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.Customer.Address)
+                            <input type="text" id="address" class="form-control" />
                         </div>
                     </div>
                 </div>
                 <div class="row form-group ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.Customer.PhoneNumber)
+                            <label for="phoneNumber">Phone Number</label>
                         </div>
                         <div class="col-md-9">
-                            @Html.TextBoxFor(m => m.Customer.PhoneNumber, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.Customer.PhoneNumber)
+                            <input type="number" id="phoneNumber" class="form-control" />
                         </div>
                     </div>
                 </div>
-                <div class="row form-group ">
+
+                <div class="row form-group  ">
                     <div class="margin-vertical">
                         <div class="col-md-3">
-                            @Html.LabelFor(m => m.Customer.Gender)
+                            <label>Gender</label>
                         </div>
                         <div class="col-md-9">
-                            <div class="col-md-3">
-                                <div class="radio">
+                            <div class="col-md-2">
 
-                                    <label>
-
-                                        @Html.RadioButtonFor(m => m.Customer.Gender, "Male")
-
-                                        <span>Male</span>
-
-                                    </label>
-                                    
-                                </div>
+                                <label for="gender-male">Male</label>
                             </div>
                             <div class="col-md-3">
-                                <div class="radio ">
+                                <input type="radio" id="gender-male" name="gender" checked="true">
+                            </div>
+                            <div class="col-md-2">
 
-                                    <label>
+                                <label for="gender-female">Female</label>
+                            </div>
+                            <div class="col-md-3">
 
-                                        @Html.RadioButtonFor(m => m.Customer.Gender, "Male")
-
-                                        <span>Female</span>
-
-                                    </label>
-
-                                </div>
+                                <input type="radio" id="gender-female" name="gender" />
                             </div>
                         </div>
-                            @Html.ValidationMessageFor(m => m.Customer.Gender)
-                        </div>
                     </div>
-                
-                <div class="form-group">
-
-                    @Html.HiddenFor(m => m.Customer.Id)
 
                 </div>
                 <div class="align-right">
-                    <button type="submit">Add Customer<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
+                    <button id="myAddCustomerBtn">Add Customer<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
                 </div>
-
-
-            }
-
+            </form>
         </div>
     </div>
 

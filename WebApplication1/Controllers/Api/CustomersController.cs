@@ -6,13 +6,14 @@ using System.Net.Http;
 using System.Web.Http;
 using WebApplication1.Models;
 using System.Data.Entity;
+using System.Text.RegularExpressions;
 using System.Web;
 using WebApplication1.Dtos;
 using AutoMapper;
 
 namespace WebApplication1.Controllers.Api
 {
-//    [Authorize]
+    //    [Authorize]
     public class CustomersController : ApiController
     {
         private ApplicationDbContext _context;
@@ -49,7 +50,89 @@ namespace WebApplication1.Controllers.Api
         {
             public int Id { get; set; }
         }
+        // POST api/Customers/EditCustomer
+        [AcceptVerbs("GET", "POST")]
+        [HttpPost]
+        [Route("api/Customers/AddCustomer")]
+        public HttpResponseMessage AddCustomer(CustomerDto customerDto)
+        {
+            customerDto.Id = CBA.RandomString(9);
+            ValidateCustomer(customerDto);
+            var customer = new Customer()
+            {
+                Address = customerDto.Address,
+                Email = customerDto.Email,
+                Gender = customerDto.Gender,
 
+                Name = customerDto.Name,
+                PhoneNumber = customerDto.PhoneNumber
+            };
+            _context.Customers.Add(customer);
+            _context.SaveChanges();
+            return Request.CreateResponse(HttpStatusCode.OK, "Customer has been added successfully");
+        }
+
+        [System.Web.Http.NonAction]
+        public void ValidateCustomer(CustomerDto customerDto)
+        {
+            var phoneNumber = customerDto.PhoneNumber.ToString();
+            var email = customerDto.Email.ToString();
+            var name = customerDto.Name.ToString();
+            string tel = phoneNumber.Substring(phoneNumber.Length - 9);
+            //            if (!Regex.IsMatch(name, @"^[a-zA-Z]+$"))
+            //            {
+            //                errorMsg = errorMsg + "<br/>Enter only text ";
+            //            }
+            if (!IsValidEmail(email))
+            {
+                errorMessage = errorMessage + "<br/>Invalid Email Address ";
+            }
+            string[] names = SplitWhitespace(name);
+
+            var phone = Regex.Match(phoneNumber, @"(.{9})\s*$");
+            var userNumbers = _context.Customers
+                .Where(c => c.PhoneNumber.Substring(c.PhoneNumber.Length - 9).Equals(tel)).ToList();
+            var userEmails = _context.Customers
+                .Where(c => c.Email.Equals(email)).ToList();
+            var userNames = _context.Customers.Where(c => c.Name.Contains(name) || c.Name.Equals(name)).ToList();
+
+            if (names.Length > 1)
+            {
+                if (userNames.Count <= 0)
+                {
+                    var firstName = names[0];
+                    var lastName = names[1];
+                    userNames = _context.Customers
+                        .Where(c => c.Name.Contains(firstName) && c.Name.Contains(lastName)).ToList();
+                }
+
+
+            }
+
+            if (userNames.Count > 0)
+            {
+                errorMessage = errorMessage + "<br/>Name already exists. ";
+            }
+            if (userNumbers.Count > 0)
+            {
+                errorMessage = errorMessage + "<br/>Phone Number already exists";
+            }
+            if (userEmails.Count > 0)
+            {
+                errorMessage = errorMessage + "<br/>Email Address already exists";
+            }
+        }
+        public static bool IsValidEmail(string email)
+        {
+            return Regex.IsMatch(email, @"\A[a-z0-9]+([-._][a-z0-9]+)*@([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,4}\z")
+                   && Regex.IsMatch(email, @"^(?=.{1,64}@.{4,64}$)(?=.{6,100}$).*");
+        }
+        [System.Web.Http.NonAction]
+        public static string[] SplitWhitespace(string input)
+        {
+            char[] whitespace = new char[] { ' ', '\t' };
+            return input.Split(whitespace);
+        }
         // POST api/Customers/EditCustomer
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
@@ -120,7 +203,7 @@ namespace WebApplication1.Controllers.Api
         public HttpResponseMessage CreateCustomerAccount(CustomerAccountDto customerAccountDto)
         {
             // customerAccountDto.AccountNumber = customerAccountDto.AccountTypeId.ToString() + customerAccountDto.CustomerId.ToString();
-           
+
             customerAccountDto.AccountBalance = 0;
             if (ValidateEntry(customerAccountDto) == true)
             {
@@ -176,7 +259,7 @@ namespace WebApplication1.Controllers.Api
         }
 
         // POST api/Customers/UpdateCustomerAccount
-        [AcceptVerbs("GET", "POST","PUT")]
+        [AcceptVerbs("GET", "POST", "PUT")]
         [HttpPut]
         [Route("api/Customers/UpdateCustomerAccount")]
         public HttpResponseMessage UpdateCustomerAccount(CustomerAccountDto customerAccountDto)
@@ -208,7 +291,7 @@ namespace WebApplication1.Controllers.Api
         public HttpResponseMessage AccountStatus(Index index)
         {
             var customerAccount = _context.CustomerAccounts.SingleOrDefault(c => c.Id == index.Id);
-            var stat="";
+            var stat = "";
             if (customerAccount == null)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "No such Customer Account Exists");
@@ -260,7 +343,7 @@ namespace WebApplication1.Controllers.Api
             _context.SaveChanges();
             return Request.CreateResponse(HttpStatusCode.OK, message);
         }
-        
+
         // POST api/Customers/CheckEligibility
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
@@ -321,11 +404,14 @@ namespace WebApplication1.Controllers.Api
         [Route("api/Customers/LoanDisbursement")]
         public HttpResponseMessage LoanDisbursement(LoanDetailsDto loanDetailsDto)
         {
+
             var loanAccountTypeConfig = _context.AccountTypes.Single(c => c.Name.Equals("Loan Account"));
             var interestRate = loanAccountTypeConfig.DebitInterestRate;
             var capitalAccount = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals("Capital Account"));
             capitalAccount.AccountBalance = capitalAccount.AccountBalance - loanDetailsDto.LoanAmount; // DEBIT
             loanDetailsDto.CustomerLoan = loanDetailsDto.LoanAmount; // CREDIT
+
+            // : Add financial entry
             AddToReport("Loan Disbursement", capitalAccount.Name, loanDetailsDto.CustomerLoanAccountName, loanDetailsDto.LoanAmount);
 
             loanDetailsDto.InterestRate = interestRate;
@@ -342,8 +428,8 @@ namespace WebApplication1.Controllers.Api
             if (linkedCustomerAccount != null)
             {
                 linkedCustomerAccount.LoanDetailsId = loanDetails.Id;
-               
-                
+
+
                 linkedCustomerAccount.AccountBalance = linkedCustomerAccount.AccountBalance + loanDetails.LoanAmount; // CREDIT
 
             }
@@ -363,6 +449,7 @@ namespace WebApplication1.Controllers.Api
         [Route("api/Customers/Terms")]
         public HttpResponseMessage Terms(TermsDto termsDto)
         {
+            termsDto.PaymentRate = (float)8.33;
             var terms = new Terms();
             terms = Mapper.Map<TermsDto, Terms>(termsDto);
 

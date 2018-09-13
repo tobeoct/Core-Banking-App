@@ -25,7 +25,15 @@
 #balanceSheetReport, #trialBalanceReport {
     display: none;
 }
-
+#resetForm {
+    position: absolute;
+    top: 7%;
+    right: 5%;
+    z-index: 5;
+}
+#resetForm a {
+    cursor: pointer;
+}
 /* Set width on the form input elements since they're 100% wide by default */
 input,
 select,

@@ -41,6 +41,39 @@ namespace WebApplication1.Controllers.Api
         // POST: /api/GeneralLedgers/EditGLCategory
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
+        [Route("api/GeneralLedgers/CreateGLCategory")]
+        public HttpResponseMessage CreateCategory(GLCategoryDto glCategoryDto)
+        {
+
+           ValidateCategory(glCategoryDto);
+            if (!errorMessage.Equals(""))
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMessage);
+            }
+            var generalLedgerCategory = new GLCategory
+            {
+                CategoriesId = glCategoryDto.CategoriesId,
+                Description = glCategoryDto.Description,
+                Name = glCategoryDto.Name,
+                
+            };
+            //Mapper.Map(generalLedgerCategoryViewModel, generalLedgerCategory);
+            _context.GlCategories.Add(generalLedgerCategory);
+            _context.SaveChanges();
+            return Request.CreateResponse(HttpStatusCode.OK, "Category Created Successfully");
+        }
+
+        public void ValidateCategory(GLCategoryDto glCategoryDto)
+        {
+            var glCategory = _context.GlCategories.Where(c => c.Name.Equals(glCategoryDto.Name)).ToList();
+            if (glCategory.Count>0)
+            {
+                errorMessage = errorMessage + "GL Category name already exists";
+            }
+        }
+        // POST: /api/GeneralLedgers/EditGLCategory
+        [AcceptVerbs("GET", "POST")]
+        [HttpPost]
         [Route("api/GeneralLedgers/EditGLCategory")]
         //        [Authorize]
         public HttpResponseMessage EditGLCategory(Index index)
@@ -98,6 +131,30 @@ namespace WebApplication1.Controllers.Api
         // POST: /api/GeneralLedgers/EditGLAccount
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
+        [Route("api/GeneralLedgers/CreateGLAccount")]
+        public HttpResponseMessage CreateGLAccount(GLAccountDto glAccountDto)
+        {
+            ValidationChecks(glAccountDto);
+            if (!errorMessage.Equals(""))
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMessage);
+            }
+            var generalLedgerAccount = new GLAccount
+            {
+                GlCategoriesId = glAccountDto.CategoriesId,
+                BranchId = glAccountDto.BranchId,
+                Name = glAccountDto.Name,
+                Code = getCode(glAccountDto.CategoriesId)
+            };
+            //Mapper.Map(generalLedgerCategoryViewModel, generalLedgerCategory);
+            _context.GlAccounts.Add(generalLedgerAccount);
+            _context.SaveChanges();
+            return Request.CreateResponse(HttpStatusCode.OK, "GL Account Created Successfully");
+        }
+
+        // POST: /api/GeneralLedgers/EditGLAccount
+        [AcceptVerbs("GET", "POST")]
+        [HttpPost]
         [Route("api/GeneralLedgers/EditGLAccount")]
         //        [Authorize]
         public HttpResponseMessage EditGLAccount(Index index)
@@ -125,6 +182,11 @@ namespace WebApplication1.Controllers.Api
         //        [Authorize]
         public HttpResponseMessage UpdateGLAccount(GLAccountDto glAccountDto)
         {
+            ValidationChecks(glAccountDto);
+            if (!errorMessage.Equals(""))
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMessage);
+            }
             var id = glAccountDto.Id;
             var glAccount = _context.GlAccounts.SingleOrDefault(c => c.Id == id);
             if (glAccount == null)
@@ -138,7 +200,15 @@ namespace WebApplication1.Controllers.Api
             return Request.CreateResponse(HttpStatusCode.OK, "GL Account Updated Successfully");
 
         }
-
+        [NonAction]
+        public void ValidationChecks(GLAccountDto glAccountDto)
+        {
+            var glAccounts = _context.GlAccounts.Where(c => c.Name.Equals(glAccountDto.Name)).ToList();
+            if (glAccounts.Count > 0)
+            {
+                errorMessage = errorMessage + "GL Account name already exists";
+            }
+        }
         // GET api/GeneralLedgers/GetPostings
         [AcceptVerbs("GET", "POST")]
         [HttpGet]
@@ -146,7 +216,7 @@ namespace WebApplication1.Controllers.Api
         //        [Authorize]
         public IHttpActionResult GetPostings()
         {
-            var glPostingsDto = _context.GlPostings.Include(c => c.GlCreditAccount).Include(b => b.GlDebitAccount).Include(c=>c.UserAccount).ToList();
+            var glPostingsDto = _context.GlPostings.Include(c => c.GlCreditAccount).Include(b => b.GlDebitAccount).Include(c => c.UserAccount).ToList();
 
 
             return Ok(glPostingsDto);
@@ -156,10 +226,10 @@ namespace WebApplication1.Controllers.Api
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
         [Route("api/GeneralLedgers/AddGLPosting")]
-//        [Authorize(Roles = RoleName.ADMIN_ROLE)]
+        //        [Authorize(Roles = RoleName.ADMIN_ROLE)]
         public HttpResponseMessage AddGLPosting(GLPostingDto glPostingDto)
         {
-            
+
             var userId = _context.Users.SingleOrDefault(c => c.Email.Equals(RoleName.EMAIL)).Id;
 
 
@@ -282,6 +352,24 @@ namespace WebApplication1.Controllers.Api
             var debitAccount = _context.GlAccounts.SingleOrDefault(c => c.Id == debitAccountId);
             var debitAccountName = debitAccount.Name;
             return debitAccountName;
+        }
+        public string getCode(int id)
+        {
+            var GLRanCode = RandomString(5);
+            var GLId = id;
+            var GLAccountCode = Convert.ToString(GLId) + Convert.ToString(GLRanCode);
+            Console.WriteLine(GLAccountCode);
+            return GLAccountCode;
+
+        }
+
+        public static string RandomString(int length)
+        {
+            Random random = new Random();
+
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }

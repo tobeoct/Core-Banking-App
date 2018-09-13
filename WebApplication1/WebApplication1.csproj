@@ -236,6 +236,7 @@
     <Compile Include="Controllers\Api\UserAccountsController.cs" />
     <Compile Include="Controllers\BranchesController.cs" />
     <Compile Include="Controllers\CustomersController.cs" />
+    <Compile Include="Controllers\EODConfigController.cs" />
     <Compile Include="Controllers\FinancialReportsController.cs" />
     <Compile Include="Controllers\GeneralLedgersController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -249,11 +250,13 @@
     <Compile Include="Dtos\ChangePasswordDto.cs" />
     <Compile Include="Dtos\CustomerAccountDto.cs" />
     <Compile Include="Dtos\CustomerDto.cs" />
+    <Compile Include="Dtos\EodConfigDto.cs" />
     <Compile Include="Dtos\FinancialReportDto.cs" />
     <Compile Include="Dtos\GLAccountDto.cs" />
     <Compile Include="Dtos\GLCategoryDto.cs" />
     <Compile Include="Dtos\GLPostingDto.cs" />
     <Compile Include="Dtos\LoanDetailsDto.cs" />
+    <Compile Include="Dtos\RegisterDto.cs" />
     <Compile Include="Dtos\ReportsDto.cs" />
     <Compile Include="Dtos\TellerDto.cs" />
     <Compile Include="Dtos\TellerPostingDto.cs" />
@@ -790,13 +793,23 @@
     <Compile Include="Migrations\201809031035586_AddUserIdToGLPosting2.Designer.cs">
       <DependentUpon>201809031035586_AddUserIdToGLPosting2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201809121024173_AddEODConfigToDb.cs" />
+    <Compile Include="Migrations\201809121024173_AddEODConfigToDb.Designer.cs">
+      <DependentUpon>201809121024173_AddEODConfigToDb.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809121942174_ChangeDateTimeToStringEODConfig.cs" />
+    <Compile Include="Migrations\201809121942174_ChangeDateTimeToStringEODConfig.Designer.cs">
+      <DependentUpon>201809121942174_ChangeDateTimeToStringEODConfig.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountRoles.cs" />
     <Compile Include="Models\AccountType.cs" />
+    <Compile Include="Models\BalanceSheetReport.cs" />
     <Compile Include="Models\BusinessStatus.cs" />
     <Compile Include="Models\CBA.cs" />
     <Compile Include="Models\CurrentAccountType.cs" />
     <Compile Include="Models\CustomerAccount.cs" />
+    <Compile Include="Models\EODConfig.cs" />
     <Compile Include="Models\FinancialDates.cs" />
     <Compile Include="Models\FinancialReport.cs" />
     <Compile Include="Models\GLPostings.cs" />
@@ -965,6 +978,7 @@
     <Content Include="Content\Images\menu.png" />
     <Content Include="Content\Images\minimize.png" />
     <Content Include="Content\Images\profile.png" />
+    <Content Include="Content\Images\profile1.png" />
     <Content Include="Content\Images\speech-bubble.png" />
     <Content Include="Content\Images\stats.png" />
     <Content Include="Content\Images\support.png" />
@@ -1157,6 +1171,7 @@
     <Content Include="Views\AccountTypes\ReadOnly.cshtml" />
     <Content Include="Views\GeneralLedgers\CategoryReadOnly.cshtml" />
     <Content Include="Views\GeneralLedgers\AccountReadOnly.cshtml" />
+    <Content Include="Views\EODConfig\index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1570,6 +1585,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809031035586_AddUserIdToGLPosting2.resx">
       <DependentUpon>201809031035586_AddUserIdToGLPosting2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809121024173_AddEODConfigToDb.resx">
+      <DependentUpon>201809121024173_AddEODConfigToDb.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809121942174_ChangeDateTimeToStringEODConfig.resx">
+      <DependentUpon>201809121942174_ChangeDateTimeToStringEODConfig.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -17,7 +17,7 @@
 
                 <div class="form-group">
                     <span>You have agreed to pay back </span> 
-                    <b><span id="paymentPlan"></span></b> <span>at an <b>Interest rate </b> of</span>
+                    <b><span id="paymentPlan"></span></b> <span> at an <b>Interest rate </b> of</span>
                     <b>
                         <span>
                             @foreach (var accountType in Model.AccountTypes)
@@ -36,10 +36,10 @@
                         
                         <div class="form-group">
                             <div class="radio">
-                                <label><input type="radio" name="optradio" checked>Decline</label>
+                                <label><input type="radio" name="optradio" id="decline" checked>Decline</label>
                             </div>
                             <div class="radio">
-                                <label><input type="radio" name="optradio">Agree</label>
+                                <label><input type="radio" name="optradio" id="agree">Agree</label>
                             </div>
                         </div>
                         <div class="row">

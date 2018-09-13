@@ -3,9 +3,11 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
@@ -33,7 +35,7 @@ namespace WebApplication1.Controllers
             }
 
         }
-      
+
         public ActionResult Index()
         {
             var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
@@ -41,18 +43,22 @@ namespace WebApplication1.Controllers
             ApplicationUser EmpUser = user;
             RoleName.USER_NAME = EmpUser.FullName;
             ViewBag.Message = RoleName.USER_NAME;
-            if (User.IsInRole(RoleName.USER_ROLE)|| User.IsInRole(RoleName.TELLER_ROLE))
-            {
-//                return View("ReadOnly");
-               return RedirectToAction("Index", "Branches");
-            }
-            else if(User.IsInRole(RoleName.ADMIN_ROLE))
-            {
-//                return View();
-               return RedirectToAction("Index", "UserAccounts");
-           }
+           
+            if (User.IsInRole(RoleName.USER_ROLE) || User.IsInRole(RoleName.TELLER_ROLE))
 
-           return RedirectToAction("Login", "Account");
+            {
+               
+                return RedirectToAction("Index", "Branches");
+            }
+
+            if (User.IsInRole(RoleName.ADMIN_ROLE))
+            {
+                //                return View();
+                return RedirectToAction("Index", "UserAccounts");
+            }
+
+           
+            return RedirectToAction("Login", "Account");
 
         }
 
