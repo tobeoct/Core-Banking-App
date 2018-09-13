@@ -17,109 +17,90 @@
 
     <div class="container bg-white shadow">
 
-    <div class="row align-center tab-report">
+        <div class="row align-center tab-report">
 
-           
-        <div class="col-md-4 col-sm-4 col-xs-4 strip " id="trialBalanceTab">
-            <div class="tab max-width padding-vertical" style="padding-top:20px;">
-                <p><b>Trial Balance</b></p>
-            </div>
 
-        </div>
-        <div class="col-md-4 col-sm-4 col-xs-4 active strip" id="plTab">
-            <div class="tab max-width padding-vertical" style="padding-top:20px;">
-                <p><b>Profit & Loss Report</b></p>
-            </div>
+            <div class="col-md-4 col-sm-4 col-xs-4 strip " id="trialBalanceTab">
+                <div class="tab max-width padding-vertical" style="padding-top:20px;">
+                    <p><b>Trial Balance</b></p>
+                </div>
 
-        </div>
-        <div class="col-md-4 col-sm-4 col-xs-4 strip" id="balanceSheetTab">
-            <div class="tab max-width padding-vertical" style="padding-top:20px;">
-                <p><b>Balance Sheet</b></p>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-4 active strip" id="plTab">
+                <div class="tab max-width padding-vertical" style="padding-top:20px;">
+                    <p><b>Profit & Loss Report</b></p>
+                </div>
+
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-4 strip" id="balanceSheetTab">
+                <div class="tab max-width padding-vertical" style="padding-top:20px;">
+                    <p><b>Balance Sheet</b></p>
+                </div>
             </div>
         </div>
-    </div>
-   
-        
-        @* <div class="row" id="dateDisplay"> *@
-        @*     <div class="col-md-4 col-sm-4 col-xs-6 strip"> *@
-        @*         <p> *@
-        @*             <span>FROM : </span> *@
-        @*             <span id="fromDateDisplay"> *@
-        @*                 <b> </b> *@
-        @*             </span> *@
-        @* *@
-        @*         </p> *@
-        @*     </div> *@
-        @*     <div class="col-md-4 col-sm-4 col-xs-6"> *@
-        @*         <p> *@
-        @*             <span>TO : </span> *@
-        @*             <span id="toDateDisplay"> *@
-        @*                 <b> </b> *@
-        @*             </span> *@
-        @*         </p> *@
-        @*     </div> *@
-        @* </div> *@
-    <div class="row" id="trialBalanceReport">
-        <div class="max-width align-center row padding-vertical">
-            <h3><b>Trial Balance</b></h3>
+
+        <div class="row" id="trialBalanceReport">
+            <div class="max-width align-center row padding-vertical">
+                <h3><b>Trial Balance</b></h3>
+            </div>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr class="padding-vertical">
+                        <th style="padding-top: 20px; padding-bottom: 20px;">Account Title</th>
+                        <th style="padding-top: 20px; padding-bottom: 20px;">Debit</th>
+                        <th style="padding-top: 20px; padding-bottom: 20px;">Credit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="cash">
+                        <td><b>Cash</b></td>
+                        <td id="debit"><b></b></td>
+                        <td><b></b></td>
+                    </tr>
+                    <tr id="receivable">
+                        <td><b>Account Receivable</b></td>
+                        <td id="debit"><b></b></td>
+                        <td><b></b></td>
+                    </tr>
+                    <tr id="loan">
+                        <td><b>Customer Loan Account</b></td>
+                        <td id="debit"><b></b></td>
+                        <td><b></b></td>
+                    </tr>
+                    <tr id="income">
+                        <td><b>Income Account</b></td>
+                        <td><b></b></td>
+                        <td id="credit"><b></b></td>
+                    </tr>
+                    <tr id="savings">
+                        <td><b>Customer Savings/Current Account</b></td>
+                        <td><b></b></td>
+                        <td id="credit"><b></b></td>
+                    </tr>
+                    <tr id="payable">
+                        <td><b>Account Payable</b></td>
+                        <td><b></b></td>
+                        <td id="credit"><b></b></td>
+                    </tr>
+                    <tr id="capital">
+                        <td><b>Capital</b></td>
+                        <td><b></b></td>
+                        <td id="credit"><b></b></td>
+                    </tr>
+                    <tr id="expense">
+                        <td><b>Expense Account</b></td>
+                        <td id="debit"><b></b></td>
+                        <td><b></b></td>
+                    </tr>
+                    <tr id="total" class="bg-grey">
+                        <td><b>TOTAL</b></td>
+                        <td id="totalDebit" class="alt-bg white-color"><b></b></td>
+                        <td id="totalCredit" class="alt-bg white-color"><b></b></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <table class="table table-bordered table-striped">
-            <thead>
-            <tr class="padding-vertical">
-                <th style="padding-top: 20px; padding-bottom: 20px;">Account Title</th>
-                <th style="padding-top: 20px; padding-bottom: 20px;">Debit</th>
-                <th style="padding-top: 20px; padding-bottom: 20px;">Credit</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr id="cash">
-                <td><b>Cash</b></td>
-                <td id="debit"><b></b></td>
-                <td><b></b></td>
-            </tr>
-            <tr id="receivable">
-                <td><b>Account Receivable</b></td>
-                <td id="debit"><b></b></td>
-                <td><b></b></td>
-            </tr>
-            <tr id="loan">
-                <td><b>Customer Loan Account</b></td>
-                <td id="debit"><b></b></td>
-                <td><b></b></td>
-            </tr>
-            <tr id="income">
-                <td><b>Income Account</b></td>
-                <td><b></b></td>
-                <td id="credit"><b></b></td>
-            </tr>
-            <tr id="savings">
-                <td><b>Customer Savings/Current Account</b></td>
-                <td><b></b></td>
-                <td id="credit"><b></b></td>
-            </tr>
-            <tr id="payable">
-                <td><b>Account Payable</b></td>
-                <td><b></b></td>
-                <td id="credit"><b></b></td>
-            </tr>
-            <tr id="capital">
-                <td><b>Capital</b></td>
-                <td><b></b></td>
-                <td id="credit"><b></b></td>
-            </tr>
-            <tr id="expense">
-                <td><b>Expense Account</b></td>
-                <td id="debit"><b></b></td>
-                <td><b></b></td>
-            </tr>
-            <tr id="total" class="bg-grey">
-                <td><b>TOTAL</b></td>
-                <td id="totalDebit" class="alt-bg white-color"><b></b></td>
-                <td id="totalCredit" class="alt-bg white-color"><b></b></td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+
         <div class="row" id="plReport">
             <div class="max-width align-center row padding-vertical">
                 <h3><b>Profit & Loss Report</b></h3>
@@ -134,10 +115,6 @@
                 <tbody></tbody>
             </table>
         </div>
-
-
-
-
 
         <div class="row" id="balanceSheetReport">
             <div class="max-width align-center row" style="padding-top: 10px; padding-bottom: 20px;">
@@ -213,17 +190,17 @@
                         <td></td>
                         <td></td>
                     </tr>
-                <tr id="totalCredDeb" class="bg-grey">
-                    <td colspan="2" ><b>TOTAL LIABILITIES & EQUITY</b></td>
-                    
+                    <tr id="totalCredDeb" class="bg-grey">
+                        <td colspan="2"><b>TOTAL LIABILITIES & EQUITY</b></td>
 
 
-                </tr>
-                <tr  >
-                    <td ><b>TOTAL </b></td>
-                    <td id="totalAsset" class="alt-bg white-color"><b></b></td>
-                    <td id="totalLE" class="alt-bg white-color"><b></b></td>
-                </tr>
+
+                    </tr>
+                    <tr>
+                        <td><b>TOTAL </b></td>
+                        <td id="totalAsset" class="alt-bg white-color"><b></b></td>
+                        <td id="totalLE" class="alt-bg white-color"><b></b></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -236,6 +213,8 @@
 {
     <script>
         var netIncome = 0;
+
+        //  : To populate Profit and Loss table
         $.ajax
             ({
                 type: 'GET',
@@ -253,11 +232,11 @@
                             + data[1] + "</td></tr><tr> <td>"
                             + data[2] + "</td><td>"
                             + data[3] + "</td></tr> <tr> <td> <b>Total Revenue</b></td><td><b>"
-                            + totalRevenue + "</b></td></tr><tr class='bg-grey'><td><b>Expense</b></td><td></td></tr><tr><td>"
+                            + totalRevenue.toFixed(2) + "</b></td></tr><tr class='bg-grey'><td><b>Expense</b></td><td></td></tr><tr><td>"
                             + data[4] + "</td><td>"
                             + data[5] + "</td></tr><tr><td> <b>Total Expense</b></td><td><b>"
-                            + totalExpense + "</b></td></tr><tr class='bg-light-grey'><td class='bg-grey' ><b>PROFIT/LOSS</b></td><td class='alt-bg white-color'><b>"
-                            + (totalRevenue - totalExpense)
+                            + totalExpense.toFixed(2) + "</b></td></tr><tr class='bg-light-grey'><td class='bg-grey' ><b>PROFIT/LOSS</b></td><td class='alt-bg white-color'><b>"
+                            + (totalRevenue - totalExpense).toFixed(2)
                             + "</b></td></tr>");
                     netIncome = (totalRevenue - totalExpense);
 
@@ -272,6 +251,8 @@
                 }
 
             });
+
+        //  : To populate Trial Balance table
         $.ajax
             ({
                 type: 'GET',
@@ -312,6 +293,8 @@
                 }
 
             });
+
+        // To populate Balance Sheet Table
         $.ajax
             ({
                 type: 'GET',
@@ -339,7 +322,7 @@
                     capitalEntry = capitalEntry + "<tr><td style='padding-left:2.5%;'>Net Income</td><td><b>" + netIncome.toFixed(2) + "</td><td></td></tr>";
                     var totalAsset = Number.parseFloat(data[0]["debitAmount"]) + Number.parseFloat(data[1]["debitAmount"]) + Number.parseFloat(data[2]["debitAmount"]);
                     var totalLiability = Number.parseFloat(data[3]["creditAmount"]) + Number.parseFloat(data[4]["creditAmount"]);
-                    var totalEquity = Number.parseFloat(data[5]["creditAmount"]) + Number.parseFloat(netIncome);
+                    var totalEquity = Number.parseFloat(data[5]["creditAmount"]) + Number.parseFloat(netIncome.toFixed(2));
                     $('#balanceSheetReport #asset').after(assetEntry);
 
                     $('#balanceSheetReport #liability').after(liabilityEntry);
@@ -362,7 +345,7 @@
                 }
 
             });
-        
+
 
         $(document).ready(function () {
 
@@ -376,6 +359,7 @@
                     });
 
                 });
+
             $("#plTab").on('click',
                 function () {
                     $('.tab-report .col-md-4').removeClass('active');
@@ -385,6 +369,7 @@
                     });
 
                 });
+
             $("#trialBalanceTab").on('click',
                 function () {
                     $('.tab-report .col-md-4').removeClass('active');

@@ -27,7 +27,7 @@
     if (User.IsInRole(RoleName.ADMIN_ROLE) || User.IsInRole(RoleName.TELLER_ROLE))
     {
         <div class="container margin-vertical" id="postWarning">
-            <p class="alert alert-warning">Business should be opened to carry out GL Postings</p>
+            <p class="alert alert-warning">Business should be <b>opened</b> to carry out <b>Teller Postings</b></p>
         </div>
         @Html.Partial("_AddTellerPosting")
         @Html.Partial("_ConfirmationModal")
