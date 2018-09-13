@@ -40,83 +40,86 @@
     </div>
    
         
-        <div class="row" id="dateDisplay">
-            <div class="col-md-4 col-sm-4 col-xs-6 strip">
-                <p>
-                    <span>FROM : </span>
-                    <span id="fromDateDisplay">
-                        <b> </b>
-                    </span>
-
-                </p>
-            </div>
-            <div class="col-md-4 col-sm-4 col-xs-6">
-                <p>
-                    <span>TO : </span>
-                    <span id="toDateDisplay">
-                        <b> </b>
-                    </span>
-                </p>
-            </div>
+        @* <div class="row" id="dateDisplay"> *@
+        @*     <div class="col-md-4 col-sm-4 col-xs-6 strip"> *@
+        @*         <p> *@
+        @*             <span>FROM : </span> *@
+        @*             <span id="fromDateDisplay"> *@
+        @*                 <b> </b> *@
+        @*             </span> *@
+        @* *@
+        @*         </p> *@
+        @*     </div> *@
+        @*     <div class="col-md-4 col-sm-4 col-xs-6"> *@
+        @*         <p> *@
+        @*             <span>TO : </span> *@
+        @*             <span id="toDateDisplay"> *@
+        @*                 <b> </b> *@
+        @*             </span> *@
+        @*         </p> *@
+        @*     </div> *@
+        @* </div> *@
+    <div class="row" id="trialBalanceReport">
+        <div class="max-width align-center row padding-vertical">
+            <h3><b>Trial Balance</b></h3>
         </div>
-        <div class="row" id="trialBalanceReport">
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr class="padding-vertical">
-                        <th style="padding-top: 20px; padding-bottom: 20px;">Account Title</th>
-                        <th style="padding-top: 20px; padding-bottom: 20px;">Debit</th>
-                        <th style="padding-top: 20px; padding-bottom: 20px;">Credit</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr id="cash">
-                        <td><b>Cash</b></td>
-                        <td id="debit"><b></b></td>
-                        <td><b></b></td>
-                    </tr>
-                    <tr id="receivable">
-                        <td><b>Account Receivable</b></td>
-                        <td id="debit"><b></b></td>
-                        <td><b></b></td>
-                    </tr>
-                    <tr id="loan">
-                        <td><b>Customer Loan Account</b></td>
-                        <td id="debit"><b></b></td>
-                        <td><b></b></td>
-                    </tr>
-                    <tr id="income">
-                        <td><b>Income Account</b></td>
-                        <td><b></b></td>
-                        <td id="credit"><b></b></td>
-                    </tr>
-                    <tr id="savings">
-                        <td><b>Customer Savings/Current Account</b></td>
-                        <td><b></b></td>
-                        <td id="credit"><b></b></td>
-                    </tr>
-                    <tr id="payable">
-                        <td><b>Account Payable</b></td>
-                        <td><b></b></td>
-                        <td id="credit"><b></b></td>
-                    </tr>
-                    <tr id="capital">
-                        <td><b>Capital</b></td>
-                        <td><b></b></td>
-                        <td id="credit"><b></b></td>
-                    </tr>
-                    <tr id="expense">
-                        <td><b>Expense Account</b></td>
-                        <td id="debit"><b></b></td>
-                        <td><b></b></td>
-                    </tr>
-                    <tr id="total" class="bg-grey">
-                        <td><b>TOTAL</b></td>
-                        <td id="totalDebit" class="alt-bg white-color"><b></b></td>
-                        <td id="totalCredit" class="alt-bg white-color"><b></b></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr class="padding-vertical">
+                <th style="padding-top: 20px; padding-bottom: 20px;">Account Title</th>
+                <th style="padding-top: 20px; padding-bottom: 20px;">Debit</th>
+                <th style="padding-top: 20px; padding-bottom: 20px;">Credit</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr id="cash">
+                <td><b>Cash</b></td>
+                <td id="debit"><b></b></td>
+                <td><b></b></td>
+            </tr>
+            <tr id="receivable">
+                <td><b>Account Receivable</b></td>
+                <td id="debit"><b></b></td>
+                <td><b></b></td>
+            </tr>
+            <tr id="loan">
+                <td><b>Customer Loan Account</b></td>
+                <td id="debit"><b></b></td>
+                <td><b></b></td>
+            </tr>
+            <tr id="income">
+                <td><b>Income Account</b></td>
+                <td><b></b></td>
+                <td id="credit"><b></b></td>
+            </tr>
+            <tr id="savings">
+                <td><b>Customer Savings/Current Account</b></td>
+                <td><b></b></td>
+                <td id="credit"><b></b></td>
+            </tr>
+            <tr id="payable">
+                <td><b>Account Payable</b></td>
+                <td><b></b></td>
+                <td id="credit"><b></b></td>
+            </tr>
+            <tr id="capital">
+                <td><b>Capital</b></td>
+                <td><b></b></td>
+                <td id="credit"><b></b></td>
+            </tr>
+            <tr id="expense">
+                <td><b>Expense Account</b></td>
+                <td id="debit"><b></b></td>
+                <td><b></b></td>
+            </tr>
+            <tr id="total" class="bg-grey">
+                <td><b>TOTAL</b></td>
+                <td id="totalDebit" class="alt-bg white-color"><b></b></td>
+                <td id="totalCredit" class="alt-bg white-color"><b></b></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
         <div class="row" id="plReport">
             <div class="max-width align-center row padding-vertical">
                 <h3><b>Profit & Loss Report</b></h3>
@@ -138,7 +141,7 @@
 
         <div class="row" id="balanceSheetReport">
             <div class="max-width align-center row" style="padding-top: 10px; padding-bottom: 20px;">
-                <h3><b>Balance Sheet - Aug 29</b></h3>
+                <h3><b>Balance Sheet</b></h3>
             </div>
             <table class="table table-bordered table-striped">
 

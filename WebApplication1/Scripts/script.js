@@ -1,27 +1,7 @@
 ﻿
-//$(document).keypress(function (event) {
-
-//    var keycode = (event.keyCode ? event.keyCode : event.which);
-//    if (keycode == '13') {
-//        if ($("#myModal").is(":hidden")) {
-//            alert("Opening Modal");
-//            $("#myBtn").trigger("click");
-//            return;
-//        }
-//        $("#myModal #enterBtn").trigger("click");
-
-//        return;
-//    }
-//    //&& (String.fromCharCode(event.which).toLowerCase() === 'u')
-//    else if ( event.shiftKey ) {
-//        alert("Loading UserAccounts");
-//        window.location = $("#nav-users").attr("href");
-//    }
-
-//});
 var iShortCutControlKey = 18; // ALT; 
 var keyEnter = 13;
-var keyA = 65, keyB = 66, keyC = 67, keyF = 70, keyG = 71, keyL = 76, keyM = 77, keyP = 80, keyT = 84, keyU = 85;
+var keyA = 65, keyB = 66, keyC = 67, keyE = 69, keyF = 70, keyG = 71, keyH = 72, keyL = 76, keyM = 77, keyP = 80, keyT = 84, keyU = 85;
 var iKeyActive;
 var iLastKey;
 var bIsControlKeyActived = false;
@@ -34,7 +14,7 @@ function Load(url) {
     window.location.replace(url);
 }
 $("#profileImg .drop,#profileImg .drop li ").on('click', function () {
-   // alert('clicked');
+    // alert('clicked');
     var url = "UserAccounts/ChangePassword";
     Load(url);
 });
@@ -48,9 +28,6 @@ $(document).keydown(function (e) {
                 $(" #myEditBranchModal #myEditBranchBtn").trigger("click");
                 return;
             }
-
-
-
             $("#myBtn").trigger("click");
             return;
         }
@@ -58,58 +35,7 @@ $(document).keydown(function (e) {
             $(" #myOpenTellerModalBtn").trigger("click");
             return;
         }
-//        if ($("#myAccountTypeModal").is(":hidden") &&
-//            $("#myAccountDetailsModal").is(":hidden") &&
-//            $("#myLoanFirstModal").is(":hidden") &&
-//            $("#myLoanSecondModal").is(":hidden") &&
-//            $("#myTermsModal").is(":hidden")) {
-//            $("#myFirstBtn").trigger("click");
-//            return;
-//        } else {
-//            return;
-//        }
-//        else {
-//            if ($("#myAccountTypeModal").css('display') === "block" &&
-//                $("#myAccountDetailsModal").is(":hidden") &&
-//                $("#myLoanFirstModal").is(":hidden") &&
-//                $("#myLoanSecondModal").is(":hidden") &&
-//                $("#myTermsModal").is(":hidden")) {
-//                $("#myAccountTypeBtn").trigger("click");
-//                return;
-//            }
-//            if ($("#myAccountDetailsModal").css('display') === "block" &&
-//                $("#myAccountTypeModal").is(":hidden") &&
-//                $("#myLoanFirstModal").is(":hidden") &&
-//                $("#myLoanSecondModal").is(":hidden") &&
-//                $("#myTermsModal").is(":hidden")) {
-//                $("#myAccountDetailsBtn").trigger("click");
-//                return;
-//            }
-//            if ($("#myLoanFirstModal").css('display') === "block" &&
-//                $("#myAccountTypeModal").is(":hidden") &&
-//                $("#myAccountDetailsModal").is(":hidden") &&
-//                $("#myLoanSecondModal").is(":hidden") &&
-//                $("#myTermsModal").is(":hidden")) {
-//                $("#myLoanFirstBtn").trigger("click");
-//                return;
-//            }
-//            if ($("#myLoanSecondModal").css('display') === "block" &&
-//                $("#myAccountTypeModal").is(":hidden") &&
-//                $("#myAccountDetailsModal").is(":hidden") &&
-//                $("#myLoanFirstModal").is(":hidden") &&
-//                $("#myTermsModal").is(":hidden")) {
-//                $("#myLoanSecondBtn").trigger("click");
-//                return;
-//            }
-//            if ($("#myTermsModal").css('display') === "block" &&
-//                $("#myAccountTypeModal").is(":hidden") &&
-//                $("#myAccountDetailsModal").is(":hidden") &&
-//                $("#myLoanFirstModal").is(":hidden") &&
-//                $("#myLoanSecondModal").is(":hidden")) {
-//                $("#myDisburseLoanBtn").trigger("click");
-//                return;
-//            }
-//        }
+
         $(" #myAddTellerPostingModal #myAddTellerPostingBtn").trigger("click");
 
         $("#myModal #enterBtn").trigger("click");
@@ -143,6 +69,12 @@ $(document).keydown(function (e) {
         console.log("Key ALT+F was pressed!");
 
         window.location = $("#nav-financial-report").attr("href");
+
+    }
+    else if (e.altKey && e.keyCode == keyE) {
+        console.log("Key ALT+E was pressed!");
+
+        window.location = $("#nav-eod-config").attr("href");
 
     }
 

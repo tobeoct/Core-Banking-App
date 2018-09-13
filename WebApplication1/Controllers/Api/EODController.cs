@@ -29,18 +29,16 @@ namespace WebApplication1.Controllers.Api
         private GLAccount principalOverdueAcc;
         private GLAccount customerLoanAcc;
         public GLAccount cotIncomeReceivableAcc { get; set; }
-
         private string userId = "";
         private DateTime lastFinancialDate;
         private List<FinancialDates> financialDates;
-        
         protected UserManager<ApplicationUser> UserManager { get; set; }
         //protected SignInManager<ApplicationSignInManager> SignInManager { get; set; }
         public EODController()
         {
             _context = new ApplicationDbContext();
             isApplied = false;
-            
+
             financialDates = _context.FinancialDates.ToList();
             var EOD = DateTime.Now;
             if (financialDates.Count == 0)
@@ -55,8 +53,8 @@ namespace WebApplication1.Controllers.Api
 
 
             userId = HttpContext.Current.User.Identity.GetUserId();
-            
-            
+
+
             this.UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(_context));
             ApplicationUser user = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(userId);
             if (userId == null || userId.Equals(""))
@@ -70,7 +68,7 @@ namespace WebApplication1.Controllers.Api
                 {
                     userId = user.Id;
                 }
-                
+
             }
             if (user != null)
             {
@@ -108,29 +106,6 @@ namespace WebApplication1.Controllers.Api
             eodConfig.StartTime = startTime;
             _context.SaveChanges();
             return Request.CreateResponse(HttpStatusCode.OK, "Updated Successfully");
-        }
-
-        [NonAction]
-        public string GetHourFromPeriod(int _hour, int period)
-        {
-            string hour = _hour.ToString();
-
-            if (period.Equals("PM"))
-            {
-                if (!hour.Equals("12"))
-                {
-                    var temp = int.Parse(hour) + 12;
-                    hour = temp.ToString();
-                    return hour;
-                }
-            }
-
-            if (hour.Equals("12"))
-            {
-                hour = "00";
-            }
-
-            return hour;
         }
 
         // GET api/<controller>
@@ -197,97 +172,6 @@ namespace WebApplication1.Controllers.Api
             return Request.CreateResponse(HttpStatusCode.OK, list);
         }
 
-        [NonAction]
-        public string GetHours(string time)
-        {
-            var hours = "";
-            hours = time.Substring(0, 2);
-            if (int.Parse(hours) > 12)
-            {
-                var temp = int.Parse(hours) - 12;
-                hours = "0" + temp.ToString();
-            }
-            else if (int.Parse(hours) == 0)
-            {
-                hours = "12";
-            }
-            return hours;
-        }
-        [NonAction]
-        public string GetMins(string time)
-        {
-            var mins = "";
-            mins = time.Substring(3, 2);
-            return mins;
-        }
-
-        [NonAction]
-        public string GetPeriod(string time)
-        {
-            var period = "AM";
-            var hours = time.Substring(0, 2);
-
-            if (int.Parse(hours) >= 12)
-            {
-                period = "PM";
-            }
-
-            return period;
-        }
-        [NonAction]
-        public string ConvertToTime(int hour, int mins, string period)
-        {
-            var tempHr = hour;
-            var hr = tempHr.ToString();
-            if (hour < 10)
-            {
-                hr = "0" + tempHr.ToString();
-            }
-            var realMin = mins.ToString();
-
-            if (mins == 0)
-            {
-                realMin = "00";
-            }
-            else if (mins>0 && mins < 10)
-            {
-                realMin = "0" + mins.ToString();
-            }
-            var time = hr + ":" + realMin;
-            if (period.Equals("PM"))
-            {
-                var addedTime = 0;
-                if (hour != 12)
-                {
-                    addedTime = 12;
-                }
-                else
-                {
-                    time =  "00"+ ":" + realMin;
-                    addedTime = 0;
-                }
-
-                var temp = hour + addedTime;
-                //realMin = mins.ToString();
-
-
-                time = temp.ToString() + ":" + realMin;
-            }
-            else
-            {
-                if (hour == 12)
-                {
-                    time = "00" + ":" + realMin;
-                    return time;
-                }
-               
-                time = hr+":" + realMin;
-            }
-           
-            return time;
-        }
-
-
         // GET api/<controller>
         [AcceptVerbs("GET", "POST")]
         [Route("api/EOD/GetStatus")]
@@ -319,6 +203,71 @@ namespace WebApplication1.Controllers.Api
             }
 
             return Request.CreateResponse(HttpStatusCode.OK, status);
+        }
+
+        [AcceptVerbs("GET", "POST")]
+        [HttpPost]
+        [Route("api/EOD/Start")]
+        //        [Authorize(Roles = RoleName.ADMIN_ROLE)]
+        public HttpResponseMessage Start(BusinessStatusDto businessStatusDto)
+        {
+            var nowHour = DateTime.Now.Hour * 100;
+            var nowMin = DateTime.Now.Minute;
+            var eodConfig = _context.EODConfig.FirstOrDefault();
+            var startTime = eodConfig.StartTime;
+            var endTime = eodConfig.EndTime;
+            var startHour = int.Parse(startTime.Substring(0, 2)) * 100;
+            var startMin = int.Parse(GetMins(startTime));
+            var endHour = int.Parse(endTime.Substring(0, 2)) * 100;
+            var endMin = int.Parse(GetMins(endTime));
+            isApplied = true;
+            var status = false;
+            bool isEOMDone = false;
+            var businessStatus = _context.BusinessStatus.FirstOrDefault();
+            ValidateGLAccounts();
+            // : If Business is being Closed 
+            if (businessStatusDto.IntendedAction.Equals("Close"))
+            {
+
+                if (((nowHour + nowMin) >= (endHour + endMin) && (nowHour + nowMin) <= (startHour + startMin)))
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Sorry you cannot run EOD at this Time, Go To <a href='/EODConfig'><b>EODConfig</b></a> to change Time settings ");
+                }
+                if (CheckIfConfigComplete() == false)
+                {
+
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMsg);
+                }
+                CloseBusiness(isEOMDone);
+                if (!errorMsg.Equals(""))
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMsg);
+                }
+            }
+            else
+            {
+                //                if (((nowHour + nowMin) < (endHour + endMin) && (nowHour + nowMin) > (startHour + startMin)))
+                //                {
+                //                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Sorry you cannot Open EOD at this Time, Go To <a href='/EODConfig'><b>EODConfig</b></a> to change Time settings ");
+                //                }
+                status = true;
+                returnMsg = returnMsg + "<br/> : Business <b>Opened</b>";
+            }
+
+
+            if (businessStatus == null)
+            {
+                var business = new BusinessStatus();
+                business.Status = status;
+                _context.BusinessStatus.Add(business);
+
+            }
+            {
+                businessStatus.Status = status;
+            }
+            _context.SaveChanges();
+            return Request.CreateResponse(HttpStatusCode.OK, returnMsg);
+
         }
 
         [NonAction]
@@ -360,70 +309,6 @@ namespace WebApplication1.Controllers.Api
             var eodConfig = _context.EODConfig.FirstOrDefault();
             return eodConfig;
         }
-        [AcceptVerbs("GET", "POST")]
-        [HttpPost]
-        [Route("api/EOD/Start")]
-        //        [Authorize(Roles = RoleName.ADMIN_ROLE)]
-        public HttpResponseMessage Start(BusinessStatusDto businessStatusDto)
-        {
-            var nowHour = DateTime.Now.Hour * 100;
-            var nowMin = DateTime.Now.Minute;
-            var eodConfig = _context.EODConfig.FirstOrDefault();
-            var startTime = eodConfig.StartTime;
-            var endTime = eodConfig.EndTime;
-            var startHour = int.Parse(startTime.Substring(0, 2)) * 100;
-            var startMin = int.Parse(GetMins(startTime));
-            var endHour = int.Parse(endTime.Substring(0, 2)) * 100;
-            var endMin = int.Parse(GetMins(endTime));
-            isApplied = true;
-            var status = false;
-            bool isEOMDone = false;
-            var businessStatus = _context.BusinessStatus.FirstOrDefault();
-            ValidateGLAccounts();
-            // : If Business is being Closed 
-            if (businessStatusDto.IntendedAction.Equals("Close"))
-            {
-               
-                if (((nowHour + nowMin) >= (endHour + endMin) && (nowHour + nowMin) <= (startHour + startMin)))
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Sorry you cannot run EOD at this Time, Go To <a href='/EODConfig'><b>EODConfig</b></a> to change Time settings ");
-                }
-                if (CheckIfConfigComplete() == false)
-                {
-
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMsg);
-                }
-                CloseBusiness(isEOMDone);
-                if (!errorMsg.Equals(""))
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMsg);
-                }
-            }
-            else
-            {
-//                if (((nowHour + nowMin) < (endHour + endMin) && (nowHour + nowMin) > (startHour + startMin)))
-//                {
-//                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Sorry you cannot Open EOD at this Time, Go To <a href='/EODConfig'><b>EODConfig</b></a> to change Time settings ");
-//                }
-                status = true;
-                returnMsg = returnMsg + "<br/> : Business <b>Opened</b>";
-            }
-
-
-            if (businessStatus == null)
-            {
-                var business = new BusinessStatus();
-                business.Status = status;
-                _context.BusinessStatus.Add(business);
-
-            }
-            {
-                businessStatus.Status = status;
-            }
-            _context.SaveChanges();
-            return Request.CreateResponse(HttpStatusCode.OK, returnMsg);
-
-        }
 
         [NonAction]
         public void CloseBusiness(bool isEOMDone)
@@ -447,55 +332,59 @@ namespace WebApplication1.Controllers.Api
                         InterestExpenseApplied();
                         if (errorMsg.Equals(""))
                         {
-
-                            // : If END OF FINANCIAL MONTH
-                            if (financialDates % 30 == 1 && financialDates >= 29)
+                            RunAppliedEOM();
+                            if (errorMsg.Equals(""))
                             {
 
-                                ValidateGLAccounts();
-
-                                if (errorMsg == "")
+                                // : If END OF FINANCIAL MONTH
+                                if (financialDates % 30 == 1 && financialDates >= 29)
                                 {
-                                    if (isApplied == false)
+
+                                    ValidateGLAccounts();
+
+                                    if (errorMsg == "")
                                     {
-                                        RunEOM();
-                                        isEOMDone = true;
+                                        if (isApplied == false)
+                                        {
+                                            RunEOM();
+                                            isEOMDone = true;
+                                        }
+
+
+                                    }
+                                    else
+                                    {
+                                        errorMsg = "<b>EOM Failed</b> :" + errorMsg;
+                                        return;
                                     }
 
+                                }
 
+                                _context.SaveChanges();
+
+                                if (isEOMDone == false)
+                                {
+                                    var financialDate = new FinancialDates
+                                    {
+                                        EOD = DateTime.Now
+                                    };
+                                    _context.FinancialDates.Add(financialDate);
+                                    _context.SaveChanges();
                                 }
                                 else
                                 {
-                                    errorMsg = "<b>EOM Failed</b> :" + errorMsg;
-                                    return;
+                                    var financialDate = new FinancialDates
+                                    {
+                                        EOD = DateTime.Now,
+                                        EOM = DateTime.Now
+                                    };
+                                    _context.FinancialDates.Add(financialDate);
+                                    _context.SaveChanges();
+                                    returnMsg = returnMsg + "<br/> : <b>EOM</b> Completed";
                                 }
 
+                                returnMsg = returnMsg + "<br/> : Business <b>Closed</b>";
                             }
-
-                            _context.SaveChanges();
-
-                            if (isEOMDone == false)
-                            {
-                                var financialDate = new FinancialDates
-                                {
-                                    EOD = DateTime.Now
-                                };
-                                _context.FinancialDates.Add(financialDate);
-                                _context.SaveChanges();
-                            }
-                            else
-                            {
-                                var financialDate = new FinancialDates
-                                {
-                                    EOD = DateTime.Now,
-                                    EOM = DateTime.Now
-                                };
-                                _context.FinancialDates.Add(financialDate);
-                                _context.SaveChanges();
-                                returnMsg = returnMsg + "<br/> : <b>EOM</b> Completed";
-                            }
-
-                            returnMsg = returnMsg + "<br/> : Business <b>Closed</b>";
                         }
                     }
                 }
@@ -552,22 +441,8 @@ namespace WebApplication1.Controllers.Api
 
                                     //ADD TO REPORT TABLE IN DB (DOUBLE ENTRY)
 
-                                    AddToReport("COT", cotIncomeReceivableAcc.Name, CBA.COT_INCOME_GL_ACCOUNT,
-                                        cotAmount);
-                                    var glPosting = new GLPostings()
-                                    {
-                                        GlDebitAccountId = cotIncomeReceivableAcc.Id,
-                                        DebitNarration = "Debit from " + cotIncomeReceivableAcc.Name,
-                                        DebitAmount = cotAmount,
-                                        GlCreditAccountId = COTIncomeGLAccount.Id,
-                                        CreditNarration = "Credit to " + COTIncomeGLAccount.Name,
-                                        CreditAmount = cotAmount,
-                                        TransactionDate = DateTime.Now,
-                                        UserAccountId = userId
-
-                                    };
-                                    _context.GlPostings.Add(glPosting);
-                                    _context.SaveChanges();
+                                    AddToReport("COT", cotIncomeReceivableAcc.Name, CBA.COT_INCOME_GL_ACCOUNT, cotAmount);
+                                    AddGLPosting(cotAmount, COTIncomeGLAccount, cotIncomeReceivableAcc);
                                     // AddToReport("COT", CBA.COT_INCOME_GL_ACCOUNT, "Capital Account", cotAmount);
                                 }
                                 else
@@ -660,6 +535,7 @@ namespace WebApplication1.Controllers.Api
                                     };
                                     _context.GlPostings.Add(glPosting);
                                     _context.SaveChanges();
+                                    AddGLPosting(cotAmount, COTIncomeGLAccount, cotIncomeReceivableAcc);
                                 }
                                 else
                                 {
@@ -709,29 +585,44 @@ namespace WebApplication1.Controllers.Api
 
                 AddToReport("COT", customerAccount.Name, cotIncomeReceivableAcc.Name, customerAccount.COTIncome);
                 AddToReport("COT", COTIncomeGLAccount.Name, capitalAccount.Name, customerAccount.COTIncome);
-                var glPosting = new GLPostings()
-                {
-                    GlDebitAccountId = COTIncomeGLAccount.Id,
-                    DebitNarration = "Debit from " + COTIncomeGLAccount.Name,
-                    DebitAmount = customerAccount.COTIncome,
-                    GlCreditAccountId = capitalAccount.Id,
-                    CreditNarration = "Credit to " + capitalAccount.Name,
-                    CreditAmount = customerAccount.COTIncome,
-                    TransactionDate = DateTime.Now,
-                    UserAccountId = userId
+                AddGLPosting(customerAccount.COTIncome, capitalAccount, COTIncomeGLAccount);
+            }
+        }
 
-                };
-                _context.GlPostings.Add(glPosting);
-                _context.SaveChanges();
+        // Till Double Entry
+        [NonAction]
+        public void SettleTill()
+        {
+            var tillAccounts = _context.Tellers.ToList();
+            var capitalAccount = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals("Capital Account"));
+            foreach (var tillAccount in tillAccounts)
+            {
+                var glAccount = _context.GlAccounts.SingleOrDefault(c => c.Id == tillAccount.TillAccountId);
+
+                if (capitalAccount != null)
+                {
+                    if (glAccount != null)
+                    {
+                        var balance = glAccount.AccountBalance;
+                        capitalAccount.AccountBalance = capitalAccount.AccountBalance + balance; // CREDIT
+                        glAccount.AccountBalance = glAccount.AccountBalance - balance; // DEBIT
+                        tillAccount.TillAccountBalance = 0;
+
+                        AddToReport("GL Posting", glAccount.Name, capitalAccount.Name, balance);
+                        AddGLPosting(balance, capitalAccount, glAccount);
+                    }
+                }
+                else
+                {
+                    errorMsg = errorMsg + "<br/> Insufficient Capital Account Balance";
+                }
+
 
             }
         }
 
-
-        /**
-         * Interest Applied *Daily*
-         */
-
+        // Interest Applied *Daily*
+        [NonAction]
         public void InterestApplied()
         {
             float currentAccountMinimumBalance = 0;
@@ -802,21 +693,7 @@ namespace WebApplication1.Controllers.Api
                                 // Financial Report Entry
                                 AddToReport("Interest Accrual", interestReceivableAcc.Name, incomeGlAccount.Name, interest);
                                 AddToReport("Interest Accrual", linkedAccount.Name, interestReceivableAcc.Name, interest);
-                                var glPosting = new GLPostings()
-                                {
-                                    GlDebitAccountId = interestReceivableAcc.Id,
-                                    DebitNarration = "Debit from " + interestReceivableAcc.Name,
-                                    DebitAmount = interest,
-                                    GlCreditAccountId = incomeGlAccount.Id,
-                                    CreditNarration = "Credit to " + incomeGlAccount.Name,
-                                    CreditAmount = interest,
-                                    TransactionDate = DateTime.Now,
-                                    UserAccountId = userId
-
-                                };
-                                _context.GlPostings.Add(glPosting);
-                                _context.SaveChanges();
-                                
+                                AddGLPosting(interest, incomeGlAccount, interestReceivableAcc);
                             }
                             else
                             {
@@ -829,9 +706,8 @@ namespace WebApplication1.Controllers.Api
             }
 
         }
-        /**
-         *  Perform Daily Interest Accrual
-         */
+
+        //  Perform Daily Interest Accrual
         [NonAction]
         public void InterestAccrual()
         {
@@ -873,21 +749,7 @@ namespace WebApplication1.Controllers.Api
 
                     //ADD TO REPORT TABLE IN DB (DOUBLE ENTRY)
                     AddToReport("Interest Accrual", CBA.INTEREST_RECEIVABLE_ACC_NAME, CBA.INTEREST_INCOME_ACC_NAME, accruedInterest);
-                    var glPosting = new GLPostings()
-                    {
-                        GlDebitAccountId = interestReceivableAcc.Id,
-                        DebitNarration = "Debit from " + interestReceivableAcc.Name,
-                        DebitAmount = accruedInterest,
-                        GlCreditAccountId = interestIncomeAcc.Id,
-                        CreditNarration = "Credit to " + interestIncomeAcc.Name,
-                        CreditAmount = accruedInterest,
-                        TransactionDate = DateTime.Now,
-                        UserAccountId = userId
-
-                    };
-                    _context.GlPostings.Add(glPosting);
-                    _context.SaveChanges();
-
+                    AddGLPosting(accruedInterest, interestIncomeAcc, interestReceivableAcc);
                     // returnMsg = returnMsg + "<br/> : <b>Interest Accrual </b> Process Successful";
 
                 }
@@ -895,50 +757,6 @@ namespace WebApplication1.Controllers.Api
             }
 
 
-        }
-
-        [NonAction]
-        public void SettleTill()
-        {
-            var tillAccounts = _context.Tellers.ToList();
-            var capitalAccount = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals("Capital Account"));
-            foreach (var tillAccount in tillAccounts)
-            {
-                var glAccount = _context.GlAccounts.SingleOrDefault(c => c.Id == tillAccount.TillAccountId);
-
-                if (capitalAccount != null)
-                {
-                    if (glAccount != null)
-                    {
-                        var balance = glAccount.AccountBalance;
-                        capitalAccount.AccountBalance = capitalAccount.AccountBalance + balance; // CREDIT
-                        glAccount.AccountBalance = glAccount.AccountBalance - balance; // DEBIT
-                        tillAccount.TillAccountBalance = 0;
-
-                        AddToReport("GL Posting", glAccount.Name, capitalAccount.Name, balance);
-                        var glPosting = new GLPostings()
-                        {
-                            CreditAmount = balance,
-                            CreditNarration = "Credit to " + capitalAccount.Name,
-                            DebitAmount = balance,
-                            DebitNarration = "Debit from " + glAccount.Name,
-                            GlCreditAccountId = capitalAccount.Id,
-                            GlDebitAccountId = glAccount.Id,
-                            TransactionDate = DateTime.Now,
-                            UserAccountId = userId
-
-                        };
-                        _context.GlPostings.Add(glPosting);
-                        _context.SaveChanges();
-                    }
-                }
-                else
-                {
-                    errorMsg = errorMsg + "<br/> Insufficient Capital Account Balance";
-                }
-
-
-            }
         }
 
         [NonAction]
@@ -985,23 +803,10 @@ namespace WebApplication1.Controllers.Api
 
                         if (Math.Abs(interest) > 0) // If interest is greater than 0
                         {
+
                             AddToReport("Teller Posting", interestExpenseGLAccount.Name, acc.Name, interest);
                             AddToReport("GL Posting", capitalAccount.Name, interestExpenseGLAccount.Name, interest);
-                            var glPosting = new GLPostings()
-                            {
-                                CreditAmount = interest,
-                                CreditNarration = "Credit to " + capitalAccount.Name,
-                                DebitAmount = interest,
-                                DebitNarration = "Debit from " + interestExpenseGLAccount.Name,
-                                GlCreditAccountId = interestExpenseGLAccount.Id,
-                                GlDebitAccountId = capitalAccount.Id,
-                                TransactionDate = DateTime.Now,
-                                UserAccountId = userId
-
-                            };
-                            _context.GlPostings.Add(glPosting);
-
-                            _context.SaveChanges();
+                            AddGLPosting(interest, interestExpenseGLAccount, capitalAccount);
                         }
                     }
                     else
@@ -1013,6 +818,7 @@ namespace WebApplication1.Controllers.Api
             }
 
         }
+
         [NonAction]
         public void InterestExpenseAccrual()
         {
@@ -1063,20 +869,7 @@ namespace WebApplication1.Controllers.Api
 
                             AddToReport("GL Posting", interestExpenseGLAccount.Name, interestPayable.Name, interest);
                             _context.SaveChanges();
-                            var glPosting = new GLPostings()
-                            {
-                                CreditAmount = interest,
-                                CreditNarration = "Credit to " + interestPayable.Name,
-                                DebitAmount = interest,
-                                DebitNarration = "Debit from " + interestExpenseGLAccount.Name,
-                                GlCreditAccountId = interestPayable.Id,
-                                GlDebitAccountId = interestExpenseGLAccount.Id,
-                                TransactionDate = DateTime.Now,
-                                UserAccountId = userId
-
-                            };
-                            _context.GlPostings.Add(glPosting);
-                            _context.SaveChanges();
+                            AddGLPosting(interest, interestPayable, interestExpenseGLAccount);
                         }
                     }
                     else
@@ -1124,29 +917,16 @@ namespace WebApplication1.Controllers.Api
                     account.Interest = 0;
                     AddToReport("Interest Expense", interestPayable.Name, account.Name, account.Interest);
                     AddToReport("GL Posting", capitalAccount.Name, expenseAccount.Name, account.Interest);
-                    var glPosting = new GLPostings()
-                    {
-                        CreditAmount = account.Interest,
-                        CreditNarration = "Credit to " + expenseAccount.Name,
-                        DebitAmount = account.Interest,
-                        DebitNarration = "Debit from " + capitalAccount.Name,
-                        GlCreditAccountId = expenseAccount.Id,
-                        GlDebitAccountId = capitalAccount.Id,
-                        TransactionDate = DateTime.Now,
-                        UserAccountId = userId
-
-                    };
-                    _context.GlPostings.Add(glPosting);
-
-
+                    AddGLPosting(account.Interest, expenseAccount, capitalAccount);
                 }
-
 
             }
 
             _context.SaveChanges();
 
         }
+
+        // Check if the appriopriate GL Accounts are available
         [NonAction]
         public void ValidateGLAccounts()
         {
@@ -1188,6 +968,7 @@ namespace WebApplication1.Controllers.Api
             }
         }
 
+        // Create GL Accounts if they dont exist
         [NonAction]
         public void CreateGlAccount(string name)
         {
@@ -1227,23 +1008,6 @@ namespace WebApplication1.Controllers.Api
             }
 
 
-        }
-        public string getCode(int id)
-        {
-            var GLRanCode = RandomString(5);
-            var GLId = id;
-            var GLAccountCode = Convert.ToString(GLId) + Convert.ToString(GLRanCode);
-            Console.WriteLine(GLAccountCode);
-            return GLAccountCode;
-
-        }
-
-        public static string RandomString(int length)
-        {
-            Random random = new Random();
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, length)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
         // : EOM Process is carried out at the end of 30 Financal Days - 1 Financial Month
@@ -1286,7 +1050,91 @@ namespace WebApplication1.Controllers.Api
 
 
         }
+
+        [NonAction]
+        public void RunAppliedEOM()
+        {
+            var customerAccounts = _context.CustomerAccounts.ToList();
+            var loanDetails = _context.LoanDetails.Include(c => c.Terms).ToList(); // List of all LOAN Details
+            var loanAccountTypeConfig = _context.AccountTypes.SingleOrDefault(c => c.Name.Equals("Loan Account"));
+            float debitInterestRate = 0;
+            if (loanAccountTypeConfig != null)
+            {
+                debitInterestRate = (float)loanAccountTypeConfig.DebitInterestRate;
+            }
+
+            foreach (var loanDetail in loanDetails)
+            {
+                var customerAccount = customerAccounts.Where(c => c.AccountTypeId != CBA.LOAN_ACCOUNT_TYPE_ID).SingleOrDefault(c => c.LoanDetailsId == loanDetail.Id);
+                if (customerAccount != null)
+                {
+                    var customerAccountBalance = customerAccount.AccountBalance;
+                    if (_context.AccountTypes != null)
+                    {
+                        var minimumBalance = _context.AccountTypes.SingleOrDefault(c => c.Id == customerAccount.AccountTypeId).MinimumBalance; // Minimum amount this account type can have
+
+                        var loanAmount = loanDetail.LoanAmount; // Total amount 
+                        var monthlyInterest = (debitInterestRate * loanAmount) / 12; // Monthly interest to be repaid
+                        var monthlyPrincipal = (loanDetail.Terms.PaymentRate / 100) * loanAmount; // Monthly principal to be repaid
+                        var customerLoanAccount = _context.CustomerAccounts.Where(c => c.AccountTypeId == CBA.LOAN_ACCOUNT_TYPE_ID)
+                            .SingleOrDefault(c => c.LoanDetailsId == loanDetail.Id);
+                        if (customerAccount.IsClosed == false)
+                        {
+
+                            PerformLoanAppliedDoubleEntry(loanDetail, customerAccount, customerLoanAccount, minimumBalance, customerAccountBalance, monthlyPrincipal, monthlyInterest, loanAmount);
+                        }
+                    }
+                }
+            }
+
+
+        }
         // : Perform corresponding DEBIT and CREDIT operations on account balance
+
+        [NonAction]
+        public void LoanApplied(LoanDetails loanDetail, CustomerAccount customerAccount, CustomerAccount customerLoanAccount, float minimumBalance, float customerAccountBalance, float monthlyPrincipal, float monthlyInterest)
+        {
+            // Interest Repayment
+            var capitalAccount = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals("Capital Account"));
+            var dailyPrincipal = monthlyPrincipal / 30;
+            if (interestReceivableAcc != null)
+            {
+                // Principal Repayment
+                customerAccount.AccountBalance = customerAccount.AccountBalance - dailyPrincipal; // DEBIT
+                loanDetail.CustomerLoan = loanDetail.CustomerLoan - dailyPrincipal;
+                customerLoanAccount.AccountBalance = customerLoanAccount.AccountBalance - dailyPrincipal; // CREDIT
+
+                //                if (capitalAccount != null)
+                //                {
+                //                    customerLoanAccount.AccountBalance = customerLoanAccount.AccountBalance - dailyPrincipal; // DEBIT
+                //                    capitalAccount.AccountBalance = capitalAccount.AccountBalance + dailyPrincipal; // CREDIT
+                //                }
+
+
+                if (dailyPrincipal != 0)
+                {
+                    AddToReport("Loan Repayment", customerAccount.Name, customerLoanAccount.Name, dailyPrincipal);
+                    //                    AddToReport("GL Posting", customerLoanAccount.Name, capitalAccount.Name, dailyPrincipal);
+
+                }
+            }
+
+            _context.SaveChanges();
+        }
+        [NonAction]
+        public void PerformLoanAppliedDoubleEntry(LoanDetails loanDetail, CustomerAccount customerAccount, CustomerAccount customerLoanAccount, float? newMinimumBalance, float customerAccountBalance, float monthlyPrincipal, float monthlyInterest, float loanAmount)
+        {
+            var minimumBalance = (float)newMinimumBalance; // Minimum Balance this Account Type must have;
+            var availableBalance = customerAccountBalance - minimumBalance; // Amount that can be taken out of customers account - DEBIT
+            var principalOverdue = loanDetail.PrincipalOverdue; // Principal left unpaid
+            var interestOverdue = loanDetail.InterestOverdue; // Interest Left unpaid
+            var amountPayable = monthlyPrincipal + monthlyInterest; // Total amount to be paid(settled) at EOM
+            var amountOverdue = principalOverdue + interestOverdue; // Total amount left unpaid
+            var totalAmountPayable = amountPayable + amountOverdue; // Total amount to be paid(settled)
+            LoanApplied(loanDetail, customerAccount, customerLoanAccount, minimumBalance, customerAccountBalance, monthlyPrincipal, monthlyInterest);
+
+        }
+
         [NonAction]
         public void PerformDoubleEntry(LoanDetails loanDetail, CustomerAccount customerAccount, CustomerAccount customerLoanAccount, float? newMinimumBalance, float customerAccountBalance, float monthlyPrincipal, float monthlyInterest, float loanAmount)
         {
@@ -1297,6 +1145,7 @@ namespace WebApplication1.Controllers.Api
             var amountPayable = monthlyPrincipal + monthlyInterest; // Total amount to be paid(settled) at EOM
             var amountOverdue = principalOverdue + interestOverdue; // Total amount left unpaid
             var totalAmountPayable = amountPayable + amountOverdue; // Total amount to be paid(settled)
+
             if (availableBalance > amountPayable)
             {
                 FullLoanRepayment(loanDetail, customerAccount, customerLoanAccount, minimumBalance, customerAccountBalance, monthlyPrincipal, monthlyInterest);
@@ -1308,6 +1157,7 @@ namespace WebApplication1.Controllers.Api
             }
 
         }
+
         [NonAction]
         public void FullLoanRepayment(LoanDetails loanDetail, CustomerAccount customerAccount, CustomerAccount customerLoanAccount, float minimumBalance, float customerAccountBalance, float monthlyPrincipal, float monthlyInterest)
         {
@@ -1358,20 +1208,7 @@ namespace WebApplication1.Controllers.Api
                 interestOverdueAcc.AccountBalance = interestOverdueAcc.AccountBalance + interestUnpaid;
                 interestInSuspenseAcc.AccountBalance = interestInSuspenseAcc.AccountBalance + interestUnpaid;
                 AddToReport("Loan Repayment", interestOverdueAcc.Name, interestInSuspenseAcc.Name, interestUnpaid);
-                var glPosting = new GLPostings()
-                {
-                    CreditAmount = interestUnpaid,
-                    CreditNarration = "Credit to " + interestInSuspenseAcc.Name,
-                    DebitAmount = interestUnpaid,
-                    DebitNarration = "Debit from " + interestOverdueAcc.Name,
-                    GlCreditAccountId = interestInSuspenseAcc.Id,
-                    GlDebitAccountId = interestOverdueAcc.Id,
-                    TransactionDate = DateTime.Now,
-                    UserAccountId = userId
-
-                };
-                _context.GlPostings.Add(glPosting);
-                _context.SaveChanges();
+                AddGLPosting(interestUnpaid, interestInSuspenseAcc, interestOverdueAcc);
             }
             else
             {
@@ -1414,20 +1251,7 @@ namespace WebApplication1.Controllers.Api
                 interestOverdueAcc.AccountBalance = interestOverdueAcc.AccountBalance - interestOverdueToBePaid; // CREDIT
                 AddToReport("Loan Repayment", customerAccount.Name, interestIncomeAcc.Name, interestOverdueToBePaid);
                 AddToReport("Loan Repayment", interestInSuspenseAcc.Name, interestOverdueAcc.Name, interestOverdueToBePaid);
-                var glPosting = new GLPostings()
-                {
-                    CreditAmount = interestOverdueToBePaid,
-                    CreditNarration = "Credit to " + interestOverdueAcc.Name,
-                    DebitAmount = interestOverdueToBePaid,
-                    DebitNarration = "Debit from " + interestInSuspenseAcc.Name,
-                    GlCreditAccountId = interestOverdueAcc.Id,
-                    GlDebitAccountId = interestInSuspenseAcc.Id,
-                    TransactionDate = DateTime.Now,
-                    UserAccountId = userId
-
-                };
-                _context.GlPostings.Add(glPosting);
-                _context.SaveChanges();
+                AddGLPosting(interestOverdueToBePaid, interestOverdueAcc, interestInSuspenseAcc);
             }
             else
             {
@@ -1440,25 +1264,11 @@ namespace WebApplication1.Controllers.Api
                 AddToReport("Loan Repayment", customerAccount.Name, interestIncomeAcc.Name, interestOverdueToBePaid);
                 AddToReport("Loan Repayment", interestInSuspenseAcc.Name, interestOverdueAcc.Name, interestOverdueToBePaid);
                 AddToReport("Loan Repayment", customerAccount.Name, principalOverdueAcc.Name, principalOverdueToBePaid);
-                var glPosting = new GLPostings()
-                {
-                    CreditAmount = interestOverdueToBePaid,
-                    CreditNarration = "Credit to " + interestOverdueAcc.Name,
-                    DebitAmount = interestOverdueToBePaid,
-                    DebitNarration = "Debit from " + interestInSuspenseAcc.Name,
-                    GlCreditAccountId = interestOverdueAcc.Id,
-                    GlDebitAccountId = interestInSuspenseAcc.Id,
-                    TransactionDate = DateTime.Now,
-                    UserAccountId = userId
-
-                };
-                _context.GlPostings.Add(glPosting);
-                _context.SaveChanges();
+                AddGLPosting(interestOverdueToBePaid, interestOverdueAcc, interestInSuspenseAcc);
             }
 
             _context.SaveChanges();
         }
-
 
         // Create Financial Report Entry
         [NonAction]
@@ -1479,8 +1289,143 @@ namespace WebApplication1.Controllers.Api
             CBA.AddReport(financialReportDto);
         }
 
+        [NonAction]
+        public string GetHours(string time)
+        {
+            var hours = "";
+            hours = time.Substring(0, 2);
+            if (int.Parse(hours) > 12)
+            {
+                var temp = int.Parse(hours) - 12;
+                hours = "0" + temp.ToString();
+            }
+            else if (int.Parse(hours) == 0)
+            {
+                hours = "12";
+            }
+            return hours;
+        }
 
+        [NonAction]
+        public string GetMins(string time)
+        {
+            var mins = "";
+            mins = time.Substring(3, 2);
+            return mins;
+        }
+
+        [NonAction]
+        public string GetPeriod(string time)
+        {
+            var period = "AM";
+            var hours = time.Substring(0, 2);
+
+            if (int.Parse(hours) >= 12)
+            {
+                period = "PM";
+            }
+
+            return period;
+        }
+
+        [NonAction]
+        public string ConvertToTime(int hour, int mins, string period)
+        {
+            var tempHr = hour;
+            var hr = tempHr.ToString();
+            if (hour < 10)
+            {
+                hr = "0" + tempHr.ToString();
+            }
+            var realMin = mins.ToString();
+
+            if (mins == 0)
+            {
+                realMin = "00";
+            }
+            else if (mins > 0 && mins < 10)
+            {
+                realMin = "0" + mins.ToString();
+            }
+            var time = hr + ":" + realMin;
+            if (period.Equals("PM"))
+            {
+                var addedTime = 0;
+                if (hour != 12)
+                {
+                    addedTime = 12;
+                }
+                else
+                {
+                    time = "00" + ":" + realMin;
+                    addedTime = 0;
+                }
+
+                var temp = hour + addedTime;
+                //realMin = mins.ToString();
+
+
+                time = temp.ToString() + ":" + realMin;
+            }
+            else
+            {
+                if (hour == 12)
+                {
+                    time = "00" + ":" + realMin;
+                    return time;
+                }
+
+                time = hr + ":" + realMin;
+            }
+
+            return time;
+        }
+
+        [NonAction]
+        public string getCode(int id)
+        {
+            var GLRanCode = RandomString(5);
+            var GLId = id;
+            var GLAccountCode = Convert.ToString(GLId) + Convert.ToString(GLRanCode);
+            Console.WriteLine(GLAccountCode);
+            return GLAccountCode;
+
+        }
+
+        [NonAction]
+        private static string RandomString(int length)
+        {
+            Random random = new Random();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+        [NonAction]
+        public void AddGLPosting(float amount, GLAccount creditAccount, GLAccount debitAccount)
+        {
+            var creditAccountId = creditAccount.Id;
+            var creditAccountName = creditAccount.Name;
+            var debitAccountId = debitAccount.Id;
+            var debitAccountName = debitAccount.Name;
+            var glPosting = new GLPostings()
+            {
+                CreditAmount = amount,
+                CreditNarration = "Debit from " + debitAccountName,
+                DebitAmount = amount,
+                DebitNarration = "Debit from " + debitAccountName,
+                GlCreditAccountId = creditAccountId,
+                GlDebitAccountId = debitAccountId,
+                TransactionDate = DateTime.Now,
+                UserAccountId = userId
+
+            };
+            _context.GlPostings.Add(glPosting);
+            _context.SaveChanges();
+        }
 
 
     }
+
+
 }

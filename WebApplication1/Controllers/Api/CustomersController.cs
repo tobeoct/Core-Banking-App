@@ -17,7 +17,7 @@ namespace WebApplication1.Controllers.Api
     public class CustomersController : ApiController
     {
         private ApplicationDbContext _context;
-        private string errorMessage = " ";
+        private string errorMessage = "";
 
         public CustomersController()
         {
@@ -30,6 +30,8 @@ namespace WebApplication1.Controllers.Api
             var customers = _context.Customers.ToList();
             return Ok(customers);
         }
+
+        // GET api/Customers/CustomerAccounts
         [Route("api/Customers/CustomerAccounts")]
         public IHttpActionResult GetCustomerAccounts()
         {
@@ -50,7 +52,7 @@ namespace WebApplication1.Controllers.Api
         {
             public int Id { get; set; }
         }
-        // POST api/Customers/EditCustomer
+        // POST api/Customers/AddCustomer
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
         [Route("api/Customers/AddCustomer")]
@@ -58,81 +60,25 @@ namespace WebApplication1.Controllers.Api
         {
             customerDto.Id = CBA.RandomString(9);
             ValidateCustomer(customerDto);
+            if (!errorMessage.Equals(""))
+            {
+
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMessage);
+            }
             var customer = new Customer()
             {
-                Address = customerDto.Address,
-                Email = customerDto.Email,
-                Gender = customerDto.Gender,
-
-                Name = customerDto.Name,
-                PhoneNumber = customerDto.PhoneNumber
+                Id = customerDto.Id,
+                Address = customerDto.Address.ToString(),
+                Email = customerDto.Email.ToString(),
+                Gender = customerDto.Gender.ToString(),
+                Name = customerDto.Name.ToString(),
+                PhoneNumber = customerDto.PhoneNumber.ToString()
             };
             _context.Customers.Add(customer);
             _context.SaveChanges();
             return Request.CreateResponse(HttpStatusCode.OK, "Customer has been added successfully");
         }
 
-        [System.Web.Http.NonAction]
-        public void ValidateCustomer(CustomerDto customerDto)
-        {
-            var phoneNumber = customerDto.PhoneNumber.ToString();
-            var email = customerDto.Email.ToString();
-            var name = customerDto.Name.ToString();
-            string tel = phoneNumber.Substring(phoneNumber.Length - 9);
-            //            if (!Regex.IsMatch(name, @"^[a-zA-Z]+$"))
-            //            {
-            //                errorMsg = errorMsg + "<br/>Enter only text ";
-            //            }
-            if (!IsValidEmail(email))
-            {
-                errorMessage = errorMessage + "<br/>Invalid Email Address ";
-            }
-            string[] names = SplitWhitespace(name);
-
-            var phone = Regex.Match(phoneNumber, @"(.{9})\s*$");
-            var userNumbers = _context.Customers
-                .Where(c => c.PhoneNumber.Substring(c.PhoneNumber.Length - 9).Equals(tel)).ToList();
-            var userEmails = _context.Customers
-                .Where(c => c.Email.Equals(email)).ToList();
-            var userNames = _context.Customers.Where(c => c.Name.Contains(name) || c.Name.Equals(name)).ToList();
-
-            if (names.Length > 1)
-            {
-                if (userNames.Count <= 0)
-                {
-                    var firstName = names[0];
-                    var lastName = names[1];
-                    userNames = _context.Customers
-                        .Where(c => c.Name.Contains(firstName) && c.Name.Contains(lastName)).ToList();
-                }
-
-
-            }
-
-            if (userNames.Count > 0)
-            {
-                errorMessage = errorMessage + "<br/>Name already exists. ";
-            }
-            if (userNumbers.Count > 0)
-            {
-                errorMessage = errorMessage + "<br/>Phone Number already exists";
-            }
-            if (userEmails.Count > 0)
-            {
-                errorMessage = errorMessage + "<br/>Email Address already exists";
-            }
-        }
-        public static bool IsValidEmail(string email)
-        {
-            return Regex.IsMatch(email, @"\A[a-z0-9]+([-._][a-z0-9]+)*@([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,4}\z")
-                   && Regex.IsMatch(email, @"^(?=.{1,64}@.{4,64}$)(?=.{6,100}$).*");
-        }
-        [System.Web.Http.NonAction]
-        public static string[] SplitWhitespace(string input)
-        {
-            char[] whitespace = new char[] { ' ', '\t' };
-            return input.Split(whitespace);
-        }
         // POST api/Customers/EditCustomer
         [AcceptVerbs("GET", "POST")]
         [HttpPost]
@@ -400,6 +346,7 @@ namespace WebApplication1.Controllers.Api
             return Request.CreateResponse(HttpStatusCode.OK, "Ok");
 
         }
+
         // POST api/Customers/LoanDisbursement
         [Route("api/Customers/LoanDisbursement")]
         public HttpResponseMessage LoanDisbursement(LoanDetailsDto loanDetailsDto)
@@ -512,6 +459,71 @@ namespace WebApplication1.Controllers.Api
             };
 
             CBA.AddReport(financialReportDto);
+        }
+
+        [NonAction]
+        public void ValidateCustomer(CustomerDto customerDto)
+        {
+            var phoneNumber = customerDto.PhoneNumber.ToString();
+            var email = customerDto.Email.ToString();
+            var name = customerDto.Name.ToString();
+            string tel = phoneNumber.Substring(phoneNumber.Length - 9);
+            //            if (!Regex.IsMatch(name, @"^[a-zA-Z]+$"))
+            //            {
+            //                errorMsg = errorMsg + "<br/>Enter only text ";
+            //            }
+            if (!IsValidEmail(email))
+            {
+                errorMessage = errorMessage + "<br/>Invalid Email Address ";
+            }
+            string[] names = SplitWhitespace(name);
+
+            var phone = Regex.Match(phoneNumber, @"(.{9})\s*$");
+            var userNumbers = _context.Customers
+                .Where(c => c.PhoneNumber.Substring(c.PhoneNumber.Length - 9).Equals(tel)).ToList();
+            var userEmails = _context.Customers
+                .Where(c => c.Email.Equals(email)).ToList();
+            var userNames = _context.Customers.Where(c => c.Name.Contains(name) || c.Name.Equals(name)).ToList();
+
+            if (names.Length > 1)
+            {
+                if (userNames.Count <= 0)
+                {
+                    var firstName = names[0];
+                    var lastName = names[1];
+                    userNames = _context.Customers
+                        .Where(c => c.Name.Contains(firstName) && c.Name.Contains(lastName)).ToList();
+                }
+
+
+            }
+
+            if (userNames.Count > 0)
+            {
+                errorMessage = errorMessage + "<br/>Name already exists. ";
+            }
+            if (userNumbers.Count > 0)
+            {
+                errorMessage = errorMessage + "<br/>Phone Number already exists";
+            }
+            if (userEmails.Count > 0)
+            {
+                errorMessage = errorMessage + "<br/>Email Address already exists";
+            }
+        }
+
+        [NonAction]
+        public static bool IsValidEmail(string email)
+        {
+            return Regex.IsMatch(email, @"\A[a-z0-9]+([-._][a-z0-9]+)*@([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,4}\z")
+                   && Regex.IsMatch(email, @"^(?=.{1,64}@.{4,64}$)(?=.{6,100}$).*");
+        }
+
+        [NonAction]
+        public static string[] SplitWhitespace(string input)
+        {
+            char[] whitespace = new char[] { ' ', '\t' };
+            return input.Split(whitespace);
         }
 
 

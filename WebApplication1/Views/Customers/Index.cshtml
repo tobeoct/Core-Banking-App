@@ -76,6 +76,7 @@
 @section scripts
 {
     <script>
+        var errorMsg = "";
         function EditCustomer(id) {
             var newId = pad_with_zeroes(id, 9);
             //alert(newId);
@@ -134,7 +135,7 @@
 
         }
 
-        var errorMsg = "";
+        
         $(document).ready(function () {
 
 
@@ -237,8 +238,10 @@
                 var customerDto = {
 
                     Name: name,
-                    Description: description,
-                    CategoriesId: categoryId
+                    PhoneNumber: phoneNumber,
+                    Email: email,
+                    Address: address,
+                    Gender:gender
                 }
 
                 $.ajax({
@@ -249,7 +252,7 @@
                     dataType: 'json',
                     success: function (data) {
 
-                        document.getElementById('glCategoryForm').reset();
+                        document.getElementById('customerForm').reset();
                         $('#myAddCustomerModal #successMessage').fadeIn(200,
                             function () {
                                 $('#myAddCustomerModal #successMessage').html(data);
