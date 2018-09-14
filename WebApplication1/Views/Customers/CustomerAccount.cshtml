@@ -48,9 +48,11 @@
                         <th>Account Name</th>
                         <th>Account Number </th>
                         <th>Branch</th>
+                        <th>Account Balance</th>
                         <th>Account Type</th>
                         <th>Edit</th>
                         <th>Close</th>
+                        <th>View Transactions</th>
                     </tr>
                 </thead>
 
@@ -139,6 +141,8 @@
 
         }
 
+
+
         $(document).ready(function () {
 
             /**
@@ -157,7 +161,7 @@
             var loanAmount; // Loan amount to be disbursed
             var tenure; // Duration of loan
             var paymentPlan; // Payment Frequency
-            var collateral="car"; // Collateral to be tied to loan
+            var collateral = "Car"; // Collateral to be tied to loan
             var accountNumber; // Customer Account Number
             var paymentRate; // Rate of Loan Repayment
             var loanDetailsDto; // Loan Details Data Transfer Object
@@ -248,6 +252,7 @@
 
                     });
             }
+
             // : To Check IF Customer already has an Account of the selected Account Type
             var CheckIfCustomerHasAccount = function (customerAccountDto) {
 
@@ -312,6 +317,7 @@
 
                     });
             }
+
             // : To Post Agreed Terms
             var AddTerms = function () {
                 $.ajax({
@@ -348,6 +354,7 @@
 
                 });
             }
+
             // : To Disburse Loan to Customer Account
             var DisburseLoan = function () {
 
@@ -384,6 +391,7 @@
                 });
 
             }
+
             function checkregex(value) {
                 if (!value.match(/^[a-zA-Z0-9 ]+$/)) {
 
@@ -395,7 +403,7 @@
 
             /**
                 * TABLE FUNCTIONALITY
-                * */
+             **/
 
             // : To GET data for Customer Accounts TABLE FROM DATABASE through API call using JQUERY.DATATABLES
             var table = $("#customerAccounts").DataTable({
@@ -412,6 +420,9 @@
                     },
                     {
                         data: "branch.name"
+                    },
+                    {
+                        data: "accountBalance"
                     },
                     {
                         data: "accountType.name"
@@ -436,6 +447,18 @@
                                 " onclick='OpenConfirmationModal(" +
                                 data +
                                 ");'>Close/Open Account</p>";
+                        }
+                    },
+                    {
+                        data: "id",
+
+                        render: function (data) {
+//                            return "<p class='js-delete btn btn-primary '  style='margin:auto;cursor:pointer;' id=" +
+//                                data +
+//                                " onclick='ViewTransactions(" +
+//                                data +
+//                                ");'>View Transactions</p>";
+                            return "<a class='js-delete btn btn-primary ' href='/Customers/ViewTransactions?id="+data+"'>View Transactions</a>";
                         }
                     }
                 ]
@@ -532,6 +555,7 @@
                     $('#successMessage, #errorMessage').fadeOut();
                     $("#myAccountTypeModal select:visible:first").focus();
                 });
+
             // : To OPEN Account Details Modal and GET Account Selection entry/data ;
             $("#myAccountTypeBtn").on("click",
                 function (e) {
@@ -580,7 +604,7 @@
                     if (branchId == 0) {
                         errorMessage = errorMessage + " : Please select a <b>Branch</b>";
                     }
-                    if (accountName == "" || accountName == null || checkregex(accountName)===false) {
+                    if (accountName == "" || accountName == null || checkregex(accountName) === false) {
 
                         errorMessage = errorMessage + " : Please enter <b>Account Name</>";
                     }
@@ -650,7 +674,6 @@
 
                 });
 
-
             // : To OPEN or CLOSE Customer Account
             $("#confirmationModal #confirmationBtn").on('click',
                 function (e) {
@@ -687,6 +710,7 @@
 
                     });
                 });
+
             // : To GET Loan Details data entry and OPEN Loan Terms entry Modal;
             $("#myLoanFirstBtn").on("click",
                 function (e) {
@@ -709,13 +733,14 @@
 
                         });
                 });
+
             // : To GET entry/data FROm Terms Modal and OPEN Terms Confirmation Modal
             $("#myLoanSecondBtn").on("click",
                 function (e) {
 
                     e.preventDefault();
                     tenure = $("#tenure").val();
-//                    collateral = $("#collateral").val();
+                    //                    collateral = $("#collateral").val();
                     paymentRate = Number.parseFloat(8.3);
 
                     termsDto = {
@@ -734,6 +759,7 @@
                         });
 
                 });
+
             // : To POST TO API's handling Creation of Loan Account
             $('#myDisburseLoanBtn').on("click",
                 function (e) {
@@ -750,7 +776,6 @@
                     }
                 });
 
-
             $("#confirmationModal #close").on("click",
                 function () {
                     table.ajax.reload(function () {
@@ -763,6 +788,7 @@
                     });
 
                 });
+
             // : To CLOSE Modals and reload DataTable
             $(".close").on("click",
                 function () {
@@ -792,6 +818,7 @@
                     });
 
                 });
+
             // : To CLOSE Terms Agreement Modal and reload DataTable
             $("#myTermsModal").on("click",
                 'close',
@@ -805,6 +832,7 @@
                     });
 
                 });
+
             $('#myTermsModal button, #myAccountDetailsModal button').on('click',
                 function () {
                     $(this).children('.loader').fadeIn();

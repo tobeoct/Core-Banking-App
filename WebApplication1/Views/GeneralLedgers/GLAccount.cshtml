@@ -39,9 +39,11 @@
                     <tr>
                         <th>GL Account Name </th>
                         <th>GL Account Code</th>
+                        <th>Account Balance</th>
                         <th>Gl Category</th>
                         <th>Branch</th>
                         <th>Action</th>
+                        <th>View Transactions</th>
                     </tr>
                 </thead>
 
@@ -107,6 +109,9 @@
                         data: "code"
                     },
                     {
+                        data: "accountBalance"
+                    },
+                    {
                         data: "glCategories.name"
                     },
                     {
@@ -118,6 +123,14 @@
                             return "<p class='js-delete btn btn-primary'  onclick='EditGLAccount(" +
                                 data +
                                 ");'>Edit</p>";
+                        }
+                    },
+                    {
+                        data: "id",
+
+                        render: function (data) {
+                           
+                            return "<a class='js-delete btn btn-primary ' href='/GeneralLedgers/ViewTransactions?id=" + data + "'>View Transactions</a>";
                         }
                     }
                 ]

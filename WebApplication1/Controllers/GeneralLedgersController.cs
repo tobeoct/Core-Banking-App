@@ -7,13 +7,15 @@ using System.Web.Mvc;
 using WebApplication1.Models;
 using WebApplication1.ViewModels;
 using System.Data.Entity;
+using System.Web.Http;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
+using WebApplication1.Dtos;
 
 namespace WebApplication1.Controllers
 {
-    [Authorize]
+    [System.Web.Mvc.Authorize]
     public class GeneralLedgersController : Controller
     {
         private ApplicationDbContext _context;
@@ -60,7 +62,18 @@ namespace WebApplication1.Controllers
                 return View("CategoryReadOnly", viewModel);
             
         }
+        public ActionResult ViewTransactions([FromUri]int id)
 
+        {
+            var acc = _context.GlAccounts.SingleOrDefault(c => c.Id == id);
+           var fReport = new FinancialReportViewModel()
+           {
+               FinancialReport = new FinancialReport(),
+               Id = id,
+               Name = acc.Name
+           };
+            return View("ViewTransactions", fReport);
+        }
         // GET: GeneralLedgers/Account
         public ActionResult Account()
         {
@@ -103,7 +116,7 @@ namespace WebApplication1.Controllers
         }
 
         //POST: GeneralLedgers/CreateCategory
-        [HttpPost]
+        [System.Web.Mvc.HttpPost]
         public ActionResult CreateCategory(GLCategoryViewModel generalLedgerCategoryViewModel)
         {
             
@@ -132,7 +145,7 @@ namespace WebApplication1.Controllers
         }
 
         // POST: GeneralLedgers/CreateAccount
-        [HttpPost]
+        [System.Web.Mvc.HttpPost]
         public ActionResult CreateAccount(GLAccountViewModel generalLedgerAccountViewModel)
         {
             if (!ModelState.IsValid)

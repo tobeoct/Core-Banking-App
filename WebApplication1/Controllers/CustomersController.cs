@@ -5,13 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Http;
 using System.Web.Mvc;
+using WebApplication1.Dtos;
 using WebApplication1.Models;
 using WebApplication1.ViewModels;
 
 namespace WebApplication1.Controllers
 {
-    [Authorize]
+    [System.Web.Mvc.Authorize]
     public class CustomersController : Controller
     {
         private ApplicationDbContext _context;
@@ -51,6 +53,19 @@ namespace WebApplication1.Controllers
             
                return View("ReadOnly", viewModel);
             
+        }
+       
+
+        public ActionResult ViewTransactions([FromUri]int id)
+
+        {
+            var acc = _context.CustomerAccounts.SingleOrDefault(c => c.Id == id);
+            var customerAcc = new CustomerAccountDto()
+            {
+                Id = id,
+                Name = acc.Name
+            };
+            return View("ViewTransactions", customerAcc);
         }
         public ActionResult Account()
         {
@@ -101,7 +116,7 @@ namespace WebApplication1.Controllers
             _context.SaveChanges();
             return RedirectToAction("Index","Customers");
         }
-        [HttpPost]
+        [System.Web.Mvc.HttpPost]
         public ActionResult CreateCustomerAccount(CustomerAccountViewModel customerAccountViewModel)
         {
             var branches = _context.Branches.ToList();

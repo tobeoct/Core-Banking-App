@@ -11,6 +11,8 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using System.Web;
+using WebApplication1.Migrations;
+using WebApplication1.ViewModels;
 
 namespace WebApplication1.Controllers.Api
 {
@@ -203,6 +205,79 @@ namespace WebApplication1.Controllers.Api
             }
 
             return Request.CreateResponse(HttpStatusCode.OK, status);
+        }
+
+        public class Entries
+        {
+            public string Narration { get; set; }
+            public float Amount { get; set; }
+            public DateTime Date { get; set; }
+        }
+        [AcceptVerbs("GET", "POST")]
+        [HttpGet]
+        [Route("api/EOD/ViewTransaction")]
+        public HttpResponseMessage ViewTransaction([FromUri]int id)
+        {
+            var entries = new List<Entries>();
+            var customerAccount = _context.CustomerAccounts.SingleOrDefault(c => c.Id == id);
+            var financialReports = _context.FinancialReports.Where(c => c.CreditAccount.Equals(customerAccount.Name) || c.DebitAccount.Equals(customerAccount.Name)).ToList();
+            Entries entry = null; 
+            foreach (var report in financialReports)
+            {
+                if (report.CreditAmount != 0)
+                {
+                    if (report.PostingType.Equals("Teller Posting"))
+                    {
+                        if (report.CreditAccount.Equals(customerAccount.Name))
+                        {
+                            entry = new Entries()
+                            {
+                                Narration = "Deposit",
+                                Amount = report.CreditAmount,
+                                Date = (DateTime) report.ReportDate
+
+                            };
+                        }
+                        else
+                        {
+                            entry = new Entries()
+                            {
+                                Narration = "Withdrawal",
+                                Amount = report.DebitAmount,
+                                Date = (DateTime) report.ReportDate
+
+                            };
+                        }
+
+                    }
+                    else
+                    {
+                        entry = new Entries()
+                        {
+                            Narration = report.PostingType,
+                            Amount = report.DebitAmount,
+                            Date = (DateTime) report.ReportDate
+
+                        };
+                    }
+                }
+
+                entries.Add(entry);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.OK,entries);
+        }
+        [AcceptVerbs("GET", "POST")]
+        [HttpGet]
+        [Route("api/EOD/ViewGLTransaction")]
+        public HttpResponseMessage ViewGLTransaction([FromUri]int id)
+        {
+            
+            var glAccount = _context.GlAccounts.SingleOrDefault(c => c.Id == id);
+            var financialReports = _context.FinancialReports.Where(c => c.CreditAccount.Equals(glAccount.Name) || c.DebitAccount.Equals(glAccount.Name)).ToList();
+
+            
+            return Request.CreateResponse(HttpStatusCode.OK, financialReports);
         }
 
         [AcceptVerbs("GET", "POST")]
@@ -804,7 +879,7 @@ namespace WebApplication1.Controllers.Api
                         if (Math.Abs(interest) > 0) // If interest is greater than 0
                         {
 
-                            AddToReport("Teller Posting", interestExpenseGLAccount.Name, acc.Name, interest);
+                            AddToReport("Interest Expense", interestExpenseGLAccount.Name, acc.Name, interest);
                             AddToReport("GL Posting", capitalAccount.Name, interestExpenseGLAccount.Name, interest);
                             AddGLPosting(interest, interestExpenseGLAccount, capitalAccount);
                         }
@@ -1038,7 +1113,7 @@ namespace WebApplication1.Controllers.Api
                         var monthlyPrincipal = (loanDetail.Terms.PaymentRate / 100) * loanAmount; // Monthly principal to be repaid
                         var customerLoanAccount = _context.CustomerAccounts.Where(c => c.AccountTypeId == CBA.LOAN_ACCOUNT_TYPE_ID)
                             .SingleOrDefault(c => c.LoanDetailsId == loanDetail.Id);
-                        if (customerAccount.IsClosed == false)
+                        if (customerAccount.IsClosed)
                         {
                             InterestExpenseRepayment();
                             COTRepayment();
@@ -1089,14 +1164,14 @@ namespace WebApplication1.Controllers.Api
 
 
         }
-        // : Perform corresponding DEBIT and CREDIT operations on account balance
 
+        // : Perform corresponding DEBIT and CREDIT operations on account balance
         [NonAction]
         public void LoanApplied(LoanDetails loanDetail, CustomerAccount customerAccount, CustomerAccount customerLoanAccount, float minimumBalance, float customerAccountBalance, float monthlyPrincipal, float monthlyInterest)
         {
             // Interest Repayment
             var capitalAccount = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals("Capital Account"));
-            var dailyPrincipal = monthlyPrincipal / 30;
+            var dailyPrincipal = (monthlyPrincipal*12) / 30;
             if (interestReceivableAcc != null)
             {
                 // Principal Repayment
@@ -1104,12 +1179,7 @@ namespace WebApplication1.Controllers.Api
                 loanDetail.CustomerLoan = loanDetail.CustomerLoan - dailyPrincipal;
                 customerLoanAccount.AccountBalance = customerLoanAccount.AccountBalance - dailyPrincipal; // CREDIT
 
-                //                if (capitalAccount != null)
-                //                {
-                //                    customerLoanAccount.AccountBalance = customerLoanAccount.AccountBalance - dailyPrincipal; // DEBIT
-                //                    capitalAccount.AccountBalance = capitalAccount.AccountBalance + dailyPrincipal; // CREDIT
-                //                }
-
+              
 
                 if (dailyPrincipal != 0)
                 {
@@ -1121,6 +1191,7 @@ namespace WebApplication1.Controllers.Api
 
             _context.SaveChanges();
         }
+
         [NonAction]
         public void PerformLoanAppliedDoubleEntry(LoanDetails loanDetail, CustomerAccount customerAccount, CustomerAccount customerLoanAccount, float? newMinimumBalance, float customerAccountBalance, float monthlyPrincipal, float monthlyInterest, float loanAmount)
         {

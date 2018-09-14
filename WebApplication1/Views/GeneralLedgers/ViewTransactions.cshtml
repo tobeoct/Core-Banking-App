@@ -1,0 +1,109 @@
+﻿
+@model WebApplication1.ViewModels.FinancialReportViewModel
+@{
+    ViewBag.Title = "View Transactions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="underline animated fadeInLeft">@Model.Name</h1>
+        </div>
+    </div>
+</div>
+<div class="row margin-vertical">
+
+    <div class="container bg-white shadow">
+
+
+        <table id="customers" class="table table-striped table-responsive small-text animated fadeInUp ">
+            <thead class="padding-vertical">
+                <tr>
+
+
+                    <th>Debit Account</th>
+                    <th>Credit Account</th>
+                    <th>Amount</th>
+                    <th>Transaction Date</th>
+                </tr>
+            </thead>
+
+            <tbody></tbody>
+        </table>
+    </div>
+
+
+    <input type="hidden" id="glName" value="@Model.Name"/>
+
+</div>
+
+@section scripts
+{
+    <script>
+
+
+
+        $(document).ready(function () {
+
+            var name = String($("#glName").val());
+            var table = $("#customers").DataTable({
+                ajax: {
+                    url: "/api/EOD/ViewGLTransaction?id="+@Model.Id,
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "debitAccount",
+
+                        render: function (data) {
+                            if (data == name) {
+                                return "<p class='blue-color'>"+data+"</p>";
+                            }
+                            return "<p>"+data+"</p>";
+                        }
+                    },
+                    {
+                        data: "creditAccount",
+                        render: function (data) {
+                            if (data == name) {
+                                return "<p class='blue-color'>"+data+"</p>";
+                            }
+                            return "<p>"+data+"</p>";
+                        }
+                    },
+                    {
+                        data: "debitAmount"
+                    },
+                    {
+                        data: "reportDate"
+                    }
+                ]
+            });
+            $("#customers ").on("click", "js-delete", function () {
+                var button = $(this);
+
+                bootbox.confirm("Are you sure you want to delete this branch", function () {
+                    if (result) {
+                        $.ajax({
+                            url: "api/branches/" + button.attr("data-branch-id"),
+                            method: "DELETE",
+                            success: function () {
+                                table.row(button.parents("tr")).remove().draw();
+                            }
+                        });
+                    }
+                });
+            });
+
+
+
+
+
+        });
+    </script>
+}
+
+
+

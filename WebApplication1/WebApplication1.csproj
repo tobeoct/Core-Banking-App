@@ -237,6 +237,7 @@
     <Compile Include="Controllers\BranchesController.cs" />
     <Compile Include="Controllers\CustomersController.cs" />
     <Compile Include="Controllers\EODConfigController.cs" />
+    <Compile Include="Controllers\EODController.cs" />
     <Compile Include="Controllers\FinancialReportsController.cs" />
     <Compile Include="Controllers\GeneralLedgersController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -813,6 +814,7 @@
     <Compile Include="Models\FinancialDates.cs" />
     <Compile Include="Models\FinancialReport.cs" />
     <Compile Include="Models\GLPostings.cs" />
+    <Compile Include="Models\Indexes.cs" />
     <Compile Include="Models\LoanAccountType.cs" />
     <Compile Include="Models\LoanDetails.cs" />
     <Compile Include="Models\PLModel.cs" />
@@ -840,6 +842,7 @@
     <Compile Include="ViewModels\CustomerAccountViewModel.cs" />
     <Compile Include="ViewModels\CustomerViewModel.cs" />
     <Compile Include="ViewModels\EditProfileViewModel.cs" />
+    <Compile Include="ViewModels\FinancialReportViewModel.cs" />
     <Compile Include="ViewModels\GLAccountViewModel.cs" />
     <Compile Include="ViewModels\GLCategoryViewModel.cs" />
     <Compile Include="ViewModels\GLPostingViewModel.cs" />
@@ -1172,9 +1175,12 @@
     <Content Include="Views\GeneralLedgers\CategoryReadOnly.cshtml" />
     <Content Include="Views\GeneralLedgers\AccountReadOnly.cshtml" />
     <Content Include="Views\EODConfig\index.cshtml" />
+    <Content Include="Views\Customers\ViewTransactions.cshtml" />
+    <Content Include="Views\GeneralLedgers\ViewTransactions.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\EOD\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
