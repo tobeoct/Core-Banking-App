@@ -18,6 +18,15 @@ namespace WebApplication1
                 "~/Scripts/jquery.hotkeys.js"
 
             ));
+            bundles.Add(new ScriptBundle("~/bundles/libs").Include(
+                "~/Scripts/jquery-{version}.js",
+                "~/Scripts/bootstrap.js",
+                "~/Scripts/bootbox.js",
+                "~/Scripts/dataTables/jquery.dataTables.js",
+                "~/Scripts/dataTables/dataTables.bootstrap.js",
+                "~/Scripts/jquery.hotkeys.js"
+
+            ));
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're
             // ready for production, use the build tool at https://modernizr.com to pick only the tests you need.

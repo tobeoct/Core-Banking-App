@@ -13,6 +13,7 @@ using Microsoft.AspNet.Identity.Owin;
 using System.Web;
 using WebApplication1.Migrations;
 using WebApplication1.ViewModels;
+using FinancialReport = WebApplication1.Models.FinancialReport;
 
 namespace WebApplication1.Controllers.Api
 {
@@ -272,12 +273,20 @@ namespace WebApplication1.Controllers.Api
         [Route("api/EOD/ViewGLTransaction")]
         public HttpResponseMessage ViewGLTransaction([FromUri]int id)
         {
-            
+
+            var reports = new List<FinancialReport>();
             var glAccount = _context.GlAccounts.SingleOrDefault(c => c.Id == id);
             var financialReports = _context.FinancialReports.Where(c => c.CreditAccount.Equals(glAccount.Name) || c.DebitAccount.Equals(glAccount.Name)).ToList();
-
+            foreach (var report in financialReports)
+            {
+                if (report.CreditAmount != 0)
+                {
+                    reports.Add(report);
+                }
+                
+            }
             
-            return Request.CreateResponse(HttpStatusCode.OK, financialReports);
+            return Request.CreateResponse(HttpStatusCode.OK, reports);
         }
 
         [AcceptVerbs("GET", "POST")]

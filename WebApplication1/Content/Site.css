@@ -13,7 +13,10 @@
     padding-left: 15px;
     padding-right: 15px;
 }
+.a-tag,.a-tag:hover,.a-tag:visited,.a-tag:focus {
+    color: white !important;
 
+}
 .display-none {
     display: none !important;
 }
