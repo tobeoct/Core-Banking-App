@@ -54,6 +54,8 @@ namespace WebApplication1.Models
         public DbSet<BusinessStatus> BusinessStatus { get; set; }
         public DbSet<FinancialDates> FinancialDates { get; set; }
         public DbSet<EODConfig> EODConfig { get; set; }
+        public DbSet<TransactionLog> TransactionLogs { get; set; }
+
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {

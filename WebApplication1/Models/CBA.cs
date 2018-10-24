@@ -5,6 +5,8 @@ using System.Web;
 using WebApplication1.Dtos;
 using WebApplication1.ViewModels;
 using System.Data.Entity;
+using WebApplication1.Processor;
+
 namespace WebApplication1.Models
 {
     public class CBA
@@ -174,6 +176,25 @@ namespace WebApplication1.Models
 
             _context.SaveChanges();
 
+
+        }
+
+        public static string PerformDoubleEntry(string type, string accountNumber, double amount)
+        {
+            var _context = new ApplicationDbContext();
+            var customerAccount =
+                _context.CustomerAccounts.Include(c=>c.AccountType).FirstOrDefault(c => c.AccountNumber.Equals(accountNumber.ToString()));
+            var accountBalance = customerAccount.AccountBalance;
+            var minimumBalance = customerAccount.AccountType.MinimumBalance;
+            if ((accountBalance - minimumBalance) < amount)
+            {
+
+                customerAccount.AccountBalance = (float) (accountBalance - amount);
+                _context.SaveChanges();
+                return Codes.APPROVED;
+            }
+
+            return Codes.INVALID_AMOUNT;
 
         }
 
