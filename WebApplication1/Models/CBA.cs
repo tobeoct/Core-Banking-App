@@ -29,7 +29,7 @@ namespace WebApplication1.Models
         public static int LOAN_ACCOUNT_TYPE_ID = 3;
         public static int CURRENT_ACCOUNT_TYPE_ID = 2;
         public static int SAVINGS_ACCOUNT_TYPE_ID = 1;
-        public static string BUSINESS_CLOSED_REFRESH_MSG ="You cannot perform postings, Business is Closed : <b onclick='window.location.reload();' style='cursor:pointer;'>Refresh Page</b>";
+        public static string BUSINESS_CLOSED_REFRESH_MSG = "You cannot perform postings, Business is Closed : <b onclick='window.location.reload();' style='cursor:pointer;'>Refresh Page</b>";
         public CBA()
         {
             _context = new ApplicationDbContext();
@@ -92,15 +92,16 @@ namespace WebApplication1.Models
             if (glAccount == null)
             {
                 var customerAccount = _context.CustomerAccounts.SingleOrDefault(c => c.Name.Equals(accountName));
-                if(customerAccount == null || customerAccount.AccountTypeId==LOAN_ACCOUNT_TYPE_ID){
+                if (customerAccount == null || customerAccount.AccountTypeId == LOAN_ACCOUNT_TYPE_ID)
+                {
                     category = "Asset";
-                    
+
                 }
                 else
                 {
                     category = "Liability";
                 }
-                
+
                 return category;
             }
             if (glAccount != null) category = glAccount.GlCategories.Categories.Name.ToString();
@@ -135,7 +136,7 @@ namespace WebApplication1.Models
                     glAccount.AccountBalance = glAccount.AccountBalance - amount;
 
                 }
-                
+
                 else
                 {
                     glAccount.AccountBalance = glAccount.AccountBalance + amount;
@@ -152,7 +153,7 @@ namespace WebApplication1.Models
                     glAccount.AccountBalance = glAccount.AccountBalance - amount;
                 }
             }
-            
+
 
         }
 
@@ -162,7 +163,7 @@ namespace WebApplication1.Models
             var glCreditAccount = _context.GlAccounts.Include(c => c.GlCategories).SingleOrDefault(c => c.Id == glPostingDto.GlCreditAccountId);
             var glDebitAccount = _context.GlAccounts.Include(c => c.GlCategories).SingleOrDefault(c => c.Id == glPostingDto.GlDebitAccountId);
             if (glDebitAccount.GlCategories.Name.Equals("Equity") &&
-                    ( glCreditAccount.GlCategories.Name.Equals("Cash") || glCreditAccount.GlCategories.Name.Equals("Expense")))
+                    (glCreditAccount.GlCategories.Name.Equals("Cash") || glCreditAccount.GlCategories.Name.Equals("Expense")))
             {
                 glDebitAccount.AccountBalance = glDebitAccount.AccountBalance - glPostingDto.DebitAmount;
                 glCreditAccount.AccountBalance = glCreditAccount.AccountBalance + glPostingDto.CreditAmount;
@@ -183,20 +184,67 @@ namespace WebApplication1.Models
         {
             var _context = new ApplicationDbContext();
             var customerAccount =
-                _context.CustomerAccounts.Include(c=>c.AccountType).FirstOrDefault(c => c.AccountNumber.Equals(accountNumber.ToString()));
+                _context.CustomerAccounts.Include(c => c.AccountType).FirstOrDefault(c => c.AccountNumber.Equals(accountNumber.ToString()));
             var accountBalance = customerAccount.AccountBalance;
             var minimumBalance = customerAccount.AccountType.MinimumBalance;
-            if ((accountBalance - minimumBalance) < amount)
-            {
 
-                customerAccount.AccountBalance = (float) (accountBalance - amount);
+
+            if (type.Equals("Debit"))
+            {
+                if ((accountBalance - minimumBalance) > amount)
+                {
+                    customerAccount.AccountBalance = (float)(accountBalance - amount);
+                    AddToReport("Teller Posting", customerAccount.Name, "ATM-Till",(float) amount);
+                    _context.SaveChanges();
+                    return Codes.APPROVED;
+                }
+            }
+            if (type.Equals("Credit"))
+            {
+                customerAccount.AccountBalance = (float)(accountBalance + amount);
+                AddToReport("Teller Posting", "ATM-Till", customerAccount.Name, (float)amount);
                 _context.SaveChanges();
                 return Codes.APPROVED;
             }
-
             return Codes.INVALID_AMOUNT;
 
         }
+        // Create Financial Report Entry
+        
+        public static void AddToReport(string postingType, string debitAccountName, string creditAccountName, float amount)
+        {
+            var creditAmount = (float)System.Math.Round(amount, 2);
+            var debitAmount = (float)System.Math.Round(amount, 2);
+            var financialReportDto = new FinancialReportDto
+            {
+                PostingType = postingType,
+                DebitAccount = debitAccountName,
+                DebitAmount = debitAmount,
+                CreditAccount = creditAccountName,
+                CreditAmount = creditAmount,
+                ReportDate = DateTime.Now
+            };
 
+            CBA.AddReport(financialReportDto);
+        }
+
+
+        public static string BalanceEnquiry(string accountNumber)
+        {
+            double amount = 0;
+            var _context = new ApplicationDbContext();
+            var customerAccount =
+                _context.CustomerAccounts.Include(c => c.AccountType).FirstOrDefault(c => c.AccountNumber.Equals(accountNumber.ToString()));
+            amount = Convert.ToDouble(FormatTo2Dp(Convert.ToDecimal(customerAccount.AccountBalance))) * 100;
+            string amountInIsoFormat = amount.ToString().PadLeft(10, '0');
+            return amountInIsoFormat;
+        }
+        public static string FormatTo2Dp(decimal myNumber)
+        {
+            // Use schoolboy rounding, not bankers.
+            myNumber = Math.Round(myNumber, 2, MidpointRounding.AwayFromZero);
+
+            return string.Format("{0:0.00}", myNumber);
+        }
     }
 }

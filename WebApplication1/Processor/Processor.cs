@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Services.Description;
 using Trx.Messaging.FlowControl;
@@ -13,45 +14,154 @@ namespace WebApplication1.Processor
 {
     public class Processor
     {
-        public void ProcessTransaction(Iso8583Message message, ListenerPeer listener)
+        private static ApplicationDbContext _context;
+        public Processor()
+        {
+            _context = new ApplicationDbContext();
+        }
+        public Iso8583Message ProcessTransaction(Iso8583Message message, ListenerPeer listener)
         {
             if (message != null)
             {
-                var fee = ExtractFee(message);
-                var trxType = ExtractTransactionType(message);
-                var accountNumber = ExtractAccountNumber(message);
-                var amount = ExtractAmount(message);
-                var STAN = ExtractSTAN(message);
-                var RRN = ExtractRRN(message);
-                if (trxType.ToString().Equals(Codes.WITHDRAWAL))
+                if (!message.IsReversalOrChargeBack())
                 {
-                    if (accountNumber != null && amount != null)
+
+                    var fee = ExtractFee(message);
+                    var trxType = ExtractTransactionType(message);
+                    var accountNumber = ExtractAccountNumber(message);
+                    var amount = ExtractAmount(message);
+                    var STAN = ExtractSTAN(message);
+                    var RRN = ExtractRRN(message);
+                    if (trxType.ToString().Equals(Codes.WITHDRAWAL))
                     {
-                       
-                        var responseCode = CBA.PerformDoubleEntry("Debit", accountNumber, (amount + fee/100));
-                        SetResponseMessage(message, responseCode);
-                       message = SendResponseMessage(listener, message);
-                        if (!message.Fields[39].Value.ToString().Equals(Codes.APPROVED))
+                        if (accountNumber != null && amount != null)
                         {
-                            new TransactionLogger().LogTransaction(message,"Debit");
-                            Debug.WriteLine("Transaction Incomplete ...");
+
+                            var responseCode = CBA.PerformDoubleEntry("Debit", accountNumber, (amount + fee));
+                           message = SetResponseMessage(message, responseCode);
+                            message = SendResponseMessage(listener, message);
+                            if (!message.Fields[39].Value.ToString().Equals(Codes.APPROVED))
+                            {
+
+                                Debug.WriteLine("Transaction Incomplete ...");
+
+                            }
+                            else
+                            {
+                                new TransactionLogger().LogTransaction(message, "Debit", "Request");
+                                Debug.WriteLine("Transaction Complete ...");
+
+                            }
+
                         }
-                        else
+                    }
+                    else if (trxType.ToString().Equals(Codes.BALANCE_ENQUIRY))
+                    {
+                        var amountEnquired = CBA.BalanceEnquiry(accountNumber);
+                        if (amountEnquired != null)
                         {
-                            Debug.WriteLine("Transaction Complete ...");
+                            message.Fields.Add(54,amountEnquired);
+                             SetResponseMessage(message, Codes.APPROVED);
+                            message = SendResponseMessage(listener, message);
+                            new TransactionLogger().LogTransaction(message, null, "Balance Enquiry");
+                        }
+                       
+
+                    }
+                    return message;
+                }
+
+                if (message.IsReversalOrChargeBack())
+                {
+                    message = PerformReversal(message, listener);
+                }
+
+            }
+            return message;
+        }
+
+        private static Iso8583Message PerformReversal(Iso8583Message message, ListenerPeer listener)
+        {
+            var STAN = ExtractSTAN(message);
+            message = SetFee(message, 0);
+            var transactionsToReverse = _context.TransactionLogs.Where(c => c.STAN.Equals(STAN)&& !c.Narration.Equals("Reversal")).ToList();
+            try
+            {
+                string responseCode = null;
+
+                if (transactionsToReverse != null || transactionsToReverse.Count>0)
+                {
+                    foreach (var transaction in transactionsToReverse)
+                    {
+                        if (!transaction.Narration.Equals("Balance Enquiry"))
+                        {
+                            if (transaction.TypeOfEntry.Equals("Debit"))
+                            {
+                                if (transaction.Account2 == null)
+                                {
+                                    responseCode = CBA.PerformDoubleEntry("Credit", transaction.Account1, transaction.Amount);
+                                    var isoAmt = Convert.ToDouble(FormatTo2Dp(Convert.ToDecimal(transaction.Amount))) * 100;
+                                    message.Fields.Add(4, isoAmt.ToString().PadLeft(10, '0'));
+                                    new TransactionLogger().LogTransaction(message, "Credit", "Reversal");
+                                    transaction.STAN = transaction.STAN + "R";
+
+                                    continue;
+                                }
+
+                            }
+                            responseCode = CBA.PerformDoubleEntry("Debit", transaction.Account1, transaction.Amount);
+                            var isoAmount = Convert.ToDouble(FormatTo2Dp(Convert.ToDecimal(transaction.Amount))) * 100;
+                            message.Fields.Add(4, isoAmount.ToString().PadLeft(10, '0'));
+                            new TransactionLogger().LogTransaction(message, "Debit", "Reversal");
+                            transaction.STAN = transaction.STAN + "R";
                         }
 
                     }
+                    _context.SaveChanges();
+                    message = SetResponseMessage(message, responseCode);
+                    message = SendResponseMessage(listener, message);
                 }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+                
+            }
+            return message;
+        }
+        private static Iso8583Message SetFee(Iso8583Message message, double? fee)
+        {
+            string feeAmount = ConvertFeeToISOFormat(fee);
+            message.Fields.Add(28, feeAmount);
+            return message;
         }
 
-        private static double ExtractFee(Iso8583Message message)
+        private static string ConvertFeeToISOFormat(double? fee)
+        {
+            //takes in 40naira C0000004000
+            double? feeInMinorDenomination = fee * 100; //in Kobo
+
+            StringBuilder feeStringBuilder = new StringBuilder(Convert.ToInt32(feeInMinorDenomination).ToString());
+            string padded = feeStringBuilder.ToString().PadLeft(8, '0');
+            feeStringBuilder.Replace(feeStringBuilder.ToString(), padded);
+            feeStringBuilder.Insert(0, 'C');
+
+            return feeStringBuilder.ToString();
+        }
+        public static string FormatTo2Dp(decimal myNumber)
+    {
+        // Use schoolboy rounding, not bankers.
+        myNumber = Math.Round(myNumber, 2, MidpointRounding.AwayFromZero);
+
+        return string.Format("{0:0.00}", myNumber);
+    }
+    private static double ExtractFee(Iso8583Message message)
         {
             double fee = 0;
             fee = ConvertFeeFromISOFormat(message.Fields[28].Value.ToString());
             Debug.WriteLine("Fee : " + fee);
-            return fee;
+            return fee/100;
         }
         private static string ExtractTransactionType(Iso8583Message message)
         {
@@ -100,7 +210,11 @@ namespace WebApplication1.Processor
 
         private static Iso8583Message SetResponseMessage(Iso8583Message message, string responseCode)
         {
-            message.SetResponseMessageTypeIdentifier();
+            if (message.IsRequest())
+            {
+                message.SetResponseMessageTypeIdentifier();
+            }
+           
             message.Fields.Add(39, responseCode);
             return message;
         }
@@ -136,7 +250,7 @@ namespace WebApplication1.Processor
 
                     }
 
-                    listenerPeer.Close();
+//                    
                     //request.MarkAsExpired();   //uncomment to test timeout
                     return response as Iso8583Message;
 
@@ -145,6 +259,7 @@ namespace WebApplication1.Processor
                 {
                     //logger.Log("Could not connect to Sink Node");
                     //clientPeer.Close();
+                    listenerPeer.Close();
                     Console.WriteLine("Client Peer is not Connected");
                     return SetResponseMessage(message, "91");
                 }

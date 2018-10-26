@@ -40,8 +40,7 @@ namespace WebApplication1.PeerConnection
             var i = 0;
         }
 
-        private static void ReceiveListener(object sender, ReceiveEventArgs e
-            )
+        private static void ReceiveListener(object sender, ReceiveEventArgs e)
         {
             
             Debug.WriteLine("Message : " + e.Message);
