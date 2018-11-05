@@ -20,5 +20,6 @@ namespace WebApplication1.Models
         public string ResponseCode { get; set; }
         public string TypeOfEntry { get; set; }
         public string Narration { get; set; }
+        public bool? RemoteOnUs { get; set; }
     }
 }

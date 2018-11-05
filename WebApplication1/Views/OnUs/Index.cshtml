@@ -1,0 +1,288 @@
+﻿
+@using WebApplication1.Models
+
+@{
+    ViewBag.Title = "On-Us Setup";
+    Layout = User.IsInRole(RoleName.ADMIN_ROLE) ? "~/Views/Shared/_Layout.cshtml" : "~/Views/Shared/_UserLayout.cshtml";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="underline animated fadeInLeft">On-Us Withdrawal Setup</h1>
+        </div>
+    </div>
+</div>
+
+@{
+    if (User.IsInRole(RoleName.ADMIN_ROLE))
+    {
+
+        @Html.Partial("_AddTerminalModal")
+
+    }
+}
+@Html.Partial("_EditTerminalModal")
+<div class="row ">
+
+
+    <div class="container bg-white shadow">
+
+
+        <div class="row  padding-horizontal">
+            <div class="col-md-6 col-sm-6 col-xs-6 align-left ">
+                <h3 class="alt-color bold-text align-left ">List of ATM Terminals  </h3>
+
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6 align-right">
+                @*@{
+                        if (User.IsInRole(RoleName.ADMIN_ROLE))
+                        {
+                            <p class=" grey-color animated fadeInRight "><span id="count">@Model.count</span> GL Postings</p>
+                        }
+                    }*@
+
+            </div>
+        </div>
+
+        <div class="row padding-horizontal">
+
+            <table id="ATMTerminals" class="table table-striped table-responsive small-text animated fadeInUp ">
+                <thead class="padding-vertical">
+                    <tr>
+                        <th> Name</th>
+                        <th>Terminal ID</th>
+                        <th>Location</th>
+                        <th>Edit</th>
+
+                    </tr>
+                </thead>
+
+                <tbody></tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    <script>
+        var errorMsg = "Please enter an ATM Terminal : </br>";
+        function EditAtmTerminal(id) {
+            //alert(id);
+            var index = {
+                Id: id
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/OnUs/EditAtmTerminal',
+                data: JSON.stringify(index),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (data) {
+
+
+                    $('#myEditAtmTerminalModal').fadeIn(200,
+                        function () {
+
+                            $('#myEditAtmTerminalModal #name').val(data['name']);
+                            $('#myEditAtmTerminalModal #location').val(data['location']);
+                            $('#myEditAtmTerminalModal #terminalID').val(data['terminalID']);
+                            $('#myEditAtmTerminalModal #hidden').val(id);
+                        });
+
+
+                },
+                error: function (errorMessage) {
+                    var msg = JSON.parse(errorMessage.responseText);
+                    alert(msg.message);
+
+                    $('#myEditAtmTerminalModal #errorMessage').fadeIn(200,
+                        function () { $('#myEditAtmTerminalModal #errorMessage').html(msg.message) });
+                }
+
+            });
+        }
+        $(document).ready(function () {
+
+
+            var table = $("#ATMTerminals").DataTable({
+                ajax: {
+                    url: "/api/OnUs/GetATMTerminals",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name"
+                    },
+                    {
+                        data: "terminalID"
+                    },
+                    {
+                        data: "location"
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return "<p class='js-delete btn btn-primary ' style='margin:auto;cursor:pointer;' id=" +
+                                data +
+                                " onclick='EditAtmTerminal(" +
+                                data +
+                                ");'>Edit</p>";
+                        }
+
+                    }
+                ]
+            });
+            $("#ATMTerminals ").on("click", "js-delete", function () {
+                var button = $(this);
+
+                bootbox.confirm("Are you sure you want to delete this branch", function () {
+                    if (result) {
+                        $.ajax({
+                            url: "api/branches/" + button.attr("data-branch-id"),
+                            method: "DELETE",
+                            success: function () {
+                                table.row(button.parents("tr")).remove().draw();
+                            }
+                        });
+                    }
+                });
+            });
+
+            $("#myAddATMTerminalBtn").on("click",
+                function (e) {
+
+                    e.preventDefault();
+                    //alert("clicked");
+                    var atmTerminalName = $("#myAddATMTerminalModal #name").val();
+                    var atmTerminalID = $("#myAddATMTerminalModal #terminalID").val();
+                    var atmLocation = $("#myAddATMTerminalModal #location").val();
+                    //alert("Credit Acc : " + creditAccountId + ", Amount : " + creditAmount + ", Narration : " + creditNarration + ", Debit Acc : " + debitAccountId + ", Amount : " + debitAmount + ", Narration : " + debitNarration );
+
+                    var ATMTerminal = {
+                        Name: atmTerminalName,
+                        TerminalId: atmTerminalID,
+                        Location: atmLocation
+
+                    };
+
+                    // ATMTerminal Modal Form Validation
+
+                    if (atmTerminalName == "" || atmTerminalName == null) {
+                        //  $('#myAddGLPostingModal #errorMessage').fadeIn();
+                        errorMsg = errorMsg + "<b>Name</b>, ";
+
+                    }
+                    if (atmTerminalID == "" || atmTerminalID == null) {
+                        //  $('#myAddGLPostingModal #errorMessage').fadeIn();
+                        errorMsg = errorMsg + "<b>ID</b>, ";
+
+                    }
+                    if (atmLocation == "" || atmLocation == null) {
+                        //  $('#myAddGLPostingModal #errorMessage').fadeIn();
+                        errorMsg = errorMsg + "<b>Location</b>";
+
+                    }
+
+                    if (errorMsg !== "Please enter an ATM Terminal : </br>") {
+                        $('#myAddATMTerminalModal #errorMessage').fadeIn();
+                        $('#myAddATMTerminalModal #errorMessage').html(errorMsg);
+                        return;
+                    }
+
+                    // To Perform GL Account validation, checking if the Accounts exists
+
+                    // :To confirm ACTION and make an API call to POST to the CONTROLLER
+
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/api/OnUs/CreateAtmTerminal',
+                        data: JSON.stringify(ATMTerminal),
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        success: function (data) {
+
+
+                            $('#myAddATMTerminalModal #successMessage').fadeIn(200,
+                                function () {
+                                    table.ajax.reload();
+                                    document.getElementById('atmTerminalForm').reset();
+
+                                    $('#myAddATMTerminalModal #successMessage').html(data);
+
+                                    $('#myAddATMTerminalModal button .loader').fadeOut();
+                                });
+                            return;
+
+
+                        },
+                        error: function (errorMessage) {
+                            // alert('request failed');
+
+                            var msg = JSON.parse(errorMessage.responseText);
+
+                            $('#myAddATMTerminalModal #errorMessage').fadeIn(200,
+                                function () { $('#myAddATMTerminalModal #errorMessage').html(msg.message) });
+                        }
+
+                    });
+
+                });
+            $("#myEditATMTerminalBtn").on('click', function (e) {
+                e.preventDefault();
+                var terminalName = $("#myEditAtmTerminalModal #name").val();
+                var terminalID = $("#myEditAtmTerminalModal #terminalID").val();
+                var terminalLocation = $("#myEditAtmTerminalModal #location").val();
+               
+                var id = $("#myEditAtmTerminalModal #hidden").val();
+               
+                // alert(customerGender);
+                var atmTerminal = {
+                    Id: id,
+                    Name: terminalName,
+                    TerminalID: terminalID,
+                    Location: terminalLocation
+                   
+                }
+                $.ajax({
+                    type: 'PUT',
+                    url: '/api/OnUs/UpdateAtmTerminal',
+                    data: JSON.stringify(atmTerminal),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    success: function (data) {
+
+
+                        $('#myEditAtmTerminalModal #successMessage').fadeIn(200,
+                            function () {
+                                $('#myEditAtmTerminalModal #successMessage').html(data);
+                                $('#myEditAtmTerminalBtn .loader').fadeOut();
+
+                            });
+
+                    },
+                    error: function (errorMessage) {
+                        // alert('request failed');
+
+                        var msg = JSON.parse(errorMessage.responseText);
+                        //alert(msg.message);
+                        $('#myEditAtmTerminalModal #errorMessage').fadeIn(200,
+                            function () { $('#myEditAtmTerminalModal #errorMessage').html(msg.message) });
+                    }
+
+                });
+
+            });
+            $("#myEditAtmTerminalModal .close").on('click', function () {
+
+                table.ajax.reload(function () {
+                    $('#count').html(table.data().count());
+                    $('#myEditAtmTerminalModal #errorMessage,#myEditAtmTerminalModal #successMessage,#myEditAtmTerminalBtn .loader').fadeOut();
+                    $('#myEditAtmTerminalModal').fadeOut();
+                });
+            });
+        });
+    </script>
+}

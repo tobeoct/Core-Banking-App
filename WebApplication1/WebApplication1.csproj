@@ -244,7 +244,10 @@
     <Compile Include="Controllers\Api\EODController.cs" />
     <Compile Include="Controllers\Api\FinancialReportsController.cs" />
     <Compile Include="Controllers\Api\GeneralLedgersController.cs" />
+    <Compile Include="Controllers\Api\OnUsController.cs" />
+    <Compile Include="Controllers\Api\RemoteOnUsController.cs" />
     <Compile Include="Controllers\Api\TellersController.cs" />
+    <Compile Include="Controllers\Api\TSSController.cs" />
     <Compile Include="Controllers\Api\UserAccountsController.cs" />
     <Compile Include="Controllers\BranchesController.cs" />
     <Compile Include="Controllers\CustomersController.cs" />
@@ -254,7 +257,10 @@
     <Compile Include="Controllers\GeneralLedgersController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\OnUsController.cs" />
+    <Compile Include="Controllers\RemoteOnUsController.cs" />
     <Compile Include="Controllers\TellersController.cs" />
+    <Compile Include="Controllers\TSSController.cs" />
     <Compile Include="Controllers\UserAccountsController.cs" />
     <Compile Include="Dtos\AccountTypeDto.cs" />
     <Compile Include="Dtos\BranchDto.cs" />
@@ -818,14 +824,28 @@
     <Compile Include="Migrations\201810241207150_AddTransactionLogsToDb.Designer.cs">
       <DependentUpon>201810241207150_AddTransactionLogsToDb.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201810261507353_AddAtmTerminalToDB.cs" />
+    <Compile Include="Migrations\201810261507353_AddAtmTerminalToDB.Designer.cs">
+      <DependentUpon>201810261507353_AddAtmTerminalToDB.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201810261510280_AddOnUsToDB.cs" />
+    <Compile Include="Migrations\201810261510280_AddOnUsToDB.Designer.cs">
+      <DependentUpon>201810261510280_AddOnUsToDB.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201810291449346_add.cs" />
+    <Compile Include="Migrations\201810291449346_add.Designer.cs">
+      <DependentUpon>201810291449346_add.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountRoles.cs" />
     <Compile Include="Models\AccountType.cs" />
+    <Compile Include="Models\ATMTerminal.cs" />
     <Compile Include="Models\BalanceSheetReport.cs" />
     <Compile Include="Models\BusinessStatus.cs" />
     <Compile Include="Models\CBA.cs" />
     <Compile Include="Models\CurrentAccountType.cs" />
     <Compile Include="Models\CustomerAccount.cs" />
+    <Compile Include="Models\DataMessages.cs" />
     <Compile Include="Models\EODConfig.cs" />
     <Compile Include="Models\FinancialDates.cs" />
     <Compile Include="Models\FinancialReport.cs" />
@@ -835,6 +855,7 @@
     <Compile Include="Models\LoanDetails.cs" />
     <Compile Include="Models\PLModel.cs" />
     <Compile Include="Models\PostingTypes.cs" />
+    <Compile Include="Models\RemoteOnUs.cs" />
     <Compile Include="Models\SavingsAccountType.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Branch.cs" />
@@ -851,6 +872,7 @@
     <Compile Include="Models\TellerPosting.cs" />
     <Compile Include="Models\Terms.cs" />
     <Compile Include="Models\TransactionLog.cs" />
+    <Compile Include="Models\TSSAccount.cs" />
     <Compile Include="Models\UserAccount.cs" />
     <Compile Include="PeerConnection\Listener.cs" />
     <Compile Include="Processor\Codes.cs" />
@@ -870,6 +892,8 @@
     <Compile Include="ViewModels\GLCategoryViewModel.cs" />
     <Compile Include="ViewModels\GLPostingViewModel.cs" />
     <Compile Include="ViewModels\LoanAccViewModel.cs" />
+    <Compile Include="ViewModels\OnUsViewModel.cs" />
+    <Compile Include="ViewModels\RemoteOnUsViewModel.cs" />
     <Compile Include="ViewModels\ReportViewModel.cs" />
     <Compile Include="ViewModels\SavingsViewModel.cs" />
     <Compile Include="ViewModels\TellerPostingViewModel.cs" />
@@ -1200,6 +1224,11 @@
     <Content Include="Views\EODConfig\index.cshtml" />
     <Content Include="Views\Customers\ViewTransactions.cshtml" />
     <Content Include="Views\GeneralLedgers\ViewTransactions.cshtml" />
+    <Content Include="Views\OnUs\Index.cshtml" />
+    <Content Include="Views\OnUs\_AddTerminalModal.cshtml" />
+    <Content Include="Views\OnUs\_EditTerminalModal.cshtml" />
+    <Content Include="Views\RemoteOnUs\Index.cshtml" />
+    <Content Include="Views\TSS\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1623,6 +1652,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201810241207150_AddTransactionLogsToDb.resx">
       <DependentUpon>201810241207150_AddTransactionLogsToDb.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810261507353_AddAtmTerminalToDB.resx">
+      <DependentUpon>201810261507353_AddAtmTerminalToDB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810261510280_AddOnUsToDB.resx">
+      <DependentUpon>201810261510280_AddOnUsToDB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810291449346_add.resx">
+      <DependentUpon>201810291449346_add.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

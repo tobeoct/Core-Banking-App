@@ -26,19 +26,24 @@ namespace WebApplication1.Processor
                 if (!message.IsReversalOrChargeBack())
                 {
 
+                    message = CheckIfFeeApplies(message);
                     var fee = ExtractFee(message);
+                   
                     var trxType = ExtractTransactionType(message);
                     var accountNumber = ExtractAccountNumber(message);
                     var amount = ExtractAmount(message);
                     var STAN = ExtractSTAN(message);
                     var RRN = ExtractRRN(message);
-                    if (trxType.ToString().Equals(Codes.WITHDRAWAL))
+                    if (trxType.ToString().Equals(Codes.WITHDRAWAL) || trxType.ToString().Equals(Codes.PAYMENT))
                     {
                         if (accountNumber != null && amount != null)
-                        {
+                        {           
+                            if (trxType.ToString().Equals(Codes.PAYMENT))
+                            {
 
-                            var responseCode = CBA.PerformDoubleEntry("Debit", accountNumber, (amount + fee));
-                           message = SetResponseMessage(message, responseCode);
+                            }
+                            var responseCode = CBA.PerformDoubleEntry("Debit", accountNumber, (amount + fee), CheckIfRemote(message));
+                            message = SetResponseMessage(message, responseCode);
                             message = SendResponseMessage(listener, message);
                             if (!message.Fields[39].Value.ToString().Equals(Codes.APPROVED))
                             {
@@ -60,12 +65,13 @@ namespace WebApplication1.Processor
                         var amountEnquired = CBA.BalanceEnquiry(accountNumber);
                         if (amountEnquired != null)
                         {
-                            message.Fields.Add(54,amountEnquired);
-                             SetResponseMessage(message, Codes.APPROVED);
+                            message.Fields.Add(54, amountEnquired);
+                            message.Fields.Add(4, "0000000000");
+                            SetResponseMessage(message, Codes.APPROVED);
                             message = SendResponseMessage(listener, message);
                             new TransactionLogger().LogTransaction(message, null, "Balance Enquiry");
                         }
-                       
+
 
                     }
                     return message;
@@ -84,12 +90,12 @@ namespace WebApplication1.Processor
         {
             var STAN = ExtractSTAN(message);
             message = SetFee(message, 0);
-            var transactionsToReverse = _context.TransactionLogs.Where(c => c.STAN.Equals(STAN)&& !c.Narration.Equals("Reversal")).ToList();
+            var transactionsToReverse = _context.TransactionLogs.Where(c => c.STAN.Equals(STAN) && !c.Narration.Equals("Reversal")).ToList();
             try
             {
                 string responseCode = null;
 
-                if (transactionsToReverse != null || transactionsToReverse.Count>0)
+                if (transactionsToReverse != null || transactionsToReverse.Count > 0)
                 {
                     foreach (var transaction in transactionsToReverse)
                     {
@@ -99,7 +105,13 @@ namespace WebApplication1.Processor
                             {
                                 if (transaction.Account2 == null)
                                 {
-                                    responseCode = CBA.PerformDoubleEntry("Credit", transaction.Account1, transaction.Amount);
+                                    bool remote1 =false;
+                                    if(transaction.RemoteOnUs==true)
+                                    {
+                                        remote1 = true;
+                                    }
+                                    
+                                    responseCode = CBA.PerformDoubleEntry("Credit", transaction.Account1, transaction.Amount, remote1);
                                     var isoAmt = Convert.ToDouble(FormatTo2Dp(Convert.ToDecimal(transaction.Amount))) * 100;
                                     message.Fields.Add(4, isoAmt.ToString().PadLeft(10, '0'));
                                     new TransactionLogger().LogTransaction(message, "Credit", "Reversal");
@@ -109,7 +121,12 @@ namespace WebApplication1.Processor
                                 }
 
                             }
-                            responseCode = CBA.PerformDoubleEntry("Debit", transaction.Account1, transaction.Amount);
+                            bool remote = false;
+                            if (transaction.RemoteOnUs == true)
+                            {
+                                remote = true;
+                            }
+                            responseCode = CBA.PerformDoubleEntry("Debit", transaction.Account1, transaction.Amount, remote);
                             var isoAmount = Convert.ToDouble(FormatTo2Dp(Convert.ToDecimal(transaction.Amount))) * 100;
                             message.Fields.Add(4, isoAmount.ToString().PadLeft(10, '0'));
                             new TransactionLogger().LogTransaction(message, "Debit", "Reversal");
@@ -126,10 +143,11 @@ namespace WebApplication1.Processor
             {
                 Console.WriteLine(e);
                 throw;
-                
+
             }
             return message;
         }
+
         private static Iso8583Message SetFee(Iso8583Message message, double? fee)
         {
             string feeAmount = ConvertFeeToISOFormat(fee);
@@ -149,19 +167,26 @@ namespace WebApplication1.Processor
 
             return feeStringBuilder.ToString();
         }
-        public static string FormatTo2Dp(decimal myNumber)
-    {
-        // Use schoolboy rounding, not bankers.
-        myNumber = Math.Round(myNumber, 2, MidpointRounding.AwayFromZero);
 
-        return string.Format("{0:0.00}", myNumber);
-    }
-    private static double ExtractFee(Iso8583Message message)
+        public static string FormatTo2Dp(decimal myNumber)
+        {
+            // Use schoolboy rounding, not bankers.
+            myNumber = Math.Round(myNumber, 2, MidpointRounding.AwayFromZero);
+
+            return string.Format("{0:0.00}", myNumber);
+        }
+
+        private static double ExtractFee(Iso8583Message message)
         {
             double fee = 0;
             fee = ConvertFeeFromISOFormat(message.Fields[28].Value.ToString());
             Debug.WriteLine("Fee : " + fee);
-            return fee/100;
+            return fee / 100;
+        }
+        private static string ExtractChannel(Iso8583Message message)
+        {
+            string channelCode = message.Fields[41].Value.ToString().Substring(0, 1);
+            return channelCode;
         }
         private static string ExtractTransactionType(Iso8583Message message)
         {
@@ -169,18 +194,21 @@ namespace WebApplication1.Processor
             Debug.WriteLine("Trx Type : " + trxType);
             return trxType;
         }
+
         private static string ExtractSTAN(Iso8583Message message)
         {
             string STAN = message.Fields[11].Value.ToString();
             Debug.WriteLine("STAN : " + STAN);
             return STAN;
         }
+
         private static string ExtractRRN(Iso8583Message message)
         {
             string RRN = message.Fields[37].Value.ToString();
             Debug.WriteLine("RRN : " + RRN);
             return RRN;
         }
+
         private static double ExtractAmount(Iso8583Message message)
         {
             double amount = 0;
@@ -188,6 +216,7 @@ namespace WebApplication1.Processor
             Debug.WriteLine("Amount : " + amount);
             return amount;
         }
+
         private static string ExtractAccountNumber(Iso8583Message message)
         {
             string accountNumber = "";
@@ -214,11 +243,10 @@ namespace WebApplication1.Processor
             {
                 message.SetResponseMessageTypeIdentifier();
             }
-           
+
             message.Fields.Add(39, responseCode);
             return message;
         }
-
 
         private static Iso8583Message SendResponseMessage(ListenerPeer listenerPeer, Iso8583Message message)
         {
@@ -250,7 +278,7 @@ namespace WebApplication1.Processor
 
                     }
 
-//                    
+                    //                    
                     //request.MarkAsExpired();   //uncomment to test timeout
                     return response as Iso8583Message;
 
@@ -271,6 +299,42 @@ namespace WebApplication1.Processor
                 //logger.Log("An error occured " + e.Message);
                 return SetResponseMessage(message, "06");
             }
+        }
+
+        private static Iso8583Message CheckIfFeeApplies(Iso8583Message message)
+        {
+            if (ExtractChannel(message).Equals(Codes.ATM))
+            {
+                var accountNumber = ExtractAccountNumber(message);
+                var transactionType = ExtractTransactionType(message);
+                var logs = _context.TransactionLogs.Where(c => c.Account1 == accountNumber && c.Narration.Equals("Request") && c.ResponseCode.Equals(Codes.APPROVED)).ToList();
+                var count = logs.Count % 3;
+                if (count != 0)
+                {
+                    message.Fields.Add(28, "C00000000");
+                }
+            }
+            return message;
+        }
+        private static string ExtractTerminalID(Iso8583Message message)
+        {
+            var field41 = message.Fields[41].Value.ToString();
+            var terminalID = field41.Substring(1, field41.Length - 1);
+            return terminalID;
+
+        }
+        private static bool CheckIfRemote(Iso8583Message message)
+        {
+            var terminalID = ExtractTerminalID(message);
+            var terminal = _context.ATMTerminals.SingleOrDefault(c => c.TerminalID == terminalID);
+            if(terminal==null)
+            {
+                Debug.WriteLine("Not Remote");
+                return false;
+               
+            }
+            Debug.WriteLine("Remote");
+            return true;
         }
     }
 }

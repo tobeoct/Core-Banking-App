@@ -180,21 +180,33 @@ namespace WebApplication1.Models
 
         }
 
-        public static string PerformDoubleEntry(string type, string accountNumber, double amount)
-        {
+        public static string PerformDoubleEntry(string type, string accountNumber, double amount, bool remote) {
             var _context = new ApplicationDbContext();
             var customerAccount =
                 _context.CustomerAccounts.Include(c => c.AccountType).FirstOrDefault(c => c.AccountNumber.Equals(accountNumber.ToString()));
+            var atmGLAccountName = "ATM-Till";
+           
+            if (remote==true)
+            {
+                atmGLAccountName = _context.RemoteOnUsConfig.Include(c => c.GLAccount).FirstOrDefault().GLAccount.Name;
+                 
+            }
+            var glAccount = _context.GlAccounts.SingleOrDefault(c => c.Name.Equals(atmGLAccountName));
             var accountBalance = customerAccount.AccountBalance;
             var minimumBalance = customerAccount.AccountType.MinimumBalance;
 
+          //  var userId = _context.Users.SingleOrDefault(c => c.Email.Equals(RoleName.EMAIL)).Id;
 
+
+   
             if (type.Equals("Debit"))
             {
                 if ((accountBalance - minimumBalance) > amount)
                 {
                     customerAccount.AccountBalance = (float)(accountBalance - amount);
-                    AddToReport("Teller Posting", customerAccount.Name, "ATM-Till",(float) amount);
+                    glAccount.AccountBalance = glAccount.AccountBalance - (float)amount;
+                    AddToReport("Teller Posting", customerAccount.Name, atmGLAccountName, (float) amount);
+                   
                     _context.SaveChanges();
                     return Codes.APPROVED;
                 }
@@ -202,7 +214,8 @@ namespace WebApplication1.Models
             if (type.Equals("Credit"))
             {
                 customerAccount.AccountBalance = (float)(accountBalance + amount);
-                AddToReport("Teller Posting", "ATM-Till", customerAccount.Name, (float)amount);
+                glAccount.AccountBalance = glAccount.AccountBalance + (float)amount;
+                AddToReport("Teller Posting", atmGLAccountName, customerAccount.Name, (float)amount);
                 _context.SaveChanges();
                 return Codes.APPROVED;
             }
@@ -213,8 +226,8 @@ namespace WebApplication1.Models
         
         public static void AddToReport(string postingType, string debitAccountName, string creditAccountName, float amount)
         {
-            var creditAmount = (float)System.Math.Round(amount, 2);
-            var debitAmount = (float)System.Math.Round(amount, 2);
+            var creditAmount = (float)Math.Round(amount, 2);
+            var debitAmount = (float)Math.Round(amount, 2);
             var financialReportDto = new FinancialReportDto
             {
                 PostingType = postingType,
@@ -239,6 +252,7 @@ namespace WebApplication1.Models
             string amountInIsoFormat = amount.ToString().PadLeft(10, '0');
             return amountInIsoFormat;
         }
+       
         public static string FormatTo2Dp(decimal myNumber)
         {
             // Use schoolboy rounding, not bankers.

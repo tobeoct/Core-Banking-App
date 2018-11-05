@@ -1,0 +1,55 @@
+﻿
+<div id="myAddATMTerminalModal" class="container bg-white shadow">
+
+    <div class="row padding-horizontal">
+
+        <div>
+            <div class=" bordered-bottom row ">
+                <div class="col-md-6 col-sm-6 col-xs-6 align-left">
+                    <h3 class="alt-color bold-text align-left ">Add ATM Terminal </h3>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-6 align-right">
+                    <p class="grey-color">Hit Tab to move to next field</p>
+                </div>
+
+            </div>
+            <div class="alert alert-danger alert-dismissible" id="errorMessage"></div>
+            <div class="alert alert-success alert-dismissible" id="successMessage"></div>
+
+            <form id="atmTerminalForm" class="padding-horizontal">
+                <table>
+                    <thead>
+                        <tr class="row">
+
+                            <th class="col-md-4">Name</th>
+                            <th class="col-md-4">Terminal ID</th>
+                            <th class="col-md-4">Location</th>
+                          
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="row">
+
+
+                            <td class="form-group col-md-4">
+                                <input type="text" id="name" class="form-control">
+                            </td>
+                            <td class="form-group col-md-4">
+                                <input type="text" id="terminalID" class="form-control">
+                            </td>
+                            <td class="form-group col-md-4">
+                                <input type="text" id="location" class="form-control">
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+
+            </form>
+            <div class="align-right">
+                <button id="myAddATMTerminalBtn">Add ATM Terminal<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
+            </div>
+        </div>
+
+    </div>
+</div>

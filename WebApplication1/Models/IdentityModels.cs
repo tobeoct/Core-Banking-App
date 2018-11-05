@@ -55,7 +55,9 @@ namespace WebApplication1.Models
         public DbSet<FinancialDates> FinancialDates { get; set; }
         public DbSet<EODConfig> EODConfig { get; set; }
         public DbSet<TransactionLog> TransactionLogs { get; set; }
-
+        public DbSet<ATMTerminal> ATMTerminals { get; set; }
+        public DbSet<RemoteOnUs> RemoteOnUsConfig { get; set; }
+        public DbSet<TSSAccount> TSSAccountConfig { get; set; }
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {

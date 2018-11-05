@@ -1,0 +1,166 @@
+﻿
+@using WebApplication1.Models
+@model WebApplication1.ViewModels.RemoteOnUsViewModel
+@{
+    ViewBag.Title = "TSS Setup";
+    Layout = User.IsInRole(RoleName.ADMIN_ROLE) ? "~/Views/Shared/_Layout.cshtml" : "~/Views/Shared/_UserLayout.cshtml";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="underline animated fadeInLeft">TSS Account Setup</h1>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div id="myUpdateAccountModal" class="container bg-white shadow">
+
+    <div class="row padding-horizontal">
+
+        <div>
+            <div class=" bordered-bottom row ">
+                <div class="col-md-6 col-sm-6 col-xs-6 align-left">
+                    <h3 class="alt-color bold-text align-left ">Edit TSS Account </h3>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-6 align-right">
+                    <p class="grey-color">Hit Tab to move to next field</p>
+                </div>
+
+            </div>
+            <div class="alert alert-danger alert-dismissible" id="errorMessage"></div>
+            <div class="alert alert-success alert-dismissible" id="successMessage"></div>
+
+            <form id="accountForm" class="padding-horizontal">
+                <table>
+                    <thead>
+                        <tr class="row">
+
+                            <th>TSS GL Account</th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="row">
+
+
+                            <td class="form-group ">
+                                <select id="gl-account" class="form-control">
+
+                                    @{
+                                        if (Model.GlAccountId == 0)
+                                        {
+                                            <option value="0" selected>-Select a GL Account</option>
+                                           
+                                        }
+                                        foreach (var account in Model.GLAccounts)
+                                        {
+
+                                            if (Model.GlAccountId == account.Id && Model.GlAccountId != 0)
+                                            {
+                                                <option value=@account.Id selected>@account.Name</option>
+                                                continue;
+                                            }
+
+
+                                            <option value=@account.Id>@account.Name </option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+
+
+                        </tr>
+
+                    </tbody>
+                </table>
+
+            </form>
+            <div class="align-right">
+                <button id="myUpdateAccountBtn">Update Account<img src="~/Content/Images/loader2.gif" style="max-width: 50px;" class="loader icon"></button>
+            </div>
+        </div>
+
+    </div>
+</div>
+@section scripts
+{
+    <script>
+        var errorMsg = "";
+        var selectedAccount = 0;
+        $("#gl-account").change(function () {
+            selectedAccount = $(this).children("option:selected").val();
+        });
+        $(document).ready(function () {
+
+
+
+            $("#myUpdateAccountBtn").on("click",
+                function (e) {
+
+                    e.preventDefault();
+                    //alert("clicked");
+                    var glAccountId;
+                    if (selectedAccount != 0) {
+                        glAccountId = selectedAccount
+                    }
+
+                    else {
+                        alert("Please select an account");
+                        return;
+                    }
+
+                    var index = {
+                        Id: glAccountId
+                    };
+
+                    // Remote-On-Us Account Form Validation
+
+
+                    // To Perform GL Account validation, checking if the Accounts exists
+
+                    // :To confirm ACTION and make an API call to POST to the CONTROLLER
+
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/api/TSS/UpdateGLAccount',
+                        data: JSON.stringify(index),
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        success: function (data) {
+
+
+                            $('#myUpdateAccountModal #successMessage').fadeIn(200,
+                                function () {
+
+
+
+                                    $('#myUpdateAccountModal #successMessage').html(data);
+
+                                    $('#myUpdateAccountModal button .loader').fadeOut();
+                                });
+                            return;
+
+
+                        },
+                        error: function (errorMessage) {
+                            // alert('request failed');
+
+                            var msg = JSON.parse(errorMessage.responseText);
+
+                            $('#myUpdateAccountModal #errorMessage').fadeIn(200,
+                                function () { $('#myUpdateAccountModal #errorMessage').html(msg.message) });
+                        }
+
+                    });
+
+                });
+
+        });
+    </script>
+}
+

@@ -31,7 +31,7 @@
 
                     </div>
                     <!--
-                    -->
+            -->
                     <div class="bg-active-indicator">
 
                     </div>
@@ -51,7 +51,7 @@
 
                     </div>
                     <!--
-                    -->
+            -->
                     <div class="bg-active-indicator">
 
                     </div>
@@ -72,7 +72,7 @@
 
                     </div>
                     <!--
-                    -->
+            -->
                     <div class="bg-active-indicator">
 
                     </div>
@@ -93,28 +93,28 @@
 
                     </div>
                     <!--
-                    -->
+            -->
                     <div class="bg-active-indicator">
 
                     </div>
-                   
+
                 </div>
                 <ul class="dropdown" style="z-index: 3;">
                     <a href="~/Customers" id="nav-customer-mgt"> <li class="col-md-12"><span style="margin-left: 30%">Management</span></li></a>
                     <a href="~/Customers/Account" id="nav-customer-acc"><li class="col-md-12"><span style="margin-left: 30%"> Accounts</span></li></a>
-                   
+
                 </ul>
             </div>
             <div class="row animated fadeInLeft">
                 <div class="col-md-3 col-sm-3 col-xs-3  align-center"><img src="~/Content/Images/account-balance.png" class="icon"></div>
-                    <a href="~/AccountTypes" id="nav-account-type"><div class="col-md-9 col-sm-4 col-xs-9">Account Type </div></a>
+                <a href="~/AccountTypes" id="nav-account-type"><div class="col-md-9 col-sm-4 col-xs-9">Account Type </div></a>
                 <div class="inline-div" id="nav-active">
 
                     <div class="alt-bg" style=" opacity: 0.6;">
 
                     </div>
                     <!--
-                    -->
+            -->
                     <div class="bg-active-indicator">
 
                     </div>
@@ -135,16 +135,76 @@
             </div>
             <div class="row animated fadeInLeft">
                 <div class="col-md-3 col-sm-3 col-xs-3  align-center">@*<img src="~/Content/Images/stats.png" class="icon">*@<i class="fa fa-cog"></i></div>
-                <a href="~/EODConfig" id="nav-eod-config"><div class="col-md-9 col-sm-4 col-xs-9">EOD Config</div></a>
+                <a href="~/EODConfig" id="nav-eod-config"><div class="col-md-9 col-sm-4 col-xs-9">EOD Setup</div></a>
+            </div>
+            <div class="row ">
+
+                <div class="" style="z-index: 3;">
+                    <div class="col-md-3 col-sm-3 col-xs-3  align-center">@*<img src="~/Content/Images/user.png" class="icon">*@<i class="fa fa-users"></i></div>
+                    <div class="col-md-9 col-sm-9 col-xs-9"><a href="~/onus" class="nav-list-item" id="nav-users">On-Us Setup </a></div>
+                </div>
+
+                <div class="inline-div" id="nav-active" style="z-index: 1;">
+
+                    <div class="alt-bg" style=" opacity: 0.6;">
+
+                    </div>
+                    <!--
+            -->
+                    <div class="bg-active-indicator">
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="row ">
+
+                <div class="" style="z-index: 3;">
+                    <div class="col-md-3 col-sm-3 col-xs-3  align-center">@*<img src="~/Content/Images/user.png" class="icon">*@<i class="fa fa-users"></i></div>
+                    <div class="col-md-9 col-sm-9 col-xs-9"><a href="~/remoteonus" class="nav-list-item" id="nav-users">Remote-On-Us Setup </a></div>
+                </div>
+
+                <div class="inline-div" id="nav-active" style="z-index: 1;">
+
+                    <div class="alt-bg" style=" opacity: 0.6;">
+
+                    </div>
+                    <!--
+            -->
+                    <div class="bg-active-indicator">
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="row ">
+
+                <div class="" style="z-index: 3;">
+                    <div class="col-md-3 col-sm-3 col-xs-3  align-center">@*<img src="~/Content/Images/user.png" class="icon">*@<i class="fa fa-users"></i></div>
+                    <div class="col-md-9 col-sm-9 col-xs-9"><a href="~/tss" class="nav-list-item" id="nav-users">TSS Account Setup </a></div>
+                </div>
+
+                <div class="inline-div" id="nav-active" style="z-index: 1;">
+
+                    <div class="alt-bg" style=" opacity: 0.6;">
+
+                    </div>
+                    <!--
+            -->
+                    <div class="bg-active-indicator">
+
+                    </div>
+                </div>
+
             </div>
             <div class="row animated fadeInLeft">
                 <div class="col-md-3 col-sm-3 col-xs-3  align-center">@*<img src="~/Content/Images/user.png" class="icon">*@<i class="fa fa-sign-out"></i></div>
                 <div class="col-md-9 col-sm-4 col-xs-9">
-                    @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form",@id="nav-log-out" }))
+                    @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form", @id = "nav-log-out" }))
                     {
                         @Html.AntiForgeryToken()
-                       <input type="submit" value="Logout" class="strip" style="border-bottom:none;width: auto !important;"/>
-                   }
+                        <input type="submit" value="Logout" class="strip" style="border-bottom:none;width: auto !important;" />
+                    }
                 </div>
             </div>
 
